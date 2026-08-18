@@ -172,4 +172,16 @@ describe('Phase 2 Server API Routes Suite', () => {
       expect(json.redirect.httpCode).toBe(301);
     });
   });
+
+  describe('5. Supabase Database Keep-Alive Cron API (/api/cron/keep-alive)', () => {
+    it('executes keep-alive ping and returns 200 with active status', async () => {
+      const { GET: keepAliveHandler } = await import('@/app/api/cron/keep-alive/route');
+      const req = new NextRequest(new URL('http://localhost:3000/api/cron/keep-alive'));
+      const res = await keepAliveHandler(req);
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.message).toContain('active');
+    });
+  });
 });
