@@ -508,103 +508,35 @@ export const allSeedStories: Story[] = [];
 
 export const publishedSeedStories: Story[] = [];
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __ETERNAL_PAWS_DYNAMIC_STORIES__: Story[] | undefined;
-}
-
-function getFileSystem() {
-  if (typeof window === 'undefined') {
-    try {
-      /* eslint-disable no-eval */
-      const req = eval('require');
-      const fs = req('fs');
-      const path = req('path');
-      return { fs, path };
-    } catch {
-      return null;
-    }
-  }
-  return null;
-}
-
-function getStoriesFilePath(): string | null {
-  const env = getFileSystem();
-  if (!env) return null;
-  return env.path.join(process.cwd(), 'src', 'data', 'live_stories.json');
-}
-
-function loadStoriesFromFile(): Story[] {
-  try {
-    const env = getFileSystem();
-    const filePath = getStoriesFilePath();
-    if (env && filePath && env.fs.existsSync(filePath)) {
-      const data = env.fs.readFileSync(filePath, 'utf-8');
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return [];
-}
-
-function saveStoriesToFile(stories: Story[]): void {
-  try {
-    const env = getFileSystem();
-    const filePath = getStoriesFilePath();
-    if (env && filePath) {
-      const dir = env.path.dirname(filePath);
-      if (!env.fs.existsSync(dir)) {
-        env.fs.mkdirSync(dir, { recursive: true });
-      }
-      env.fs.writeFileSync(filePath, JSON.stringify(stories, null, 2), 'utf-8');
-    }
-  } catch {
-    // ignore
-  }
-}
-
-function getDynamicStories(): Story[] {
-  if (globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ !== undefined) {
-    return globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__;
-  }
-  const loaded = loadStoriesFromFile();
-  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = loaded;
-  return loaded;
-}
+import { StoryService } from '@/lib/services/story-service';
 
 export function addLiveStory(story: Story): void {
-  const current = getDynamicStories();
-  const updated = [story, ...current.filter((s) => s.id !== story.id && s.slug !== story.slug)];
-  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = updated;
-  saveStoriesToFile(updated);
+  StoryService.saveStory(story);
 }
 
 export function removeLiveStory(id: string): void {
-  const current = getDynamicStories();
-  const updated = current.filter((s) => s.id !== id && s.slug !== id);
-  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = updated;
-  saveStoriesToFile(updated);
+  StoryService.removeStory(id);
 }
 
 export function clearAllLiveStories(): void {
-  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = [];
-  saveStoriesToFile([]);
+  if (typeof globalThis !== 'undefined') {
+    globalThis.__ETERNAL_PAWS_MEM_STORIES__ = [];
+  }
 }
 
 /**
  * Retrieves all stories in the active repository.
  */
 export function getAllStories(): Story[] {
-  return [...getDynamicStories(), ...allSeedStories];
+  const dynamic = StoryService.getStoriesSync();
+  return [...dynamic, ...allSeedStories];
 }
 
 /**
  * Retrieves all published stories visible to readers.
  */
 export function getPublishedStories(): Story[] {
-  return getAllStories().filter(s => s.status === 'published');
+  return getAllStories().filter((s) => s.status === 'published');
 }
 
 /**
@@ -613,10 +545,12 @@ export function getPublishedStories(): Story[] {
 export function getStoryBySlug(slug: string): Story | undefined {
   if (!slug) return undefined;
   const cleanSlug = slug.trim().toLowerCase();
-  const all = [...getDynamicStories(), ...allSeedStories, ...seedStoryFixtures];
+  const all = [...getAllStories(), ...seedStoryFixtures];
 
   return all.find(
-    s => s.slug.toLowerCase() === cleanSlug || (s.redirectHistory && s.redirectHistory.map(r => r.toLowerCase()).includes(cleanSlug))
+    (s) =>
+      s.slug.toLowerCase() === cleanSlug ||
+      (s.redirectHistory && s.redirectHistory.map((r) => r.toLowerCase()).includes(cleanSlug))
   );
 }
 
@@ -624,28 +558,28 @@ export function getStoryBySlug(slug: string): Story | undefined {
  * Filters published stories by category.
  */
 export function getStoriesByCategory(category: StoryCategory): Story[] {
-  return getPublishedStories().filter(s => s.category === category);
+  return getPublishedStories().filter((s) => s.category === category);
 }
 
 /**
  * Filters published stories by emotional theme.
  */
 export function getStoriesByTheme(theme: EmotionalTheme): Story[] {
-  return getPublishedStories().filter(s => s.emotionalThemes.includes(theme));
+  return getPublishedStories().filter((s) => s.emotionalThemes.includes(theme));
 }
 
 /**
  * Returns featured stories for the homepage hero carousel.
  */
 export function getFeaturedStories(): Story[] {
-  return getPublishedStories().filter(s => s.featured);
+  return getPublishedStories().filter((s) => s.featured);
 }
 
 /**
  * Returns all active and redirect slugs for sitemap generation and static routing.
  */
 export function getAllStorySlugs(): string[] {
-  return getPublishedStories().map(s => s.slug);
+  return getPublishedStories().map((s) => s.slug);
 }
 
 /**

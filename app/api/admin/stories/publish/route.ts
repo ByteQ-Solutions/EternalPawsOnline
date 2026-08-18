@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getSupabase } from '@/lib/db/supabase';
-import { addLiveStory } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 
 /**
  * Admin Story Direct Publish API Route
@@ -19,85 +18,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = getSupabase();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('stories')
-        .upsert(
-          {
-            slug: story.slug,
-            title: story.title,
-            subtitle: story.subtitle || '',
-            excerpt: story.excerpt || '',
-            content: story.content,
-            dog_name: story.dogName || 'Rescue Dog',
-            dog_breed: story.dogBreed || 'Rescue Mix',
-            category: story.category || 'rescues',
-            hero_image_url: story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
-            hero_image_alt: story.heroImage?.altText || `Photo of ${story.dogName}`,
-            hero_image_credit: story.heroImage?.credit || 'Verified Photo Archive',
-            hero_image_license: 'original_photography',
-            hero_image_width: 1200,
-            hero_image_height: 675,
-            read_time_minutes: story.readTimeMinutes || 3,
-            location_city: story.location?.city || 'United States',
-            location_state: story.location?.stateOrProvince || 'General',
-            location_country: story.location?.country || 'United States',
-            verification_status: 'Strongly Verified',
-            verified_by: story.verification?.factChecker || 'Elena Rostova, Fact Checker',
-            confidence_score: story.verification?.trustScore || 95,
-            published_at: new Date().toISOString(),
-          },
-          { onConflict: 'slug' }
-        )
-        .select()
-        .single();
-
-      if (error) {
-        console.warn('Supabase publish insert note:', error.message);
-      }
-    }
-
-    // Also register in live memory corpus
-    addLiveStory({
-      id: story.id || `story-${Date.now()}`,
-      slug: story.slug,
-      title: story.title,
+    const storyPayload = {
+      id: story.id || `story-${story.slug}-${Date.now().toString().slice(-4)}`,
+      slug: story.slug.trim().toLowerCase(),
+      title: story.title.trim(),
       subtitle: story.subtitle || '',
       excerpt: story.excerpt || '',
       content: story.content,
       dogName: story.dogName || 'Rescue Dog',
       dogBreed: story.dogBreed || 'Rescue Mix',
       category: story.category || 'rescues',
-      emotionalThemes: story.emotionalThemes || ['inspiring'],
+      emotionalThemes: story.emotionalThemes || ['heartwarming', 'inspiring'],
       heroImage: {
         url: story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
-        altText: story.heroImage?.altText || `Photo of ${story.dogName}`,
+        altText: story.heroImage?.altText || `Photo of ${story.dogName || 'dog'}`,
         credit: story.heroImage?.credit || 'Verified Photo Archive',
-        licenseType: 'original_photography',
+        licenseType: 'original_photography' as const,
         width: 1200,
         height: 675,
         aspectRatio: '16:9',
       },
-      readTimeMinutes: story.readTimeMinutes || 3,
+      readTimeMinutes: story.readTimeMinutes || Math.max(1, Math.ceil(story.content.split(/\s+/).length / 200)),
       location: {
         city: story.location?.city || 'United States',
         stateOrProvince: story.location?.stateOrProvince || 'General',
         country: story.location?.country || 'United States',
       },
       verification: {
-        status: 'Strongly Verified',
+        status: 'Strongly Verified' as const,
         confidenceScore: story.verification?.confidenceScore || story.verification?.trustScore || 95,
         verifiedBy: story.verification?.verifiedBy || story.verification?.factChecker || 'Elena Rostova, Fact Checker',
         verifiedAt: new Date().toISOString(),
         methodologyNotes: 'Verified via official record review.',
-        sources: [],
+        sources: story.verification?.sources || [],
       },
       publishedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       featured: true,
-      status: 'published',
-    });
+      status: 'published' as const,
+    };
+
+    await StoryService.saveStory(storyPayload);
 
     // Invalidate Next.js cache so all public client routes show the new story instantly
     try {
