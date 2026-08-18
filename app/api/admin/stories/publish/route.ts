@@ -86,9 +86,9 @@ export async function POST(req: NextRequest) {
       },
       verification: {
         status: 'Strongly Verified',
-        confidenceScore: story.verification?.trustScore || 95,
-        factChecker: story.verification?.factChecker || 'Elena Rostova, Fact Checker',
-        verifiedDate: new Date().toISOString(),
+        confidenceScore: story.verification?.confidenceScore || story.verification?.trustScore || 95,
+        verifiedBy: story.verification?.verifiedBy || story.verification?.factChecker || 'Elena Rostova, Fact Checker',
+        verifiedAt: new Date().toISOString(),
         methodologyNotes: 'Verified via official record review.',
         sources: [],
       },
