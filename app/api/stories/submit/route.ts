@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/db/supabase';
+import { SubmissionService } from '@/lib/services/submission-service';
 
 /**
  * Community Story Submission API Route (Live Supabase + Fallback)
@@ -89,55 +90,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate standard ticket format: SUB-YYYY-MMDD-XXXX
-    const now = new Date();
-    const year = now.getFullYear();
-    const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-    const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const ticketCode = `SUB-${year}-${monthDay}-${randomHex}`;
-
-    // Try Supabase insertion
-    const supabase = getSupabase();
-    if (supabase) {
-      try {
-        await supabase.from('story_submissions').insert({
-          ticket_code: ticketCode,
-          submitter_name: payload.submitterName,
-          submitter_email: payload.submitterEmail,
-          submitter_phone: payload.submitterPhone || null,
-          dog_name: payload.dogName,
-          dog_breed: payload.dogBreed || null,
-          location_city: payload.locationCity,
-          location_state: payload.locationState || null,
-          event_year: payload.eventYear || null,
-          category: payload.category || 'reunions',
-          emotional_themes: payload.emotionalThemes || [],
-          story_title: payload.storyTitle,
-          story_narrative: payload.storyNarrative,
-          photo_name: payload.photoName || null,
-          photo_credit: payload.photoCredit,
-          license_type: payload.licenseType || 'user_submitted_verified',
-          source_name: payload.sourceName || null,
-          source_url: payload.sourceUrl || null,
-          rights_confirmed: payload.rightsConfirmed,
-          status: 'pending_review',
-          created_at: now.toISOString(),
-        });
-      } catch (dbErr) {
-        console.warn('Supabase submission insert skipped:', dbErr);
-      }
-    }
+    // Record submission into unified SubmissionService
+    const submission = await SubmissionService.recordSubmission({
+      submitterName: payload.submitterName,
+      submitterEmail: payload.submitterEmail,
+      submitterPhone: payload.submitterPhone,
+      dogName: payload.dogName,
+      dogBreed: payload.dogBreed,
+      locationCity: payload.locationCity,
+      locationState: payload.locationState,
+      eventYear: payload.eventYear,
+      category: payload.category,
+      emotionalThemes: payload.emotionalThemes,
+      storyTitle: payload.storyTitle,
+      storyNarrative: payload.storyNarrative,
+      photoName: payload.photoName,
+      photoCredit: payload.photoCredit,
+      licenseType: payload.licenseType,
+      sourceName: payload.sourceName,
+      sourceUrl: payload.sourceUrl,
+    });
 
     return NextResponse.json(
       {
         success: true,
         message: 'Story successfully submitted for fact-checking review.',
         ticket: {
-          code: ticketCode,
+          code: submission.ticketCode,
           dogName: payload.dogName,
           status: 'pending_review',
           estimatedReviewDays: '2-3 business days',
-          submittedAt: now.toISOString(),
+          submittedAt: submission.submittedAt,
         },
       },
       { status: 201 }

@@ -29,6 +29,10 @@ import {
   Clock,
   MapPin,
   Send,
+  Upload,
+  Image as ImageIcon,
+  Camera,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
@@ -91,7 +95,39 @@ export const AIStudio: React.FC = () => {
     }
   };
 
-  // 2. Handle 1-Click Publish to Database
+  // 2. Handle Unique Story Custom Photo Upload
+  const handleUniquePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !generatedUniqueStory) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Please select a valid image file (JPEG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Image file size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setGeneratedUniqueStory({
+        ...generatedUniqueStory,
+        heroImage: {
+          ...generatedUniqueStory.heroImage,
+          url: dataUrl,
+          altText: `Photo of ${generatedUniqueStory.dogName} - ${generatedUniqueStory.title}`,
+          credit: 'Uploaded Photo (Admin Archive)',
+        },
+      });
+      setErrorMsg(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 3. Handle 1-Click Publish to Database
   const handlePublishUnique = async () => {
     if (!generatedUniqueStory) return;
     setIsPublishing(true);
@@ -361,7 +397,58 @@ export const AIStudio: React.FC = () => {
               )}
 
               {/* Story Details Card */}
-              <div className="space-y-3 bg-canvas p-5 rounded-xl border border-borderLight">
+              <div className="space-y-4 bg-canvas p-5 rounded-xl border border-borderLight">
+                {/* Hero Photo Preview & Upload Control */}
+                <div className="p-4 bg-card rounded-xl border border-borderLight flex flex-col sm:flex-row items-center gap-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={generatedUniqueStory.heroImage.url}
+                    alt={generatedUniqueStory.heroImage.altText || generatedUniqueStory.dogName}
+                    className="w-full sm:w-36 h-28 object-cover rounded-lg border border-borderLight shadow-sm flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0 space-y-1.5 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <ImageIcon className="w-4 h-4 text-forestPrimary flex-shrink-0" />
+                      <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">
+                        Story Hero Photograph
+                      </span>
+                    </div>
+                    <p className="text-xs text-inkMuted truncate">
+                      {generatedUniqueStory.heroImage.credit || 'Editorial Photograph'}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                      <label
+                        htmlFor="unique-photo-upload"
+                        className="min-h-[36px] px-3 py-1.5 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center gap-1.5 cursor-pointer hover:bg-forestDark transition-colors"
+                      >
+                        <Camera className="w-3.5 h-3.5" /> Upload Custom Photo
+                        <input
+                          id="unique-photo-upload"
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleUniquePhotoUpload}
+                          className="sr-only"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = window.prompt('Enter Image URL for this story:', generatedUniqueStory.heroImage.url);
+                          if (url && url.trim()) {
+                            setGeneratedUniqueStory({
+                              ...generatedUniqueStory,
+                              heroImage: { ...generatedUniqueStory.heroImage, url: url.trim() },
+                            });
+                          }
+                        }}
+                        className="min-h-[36px] px-3 py-1.5 bg-card border border-borderLight text-inkPrimary text-xs font-bold rounded-lg hover:bg-cardMuted transition-colors"
+                      >
+                        Edit Image URL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap items-center gap-2 text-xs text-inkSubtle">
                   <Badge variant="outline" size="sm">
                     {generatedUniqueStory.category.toUpperCase()}

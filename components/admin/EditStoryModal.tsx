@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, AlertCircle, CheckCircle2, ShieldCheck, PenTool } from 'lucide-react';
+import { X, Save, AlertCircle, CheckCircle2, ShieldCheck, PenTool, Camera, Image as ImageIcon, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
 import { Story } from '@/domain/types';
@@ -36,6 +36,8 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
   const [category, setCategory] = useState<string>('rescues');
   const [verificationStatus, setVerificationStatus] = useState<string>('Verified');
   const [factChecker, setFactChecker] = useState('Elena Rostova, Fact Checker');
+  const [heroImageUrl, setHeroImageUrl] = useState('');
+  const [heroImageCredit, setHeroImageCredit] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -53,9 +55,35 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       setCategory(story.category || 'rescues');
       setVerificationStatus(story.verification?.status || 'Verified');
       setFactChecker(story.verification?.verifiedBy || 'Elena Rostova, Fact Checker');
+      setHeroImageUrl(story.heroImage?.url || '');
+      setHeroImageCredit(story.heroImage?.credit || '');
       setErrorMsg(null);
     }
   }, [story]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Please select an image file (JPEG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Image size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setHeroImageUrl(dataUrl);
+      if (!heroImageCredit) setHeroImageCredit(`Photo archive / ${file.name}`);
+      setErrorMsg(null);
+    };
+    reader.readAsDataURL(file);
+  };
 
   if (!isOpen || !story) return null;
 
@@ -80,6 +108,11 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       content,
       dogName,
       dogBreed,
+      heroImage: {
+        ...story.heroImage,
+        url: heroImageUrl || story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+        credit: heroImageCredit || story.heroImage?.credit || 'Editorial Photograph',
+      },
       location: {
         city,
         stateOrProvince: state,
@@ -108,6 +141,8 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
           dogName,
           dogBreed,
           category,
+          hero_image_url: heroImageUrl || story.heroImage?.url,
+          hero_image_credit: heroImageCredit || story.heroImage?.credit,
           location: {
             city,
             stateOrProvince: state,
@@ -275,6 +310,63 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
                 onChange={(e) => setState(e.target.value)}
                 className="w-full min-h-[44px] px-3 py-2 bg-canvas border border-borderLight rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-forestPrimary"
               />
+            </div>
+          </div>
+
+          {/* Hero Photograph Upload & Preview */}
+          <div className="p-4 bg-card rounded-xl border border-borderLight space-y-3">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-forestPrimary" />
+              <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">
+                Hero Photograph & Attribution
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {heroImageUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={heroImageUrl}
+                  alt={title || 'Story photo'}
+                  className="w-28 h-20 object-cover rounded-lg border border-borderLight shadow-sm flex-shrink-0"
+                />
+              ) : (
+                <div className="w-28 h-20 bg-canvas rounded-lg border border-dashed border-borderLight flex items-center justify-center text-inkSubtle text-xs">
+                  No Image
+                </div>
+              )}
+
+              <div className="flex-1 w-full space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <label
+                    htmlFor="edit-modal-photo-upload"
+                    className="min-h-[36px] px-3.5 py-1.5 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center gap-1.5 cursor-pointer hover:bg-forestDark transition-colors"
+                  >
+                    <Camera className="w-3.5 h-3.5" /> Upload New Photo
+                    <input
+                      id="edit-modal-photo-upload"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="sr-only"
+                    />
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Or paste image URL (https://...)"
+                    value={heroImageUrl}
+                    onChange={(e) => setHeroImageUrl(e.target.value)}
+                    className="flex-1 min-w-[200px] min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Photo Credit / Photographer Attribution"
+                  value={heroImageCredit}
+                  onChange={(e) => setHeroImageCredit(e.target.value)}
+                  className="w-full min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs"
+                />
+              </div>
             </div>
           </div>
 

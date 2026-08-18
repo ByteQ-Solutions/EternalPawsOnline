@@ -17,11 +17,12 @@ import {
   Send,
   AlertCircle,
   FileText,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
-import { SubmissionItem } from '@/app/api/admin/submissions/route';
+import { CommunitySubmission as SubmissionItem } from '@/lib/services/submission-service';
 
 export const SubmissionsInbox: React.FC = () => {
   const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
@@ -65,7 +66,7 @@ export const SubmissionsInbox: React.FC = () => {
 
       const slug = `${sub.dogName.toLowerCase()}-${sub.city.toLowerCase()}-rescue-${Date.now().toString().slice(-4)}`;
 
-      // 2. Publish to Live Stories
+      // 2. Publish to Live Stories with submitted image
       const publishRes = await fetch('/api/admin/stories/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,6 +78,11 @@ export const SubmissionsInbox: React.FC = () => {
           dogName: sub.dogName,
           dogBreed: sub.dogBreed,
           category: 'rescues',
+          heroImage: {
+            url: sub.photoUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+            altText: `Photo of ${sub.dogName}, submitted by ${sub.submitterName}`,
+            credit: sub.photoCredit || `Photo courtesy of ${sub.submitterName}`,
+          },
           location: { city: sub.city, stateOrProvince: sub.state, country: 'United States' },
           readTimeMinutes: 3,
         }),
@@ -186,6 +192,24 @@ export const SubmissionsInbox: React.FC = () => {
                     <span>•</span>
                     <span>Relationship: {sub.relationship}</span>
                   </div>
+
+                  {sub.photoUrl && (
+                    <div className="flex items-center gap-3 p-3 bg-canvas rounded-xl border border-borderLight">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={sub.photoUrl}
+                        alt={`Photo of ${sub.dogName}`}
+                        className="w-20 h-20 object-cover rounded-lg border border-borderLight shadow-sm flex-shrink-0"
+                      />
+                      <div className="text-xs space-y-1">
+                        <div className="flex items-center gap-1 text-forestPrimary font-bold">
+                          <ImageIcon className="w-3.5 h-3.5" /> Submitter Uploaded Photo
+                        </div>
+                        <p className="text-inkMuted">{sub.photoCredit || `Photo by ${sub.submitterName}`}</p>
+                        <p className="text-inkSubtle text-[11px] font-mono">{sub.photoName || 'dog_photo.jpg'}</p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="p-4 bg-canvas rounded-xl border border-borderLight text-xs leading-relaxed text-inkPrimary font-serif whitespace-pre-line">
                     {sub.storyText}

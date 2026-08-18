@@ -28,6 +28,9 @@ import {
   AlertCircle,
   Save,
   Check,
+  Image as ImageIcon,
+  Trash2,
+  RefreshCw,
 } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
@@ -59,6 +62,8 @@ interface SubmissionState {
   };
   mediaAndProof: {
     photoName: string;
+    photoDataUrl: string;
+    photoSize?: string;
     photoCredit: string;
     licenseType: ImageLicenseType;
     isAiReconstruction: boolean;
@@ -92,6 +97,8 @@ const INITIAL_STATE: SubmissionState = {
   },
   mediaAndProof: {
     photoName: '',
+    photoDataUrl: '',
+    photoSize: '',
     photoCredit: '',
     licenseType: 'user_submitted_verified',
     isAiReconstruction: false,
@@ -197,6 +204,56 @@ export const StorySubmissionWizard: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrors((prev) => ({ ...prev, photoFile: 'Please upload an image file (JPEG, PNG, WebP).' }));
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, photoFile: 'Photo file size must be under 5MB.' }));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+      setState((prev) => ({
+        ...prev,
+        mediaAndProof: {
+          ...prev.mediaAndProof,
+          photoName: file.name,
+          photoDataUrl: dataUrl,
+          photoSize: sizeMb,
+          photoCredit: prev.mediaAndProof.photoCredit || `Photo provided by ${prev.submitter.name || 'Owner'}`,
+        },
+      }));
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.photoFile;
+        delete copy.photoCredit;
+        return copy;
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    setState((prev) => ({
+      ...prev,
+      mediaAndProof: {
+        ...prev.mediaAndProof,
+        photoName: '',
+        photoDataUrl: '',
+        photoSize: '',
+      },
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(3)) return;
@@ -218,6 +275,7 @@ export const StorySubmissionWizard: React.FC = () => {
         storyTitle: state.story.title,
         storyNarrative: state.story.narrative,
         photoName: state.mediaAndProof.photoName,
+        photoUrl: state.mediaAndProof.photoDataUrl || undefined,
         photoCredit: state.mediaAndProof.photoCredit,
         licenseType: state.mediaAndProof.licenseType,
         sourceName: state.mediaAndProof.sourceName,
@@ -585,18 +643,94 @@ export const StorySubmissionWizard: React.FC = () => {
                   </p>
                 </div>
 
-                <Input
-                  id="sub-photo-name"
-                  label="Photo Description / File Reference"
-                  value={state.mediaAndProof.photoName}
-                  onChange={(e) =>
-                    setState({
-                      ...state,
-                      mediaAndProof: { ...state.mediaAndProof, photoName: e.target.value },
-                    })
-                  }
-                  placeholder="e.g. Pete_reunion_shelter.jpg (Photo of Pete greeting owner)"
-                />
+                {/* Interactive Drag & Drop / File Photo Upload Component */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-inkPrimary">
+                    Dog Photograph / Image Proof <span className="text-error">*</span>
+                  </label>
+
+                  {state.mediaAndProof.photoDataUrl ? (
+                    <div className="p-4 bg-canvas border border-borderLight rounded-xl flex flex-col sm:flex-row items-center gap-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={state.mediaAndProof.photoDataUrl}
+                        alt="Uploaded preview"
+                        className="w-24 h-24 object-cover rounded-lg border border-borderLight flex-shrink-0 shadow-sm"
+                      />
+                      <div className="flex-1 min-w-0 space-y-1 text-center sm:text-left">
+                        <div className="flex items-center justify-center sm:justify-start gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
+                          <p className="text-sm font-bold text-inkPrimary truncate">
+                            {state.mediaAndProof.photoName || 'Uploaded Photograph'}
+                          </p>
+                        </div>
+                        {state.mediaAndProof.photoSize && (
+                          <p className="text-xs text-inkMuted">File Size: {state.mediaAndProof.photoSize}</p>
+                        )}
+                        <span className="inline-flex items-center gap-1 text-[11px] text-forestPrimary font-semibold bg-forestLight/60 px-2 py-0.5 rounded-md">
+                          <ShieldCheck className="w-3 h-3" /> EXIF GPS Location Stripped Automatically
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label
+                          htmlFor="sub-photo-reupload"
+                          className="min-h-[44px] px-3.5 py-2 text-xs font-bold bg-card border border-borderLight text-inkPrimary hover:bg-forestLight rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" /> Replace Photo
+                          <input
+                            id="sub-photo-reupload"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={handleFileChange}
+                            className="sr-only"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={handleRemovePhoto}
+                          className="min-h-[44px] px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-borderLight hover:border-forestPrimary/60 rounded-2xl p-6 text-center transition-colors bg-cardMuted/40">
+                      <input
+                        id="sub-photo-file-input"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleFileChange}
+                        className="sr-only"
+                      />
+                      <label
+                        htmlFor="sub-photo-file-input"
+                        className="flex flex-col items-center justify-center cursor-pointer space-y-2"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-forestLight flex items-center justify-center text-forestPrimary">
+                          <Upload className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-inkPrimary">
+                            Click to upload photo or drag & drop
+                          </p>
+                          <p className="text-xs text-inkMuted mt-0.5">
+                            PNG, JPG, or WebP (Max 5MB) • Clear photo of the dog
+                          </p>
+                        </div>
+                        <span className="min-h-[36px] px-4 py-1.5 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center gap-1.5 mt-2">
+                          <Camera className="w-3.5 h-3.5" /> Browse Device Photo
+                        </span>
+                      </label>
+                    </div>
+                  )}
+
+                  {errors.photoFile && (
+                    <p className="text-xs text-error font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" /> {errors.photoFile}
+                    </p>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
