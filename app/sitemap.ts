@@ -1,0 +1,98 @@
+/**
+ * Eternal Paws Platform - Dynamic XML Sitemap Generator
+ * Path: app/sitemap.ts
+ * 
+ * Generates XML sitemap conforming to Next.js App Router metadata conventions.
+ * 
+ * Requirements: ORIGINAL_REQUEST § Criteria; PROJECT.md F16
+ */
+
+import { MetadataRoute } from 'next';
+import { getPublishedStories } from '@/lib/data/stories';
+import { DEFAULT_BASE_URL } from '@/lib/seo';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_BASE_URL;
+  const now = new Date();
+
+  // 1. Static Core Landing & Policy Pages
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/stories`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/search`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/submit-story`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/editorial-policy`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/fact-checking`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/corrections`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
+  ];
+
+  // 2. Category Hub Pages (6 Core Categories + semantic alias)
+  const categorySlugs = [
+    'reunions',
+    'hero-dogs',
+    'rescues',
+    'survival',
+    'loyalty',
+    'lost-and-found',
+    'lost-found',
+  ];
+
+  const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
+    url: `${baseUrl}/${slug}`,
+    lastModified: now,
+    changeFrequency: 'daily',
+    priority: 0.85,
+  }));
+
+  // 3. Dynamic Published Story Articles
+  const publishedStories = getPublishedStories();
+  const storyRoutes: MetadataRoute.Sitemap = publishedStories.map((story) => ({
+    url: `${baseUrl}/stories/${story.slug}`,
+    lastModified: new Date(story.updatedAt || story.publishedAt),
+    changeFrequency: story.featured ? 'daily' : 'weekly',
+    priority: story.featured ? 0.9 : 0.75,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...storyRoutes];
+}
