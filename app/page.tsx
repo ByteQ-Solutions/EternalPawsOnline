@@ -52,7 +52,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen space-y-12 sm:space-y-16 pb-16">
       {/* 1. Hero Featured Story Showcase */}
-      {heroStory && (
+      {heroStory ? (
         <section
           aria-labelledby="hero-story-heading"
           className="pt-6 sm:pt-10 pb-8 bg-gradient-to-b from-cardMuted/80 to-canvas border-b border-borderLight"
@@ -78,44 +78,41 @@ export default function HomePage() {
               </div>
 
               {/* Right Column: Editorial Deck & Story Actions */}
-              <div className="lg:col-span-5 space-y-6">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <Link
-                    href={`/${heroStory.category}`}
-                    className="min-h-[32px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-full"
-                  >
-                    <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-forestPrimary border-forestPrimary/30">
+              <div className="lg:col-span-5 space-y-5">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="forest" size="md">
                       {heroStory.category.replace(/-/g, ' ')}
                     </Badge>
-                  </Link>
-                  <VerificationBadge
-                    status={heroStory.verification.status}
-                    confidenceScore={heroStory.verification.confidenceScore}
-                    size="sm"
-                    showScore={true}
-                  />
+                    <VerificationBadge
+                      status={heroStory.verification.status}
+                      size="md"
+                      showScore={true}
+                      confidenceScore={heroStory.verification.confidenceScore}
+                    />
+                  </div>
+
+                  <h1
+                    id="hero-story-heading"
+                    className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-inkPrimary leading-tight group"
+                  >
+                    <Link
+                      href={`/stories/${heroStory.slug}`}
+                      className="hover:text-forestPrimary transition-colors focus-visible:outline-none focus-visible:underline"
+                    >
+                      {heroStory.title}
+                    </Link>
+                  </h1>
+
+                  {heroStory.subtitle && (
+                    <p className="font-serif italic text-base text-inkMuted leading-snug">
+                      {heroStory.subtitle}
+                    </p>
+                  )}
                 </div>
 
-                <h1
-                  id="hero-story-heading"
-                  className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-inkPrimary leading-[1.15] tracking-tight"
-                >
-                  <Link
-                    href={`/stories/${heroStory.slug}`}
-                    className="hover:text-forestPrimary transition-colors focus-visible:outline-none focus-visible:underline"
-                  >
-                    {heroStory.title}
-                  </Link>
-                </h1>
-
-                {heroStory.subtitle && (
-                  <p className="font-serif italic text-lg sm:text-xl text-inkMuted leading-relaxed">
-                    {heroStory.subtitle}
-                  </p>
-                )}
-
-                {/* Canine Protagonist Pill */}
-                <div className="p-3.5 rounded-xl bg-card border border-borderLight flex items-center justify-between gap-4 shadow-soft">
+                {/* Hero Dog Metadata Badge Bar */}
+                <div className="p-3.5 rounded-xl bg-canvas border border-borderLight/80 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-forestLight text-forestPrimary flex items-center justify-center flex-shrink-0" aria-hidden="true">
                       <Heart className="w-4 h-4 fill-forestPrimary/20 text-forestPrimary" />
@@ -157,6 +154,36 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
+            </div>
+          </Container>
+        </section>
+      ) : (
+        <section className="pt-12 sm:pt-16 pb-12 bg-gradient-to-b from-cardMuted/80 to-canvas border-b border-borderLight text-center">
+          <Container size="default" className="max-w-2xl mx-auto space-y-5">
+            <div className="w-16 h-16 rounded-full bg-forestLight text-forestPrimary flex items-center justify-center mx-auto shadow-soft">
+              <Sparkles className="w-8 h-8 text-goldAccent" />
+            </div>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-inkPrimary leading-tight">
+              Verified True Dog Stories & Canine Bravery
+            </h1>
+            <p className="text-base text-inkMuted leading-relaxed">
+              Every story verified across 4 institutional tiers. Heartwarming reunions, heroic rescues, and unwavering loyalty.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/submit-story"
+                className="min-h-[44px] px-6 py-3 rounded-xl bg-forestPrimary hover:bg-forestPrimary/90 text-white font-bold text-sm transition-all shadow-soft inline-flex items-center gap-2"
+              >
+                <span>Submit a True Dog Story</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/editorial-policy"
+                className="min-h-[44px] px-5 py-3 rounded-xl bg-card hover:bg-cardMuted text-inkPrimary font-medium text-sm border border-borderLight transition-colors inline-flex items-center gap-1.5"
+              >
+                <ShieldCheck className="w-4 h-4 text-forestPrimary" />
+                <span>Our Verification Charter</span>
+              </Link>
             </div>
           </Container>
         </section>
@@ -245,85 +272,95 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recentStories.map((story) => (
-              <Card
-                key={story.id}
-                variant="elevated"
-                className="flex flex-col overflow-hidden hover:border-forestPrimary/40 transition-all group"
-              >
-                {/* Hero Media Thumbnail */}
-                <div
-                  className="relative w-full overflow-hidden bg-cardMuted"
-                  style={{ aspectRatio: '16/9' }}
+          {recentStories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentStories.map((story) => (
+                <Card
+                  key={story.id}
+                  variant="elevated"
+                  className="flex flex-col overflow-hidden hover:border-forestPrimary/40 transition-all group"
                 >
-                  <OptimizedDogImage
-                    image={story.heroImage}
-                    showDisclosure={false}
-                    containerClassName="my-0 h-full"
-                    className="rounded-none border-0 shadow-none h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 z-10">
-                    <Badge variant="forest" className="shadow-soft text-[11px] uppercase tracking-wider font-semibold">
-                      {story.category.replace(/-/g, ' ')}
-                    </Badge>
+                  {/* Hero Media Thumbnail */}
+                  <div
+                    className="relative w-full overflow-hidden bg-cardMuted"
+                    style={{ aspectRatio: '16/9' }}
+                  >
+                    <OptimizedDogImage
+                      image={story.heroImage}
+                      showDisclosure={false}
+                      containerClassName="my-0 h-full"
+                      className="rounded-none border-0 shadow-none h-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-3 left-3 z-10">
+                      <Badge variant="forest" className="shadow-soft text-[11px] uppercase tracking-wider font-semibold">
+                        {story.category.replace(/-/g, ' ')}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
 
-                {/* Card Content */}
-                <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <VerificationBadge
-                        status={story.verification.status}
-                        size="sm"
-                        showScore={true}
-                        confidenceScore={story.verification.confidenceScore}
-                      />
-                      <span className="text-xs text-inkSubtle flex items-center gap-1 font-medium">
-                        <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                        {story.readTimeMinutes} min read
-                      </span>
+                  {/* Card Content */}
+                  <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <VerificationBadge
+                          status={story.verification.status}
+                          size="sm"
+                          showScore={true}
+                          confidenceScore={story.verification.confidenceScore}
+                        />
+                        <span className="text-xs text-inkSubtle flex items-center gap-1 font-medium">
+                          <Clock className="w-3.5 h-3.5" aria-hidden="true" />
+                          {story.readTimeMinutes} min read
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif font-bold text-xl text-inkPrimary leading-snug group-hover:text-forestPrimary transition-colors">
+                        <Link
+                          href={`/stories/${story.slug}`}
+                          className="focus-visible:outline-none focus-visible:underline"
+                        >
+                          {story.title}
+                        </Link>
+                      </h3>
+
+                      <p className="text-sm text-inkMuted line-clamp-3 leading-relaxed">
+                        {story.excerpt}
+                      </p>
                     </div>
 
-                    <h3 className="font-serif font-bold text-xl text-inkPrimary leading-snug group-hover:text-forestPrimary transition-colors">
+                    {/* Card Footer: Dog Info & CTA */}
+                    <div className="pt-3 border-t border-borderLight flex items-center justify-between text-xs">
+                      <div className="space-y-0.5">
+                        <span className="font-bold text-inkPrimary block">
+                          {story.dogName} • {story.dogBreed}
+                        </span>
+                        <span className="text-inkSubtle">
+                          {story.location.city}, {story.location.stateOrProvince}
+                        </span>
+                      </div>
+
                       <Link
                         href={`/stories/${story.slug}`}
-                        className="focus-visible:outline-none focus-visible:underline"
+                        className="font-bold text-forestPrimary hover:underline inline-flex items-center gap-1 min-h-[36px] py-1"
+                        aria-label={`Read verified story: ${story.title}`}
                       >
-                        {story.title}
+                        <span>Read</span>
+                        <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                       </Link>
-                    </h3>
-
-                    <p className="text-sm text-inkMuted line-clamp-3 leading-relaxed">
-                      {story.excerpt}
-                    </p>
-                  </div>
-
-                  {/* Card Footer: Dog Info & CTA */}
-                  <div className="pt-3 border-t border-borderLight flex items-center justify-between text-xs">
-                    <div className="space-y-0.5">
-                      <span className="font-bold text-inkPrimary block">
-                        {story.dogName} • {story.dogBreed}
-                      </span>
-                      <span className="text-inkSubtle">
-                        {story.location.city}, {story.location.stateOrProvince}
-                      </span>
                     </div>
-
-                    <Link
-                      href={`/stories/${story.slug}`}
-                      className="min-h-[44px] px-3.5 py-2 rounded-lg bg-forestLight hover:bg-forestPrimary text-forestPrimary hover:text-white font-bold transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
-                      aria-label={`Read verified story about ${story.dogName}`}
-                    >
-                      <span>Read Story</span>
-                      <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 px-4 bg-card border border-borderLight rounded-2xl space-y-3">
+              <BookOpen className="w-8 h-8 text-forestPrimary/40 mx-auto" />
+              <p className="font-serif text-lg font-bold text-inkPrimary">Editorial Queue Ready</p>
+              <p className="text-xs text-inkMuted max-w-md mx-auto">
+                Stories published via the Admin AI Studio or Reader Submissions will be displayed here immediately.
+              </p>
+            </div>
+          )}
         </Container>
       </section>
 

@@ -84,7 +84,7 @@ type AdminTab =
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stories');
   const [stories, setStories] = useState<Story[]>(allSeedStories);
-  const [selectedStory, setSelectedStory] = useState<Story>(allSeedStories[0]);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(allSeedStories[0] || null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
@@ -104,9 +104,11 @@ export const AdminDashboard: React.FC = () => {
       try {
         const res = await fetch('/api/admin/stories/list');
         const data = await res.json();
-        if (data.success && data.stories && data.stories.length > 0) {
+        if (data.success && data.stories) {
           setStories(data.stories);
-          setSelectedStory(data.stories[0]);
+          if (data.stories.length > 0) {
+            setSelectedStory(data.stories[0]);
+          }
         }
       } catch (err) {
         console.warn('Live stories fetch fallback:', err);
@@ -117,7 +119,7 @@ export const AdminDashboard: React.FC = () => {
 
   const handleStoryUpdated = (updated: Story) => {
     setStories((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
-    if (selectedStory.id === updated.id) {
+    if (selectedStory && selectedStory.id === updated.id) {
       setSelectedStory(updated);
     }
   };
@@ -125,8 +127,8 @@ export const AdminDashboard: React.FC = () => {
   const handleStoryDeleted = (deletedId: string) => {
     setStories((prev) => {
       const remaining = prev.filter((s) => s.id !== deletedId);
-      if (selectedStory.id === deletedId && remaining.length > 0) {
-        setSelectedStory(remaining[0]);
+      if (selectedStory && selectedStory.id === deletedId) {
+        setSelectedStory(remaining.length > 0 ? remaining[0] : null);
       }
       return remaining;
     });
@@ -143,7 +145,10 @@ export const AdminDashboard: React.FC = () => {
   };
 
   // 9-Point Pre-Publish Checklist Calculation
-  const runPrePublishChecklist = (story: Story) => {
+  const runPrePublishChecklist = (story: Story | null) => {
+    if (!story) {
+      return { checks: [], allPassed: false };
+    }
     const titleLength = !!(story.title && story.title.trim().length >= 10 && story.title.trim().length <= 120);
     const slugFormat = !!(story.slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(story.slug));
     const heroImagePresent = !!(story.heroImage?.url && story.heroImage.width > 0 && story.heroImage.height > 0);
@@ -385,169 +390,193 @@ export const AdminDashboard: React.FC = () => {
               </h2>
 
               <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
-                {stories.map((story) => {
-                  const isSelected = selectedStory.id === story.id;
-                  return (
-                    <div
-                      key={story.id}
-                      onClick={() => setSelectedStory(story)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-forestLight/40 border-forestPrimary shadow-sm ring-1 ring-forestPrimary'
-                          : 'bg-card border-borderLight hover:bg-cardMuted'
-                      }`}
+                {stories.length === 0 ? (
+                  <div className="p-8 text-center bg-card border border-borderLight rounded-2xl text-inkMuted text-xs space-y-3">
+                    <Sparkles className="w-8 h-8 text-goldAccent mx-auto" />
+                    <p className="font-bold text-inkPrimary text-sm">No Stories in Corpus Yet</p>
+                    <p>Click the &ldquo;AI Studio&rdquo; tab above to generate your first verified story in 3 seconds!</p>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => setActiveTab('ai-studio')}
+                      className="min-h-[40px] text-xs font-bold shadow-soft"
                     >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-bold text-inkPrimary">
-                          {story.dogName} ({story.dogBreed})
-                        </span>
-                        <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
-                      </div>
+                      <Sparkles className="w-3.5 h-3.5 mr-1" /> Open AI Studio
+                    </Button>
+                  </div>
+                ) : (
+                  stories.map((story) => {
+                    const isSelected = selectedStory?.id === story.id;
+                    return (
+                      <div
+                        key={story.id}
+                        onClick={() => setSelectedStory(story)}
+                        className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-forestLight/40 border-forestPrimary shadow-sm ring-1 ring-forestPrimary'
+                            : 'bg-card border-borderLight hover:bg-cardMuted'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs font-bold text-inkPrimary">
+                            {story.dogName} ({story.dogBreed})
+                          </span>
+                          <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                        </div>
 
-                      <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
-                        {story.title}
-                      </p>
+                        <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
+                          {story.title}
+                        </p>
 
-                      <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
-                        <span className="text-[11px] text-inkSubtle">
-                          {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
-                        </span>
+                        <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
+                          <span className="text-[11px] text-inkSubtle">
+                            {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
+                          </span>
 
-                        <div className="flex items-center gap-1">
-                          <a
-                            href={`/stories/${story.slug}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label={`View live ${story.dogName}'s story`}
-                            className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
-                            title="View Live"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </a>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditModal(story);
-                            }}
-                            aria-label={`Edit ${story.dogName}'s story`}
-                            className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
-                            title="Edit Story"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openDeleteModal(story);
-                            }}
-                            aria-label={`Delete ${story.dogName}'s story`}
-                            className="p-1.5 rounded-lg text-inkMuted hover:text-error hover:bg-card transition-colors"
-                            title="Delete Story"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <a
+                              href={`/stories/${story.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              aria-label={`View live ${story.dogName}'s story`}
+                              className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                              title="View Live"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </a>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openEditModal(story);
+                              }}
+                              aria-label={`Edit ${story.dogName}'s story`}
+                              className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                              title="Edit Story"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDeleteModal(story);
+                              }}
+                              aria-label={`Delete ${story.dogName}'s story`}
+                              className="p-1.5 rounded-lg text-inkMuted hover:text-error hover:bg-card transition-colors"
+                              title="Delete Story"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
 
             {/* Right Column: Pre-Publish Checklist & 301 Manager */}
             <div className="lg:col-span-7 space-y-6">
               {/* 9-Point Checklist Panel */}
-              <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
-                      Pre-Publish Checklist Gate
-                    </span>
-                    <h2 className="font-serif text-xl font-bold text-inkPrimary">
-                      Reviewing: {selectedStory.dogName}&apos;s Story
-                    </h2>
-                  </div>
+              {selectedStory ? (
+                <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
+                    <div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
+                        Pre-Publish Checklist Gate
+                      </span>
+                      <h2 className="font-serif text-xl font-bold text-inkPrimary">
+                        Reviewing: {selectedStory.dogName}&apos;s Story
+                      </h2>
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(selectedStory)}
-                      className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
-                    >
-                      <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openDeleteModal(selectedStory)}
-                      className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Delete
-                    </button>
-                    {checklistResult.allPassed ? (
-                      <Badge variant="forest" size="md">
-                        <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
-                      </Badge>
-                    ) : (
-                      <Badge variant="unverified" size="md">
-                        Incomplete
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  {checklistResult.checks.map((check, index) => (
-                    <div
-                      key={check.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-canvas border border-borderLight/60 text-sm"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-card text-inkSubtle border border-borderLight">
-                          {index + 1}
-                        </span>
-                        <span className="text-inkPrimary font-medium">{check.label}</span>
-                      </div>
-
-                      {check.passed ? (
-                        <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
-                          <CheckCircle2 className="w-4 h-4 mr-1" /> Passed
-                        </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(selectedStory)}
+                        className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openDeleteModal(selectedStory)}
+                        className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
+                      {checklistResult.allPassed ? (
+                        <Badge variant="forest" size="md">
+                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center text-xs font-bold text-error">
-                          <AlertTriangle className="w-4 h-4 mr-1" /> Action Needed
-                        </span>
+                        <Badge variant="unverified" size="md">
+                          Incomplete
+                        </Badge>
                       )}
                     </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-borderLight">
-                  <div className="text-xs text-inkMuted">
-                    <span>Confidence Score: </span>
-                    <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => openEditModal(selectedStory)}
-                      className="min-h-[44px]"
-                    >
-                      <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
-                    </Button>
-                    <Button
-                      variant="primary"
-                      disabled={!checklistResult.allPassed}
-                      className="min-h-[44px]"
-                    >
-                      <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
-                    </Button>
+                  <div className="space-y-3 mb-6">
+                    {checklistResult.checks.map((check, index) => (
+                      <div
+                        key={check.id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-canvas border border-borderLight/60 text-sm"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-card text-inkSubtle border border-borderLight">
+                            {index + 1}
+                          </span>
+                          <span className="text-inkPrimary font-medium">{check.label}</span>
+                        </div>
+
+                        {check.passed ? (
+                          <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
+                            <CheckCircle2 className="w-4 h-4 mr-1" /> Passed
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center text-xs font-bold text-error">
+                            <AlertTriangle className="w-4 h-4 mr-1" /> Action Needed
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </Card>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-borderLight">
+                    <div className="text-xs text-inkMuted">
+                      <span>Confidence Score: </span>
+                      <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => openEditModal(selectedStory)}
+                        className="min-h-[44px]"
+                      >
+                        <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
+                      </Button>
+                      <Button
+                        variant="primary"
+                        disabled={!checklistResult.allPassed}
+                        className="min-h-[44px]"
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                <Card className="bg-card border-borderLight rounded-2xl p-8 shadow-sm text-center text-inkMuted text-xs space-y-2">
+                  <FileText className="w-8 h-8 text-forestPrimary/40 mx-auto" />
+                  <p className="font-bold text-inkPrimary text-sm">Editorial Gate Ready</p>
+                  <p>Publish a story from AI Studio or Reader Submissions to review the 9-point checklist.</p>
+                </Card>
+              )}
 
               {/* 301 URL Redirect Manager Panel */}
               <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">

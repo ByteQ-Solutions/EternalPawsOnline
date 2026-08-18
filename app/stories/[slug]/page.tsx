@@ -47,6 +47,8 @@ interface StoryPageProps {
   };
 }
 
+export const dynamicParams = true;
+
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const slugs = getAllStorySlugs();
   return slugs.map((slug) => ({ slug }));

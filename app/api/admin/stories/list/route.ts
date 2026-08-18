@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (!dbStories || dbStories.length === 0) {
+    if (dbStories === null) {
       return NextResponse.json({
         success: true,
         stories: allSeedStories,
