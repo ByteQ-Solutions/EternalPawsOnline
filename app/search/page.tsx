@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'Search documented true stories of dog loyalty, survival, heroic rescues, and miraculous reunions.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function SearchPage() {
   return (
     <main id="main-content" className="min-h-screen bg-canvas">

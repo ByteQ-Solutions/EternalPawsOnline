@@ -10,7 +10,7 @@
  * Requirements: ORIGINAL_REQUEST § R4, § 50-51; PROJECT.md F18
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Search, X, Filter, BookOpen, Sparkles, ArrowRight, ShieldCheck, Heart } from 'lucide-react';
@@ -21,7 +21,7 @@ import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { OptimizedDogImage } from '@/components/article/OptimizedDogImage';
-import { publishedSeedStories } from '@/lib/data/stories';
+import { getPublishedStories } from '@/lib/data/stories';
 import { CATEGORIES_CONFIG, StoryCategory, VerificationStatus, Story } from '@/domain/types';
 
 function levenshteinDistance(a: string, b: string): number {
@@ -65,11 +65,27 @@ export const SearchInterface: React.FC = () => {
   const [query, setQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [corpus, setCorpus] = useState<Story[]>(() => getPublishedStories());
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const res = await fetch('/api/admin/stories/list');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.stories)) {
+          setCorpus(data.stories.filter((s: Story) => s.status === 'published'));
+        }
+      } catch {
+        // use initial corpus
+      }
+    };
+    fetchStories();
+  }, []);
 
   const filteredResults = useMemo(() => {
     let results: { story: Story; score: number }[] = [];
 
-    for (const story of publishedSeedStories) {
+    for (const story of corpus) {
       // Category filter
       if (selectedCategory !== 'all' && story.category !== selectedCategory) {
         continue;
@@ -101,7 +117,7 @@ export const SearchInterface: React.FC = () => {
     }
 
     return results.sort((a, b) => b.score - a.score).map((r) => r.story);
-  }, [query, selectedCategory, selectedStatus]);
+  }, [query, selectedCategory, selectedStatus, corpus]);
 
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
 

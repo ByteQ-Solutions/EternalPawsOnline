@@ -10,6 +10,8 @@ import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('rescues');
 
+export const dynamic = 'force-dynamic';
+
 export default function RescuesPage() {
   return <CategoryHubView category="rescues" />;
 }

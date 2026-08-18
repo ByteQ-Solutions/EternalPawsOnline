@@ -10,6 +10,8 @@ import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('survival');
 
+export const dynamic = 'force-dynamic';
+
 export default function SurvivalPage() {
   return <CategoryHubView category="survival" />;
 }

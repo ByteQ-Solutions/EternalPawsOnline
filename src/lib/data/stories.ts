@@ -508,25 +508,96 @@ export const allSeedStories: Story[] = [];
 
 export const publishedSeedStories: Story[] = [];
 
-let dynamicStories: Story[] = [];
+declare global {
+  // eslint-disable-next-line no-var
+  var __ETERNAL_PAWS_DYNAMIC_STORIES__: Story[] | undefined;
+}
+
+function getFileSystem() {
+  if (typeof window === 'undefined') {
+    try {
+      /* eslint-disable no-eval */
+      const req = eval('require');
+      const fs = req('fs');
+      const path = req('path');
+      return { fs, path };
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+function getStoriesFilePath(): string | null {
+  const env = getFileSystem();
+  if (!env) return null;
+  return env.path.join(process.cwd(), 'src', 'data', 'live_stories.json');
+}
+
+function loadStoriesFromFile(): Story[] {
+  try {
+    const env = getFileSystem();
+    const filePath = getStoriesFilePath();
+    if (env && filePath && env.fs.existsSync(filePath)) {
+      const data = env.fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
+function saveStoriesToFile(stories: Story[]): void {
+  try {
+    const env = getFileSystem();
+    const filePath = getStoriesFilePath();
+    if (env && filePath) {
+      const dir = env.path.dirname(filePath);
+      if (!env.fs.existsSync(dir)) {
+        env.fs.mkdirSync(dir, { recursive: true });
+      }
+      env.fs.writeFileSync(filePath, JSON.stringify(stories, null, 2), 'utf-8');
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function getDynamicStories(): Story[] {
+  if (globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ !== undefined) {
+    return globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__;
+  }
+  const loaded = loadStoriesFromFile();
+  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = loaded;
+  return loaded;
+}
 
 export function addLiveStory(story: Story): void {
-  dynamicStories = [story, ...dynamicStories.filter(s => s.id !== story.id)];
+  const current = getDynamicStories();
+  const updated = [story, ...current.filter((s) => s.id !== story.id && s.slug !== story.slug)];
+  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = updated;
+  saveStoriesToFile(updated);
 }
 
 export function removeLiveStory(id: string): void {
-  dynamicStories = dynamicStories.filter(s => s.id !== id);
+  const current = getDynamicStories();
+  const updated = current.filter((s) => s.id !== id && s.slug !== id);
+  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = updated;
+  saveStoriesToFile(updated);
 }
 
 export function clearAllLiveStories(): void {
-  dynamicStories = [];
+  globalThis.__ETERNAL_PAWS_DYNAMIC_STORIES__ = [];
+  saveStoriesToFile([]);
 }
 
 /**
  * Retrieves all stories in the active repository.
  */
 export function getAllStories(): Story[] {
-  return [...dynamicStories, ...allSeedStories];
+  return [...getDynamicStories(), ...allSeedStories];
 }
 
 /**
@@ -542,7 +613,7 @@ export function getPublishedStories(): Story[] {
 export function getStoryBySlug(slug: string): Story | undefined {
   if (!slug) return undefined;
   const cleanSlug = slug.trim().toLowerCase();
-  const all = [...dynamicStories, ...allSeedStories, ...seedStoryFixtures];
+  const all = [...getDynamicStories(), ...allSeedStories, ...seedStoryFixtures];
 
   return all.find(
     s => s.slug.toLowerCase() === cleanSlug || (s.redirectHistory && s.redirectHistory.map(r => r.toLowerCase()).includes(cleanSlug))

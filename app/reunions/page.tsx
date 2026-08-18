@@ -10,6 +10,8 @@ import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('reunions');
 
+export const dynamic = 'force-dynamic';
+
 export default function ReunionsPage() {
   return <CategoryHubView category="reunions" />;
 }

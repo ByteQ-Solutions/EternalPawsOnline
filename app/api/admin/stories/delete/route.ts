@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getSupabase } from '@/lib/db/supabase';
 import { removeLiveStory } from '@/lib/data/stories';
 
@@ -22,6 +23,9 @@ export async function DELETE(req: NextRequest) {
     if (id) {
       removeLiveStory(id);
     }
+    if (slug) {
+      removeLiveStory(slug);
+    }
 
     const supabase = getSupabase();
     if (supabase) {
@@ -34,6 +38,22 @@ export async function DELETE(req: NextRequest) {
       if (error) {
         console.warn('Supabase story delete error:', error.message);
       }
+    }
+
+    try {
+      revalidatePath('/');
+      revalidatePath('/stories');
+      revalidatePath('/rescues');
+      revalidatePath('/hero-dogs');
+      revalidatePath('/reunions');
+      revalidatePath('/survival');
+      revalidatePath('/loyalty');
+      revalidatePath('/lost-and-found');
+      revalidatePath('/search');
+      if (slug) revalidatePath(`/stories/${slug}`);
+      revalidatePath('/admin');
+    } catch {
+      // ignore
     }
 
     return NextResponse.json({

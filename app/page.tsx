@@ -42,6 +42,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const featuredStories = getFeaturedStories();
   const heroStory = featuredStories[0] || getPublishedStories()[0];

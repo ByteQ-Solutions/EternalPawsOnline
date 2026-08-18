@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getSupabase } from '@/lib/db/supabase';
 import { addLiveStory } from '@/lib/data/stories';
 
@@ -97,6 +98,23 @@ export async function POST(req: NextRequest) {
       featured: true,
       status: 'published',
     });
+
+    // Invalidate Next.js cache so all public client routes show the new story instantly
+    try {
+      revalidatePath('/');
+      revalidatePath('/stories');
+      revalidatePath('/rescues');
+      revalidatePath('/hero-dogs');
+      revalidatePath('/reunions');
+      revalidatePath('/survival');
+      revalidatePath('/loyalty');
+      revalidatePath('/lost-and-found');
+      revalidatePath('/search');
+      revalidatePath(`/stories/${story.slug}`);
+      revalidatePath('/admin');
+    } catch {
+      // ignore
+    }
 
     return NextResponse.json({
       success: true,

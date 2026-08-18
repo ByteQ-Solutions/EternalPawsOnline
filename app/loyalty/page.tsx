@@ -10,6 +10,8 @@ import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('loyalty');
 
+export const dynamic = 'force-dynamic';
+
 export default function LoyaltyPage() {
   return <CategoryHubView category="loyalty" />;
 }

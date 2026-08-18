@@ -28,6 +28,8 @@ export const metadata: Metadata = generateHubMetadata({
   keywords: ['dog stories archive', 'verified pet stories', 'hero dogs', 'dog rescues', 'canine reunions'],
 });
 
+export const dynamic = 'force-dynamic';
+
 export default function StoriesPage() {
   const stories = getPublishedStories();
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
