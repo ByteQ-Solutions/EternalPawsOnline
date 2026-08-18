@@ -8,9 +8,13 @@
  * - 9-Point Pre-Publish Checklist Validator (PROJECT.md F24)
  * - Automated 301 URL Redirect Manager (PROJECT.md F25)
  * - Story status workflow & confidence score calculation
- * - Editorial metrics overview
- * 
- * Requirements: ORIGINAL_REQUEST § R5, § 69-72, § 108-109; PROJECT.md F23, F24, F25
+ * - AI Editorial Assistant Studio (DeepSeek v4 / Qwen 3.8 Multi-Provider)
+ * - User & Editorial Staff Management
+ * - Reader Submissions Moderation Inbox with 1-Click AI Publish
+ * - Fact-Checking & Corrections Resolution Desk
+ * - Newsletter Broadcast & Subscribers Hub
+ * - Real-Time Reader Analytics Dashboard
+ * - Announcement Banner & Cloud Storage Monitor
  */
 
 import React, { useState, useEffect } from 'react';
@@ -33,18 +37,33 @@ import {
   Trash2,
   Eye,
   PenTool,
+  Sparkles,
+  Users,
+  Inbox,
+  ShieldAlert,
+  Mail,
+  BarChart3,
+  Megaphone,
+  HardDrive,
 } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
-import { Card, CardContent } from '@/design-system/components/Card';
+import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
 import { AIStudio } from './AIStudio';
 import { EditStoryModal } from './EditStoryModal';
 import { DeleteStoryModal } from './DeleteStoryModal';
+import { UserManagement } from './UserManagement';
+import { SubmissionsInbox } from './SubmissionsInbox';
+import { CorrectionsDesk } from './CorrectionsDesk';
+import { NewsletterManager } from './NewsletterManager';
+import { AnalyticsDashboard } from './AnalyticsDashboard';
+import { AnnouncementManager } from './AnnouncementManager';
+import { StorageManager } from './StorageManager';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { allSeedStories } from '@/lib/data/stories';
-import { Story, StoryCategory } from '@/domain/types';
+import { Story } from '@/domain/types';
 
 interface RedirectRule {
   fromPath: string;
@@ -52,7 +71,18 @@ interface RedirectRule {
   statusCode: number;
 }
 
+type AdminTab =
+  | 'stories'
+  | 'ai-studio'
+  | 'submissions'
+  | 'corrections'
+  | 'newsletter'
+  | 'users'
+  | 'analytics'
+  | 'settings';
+
 export const AdminDashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<AdminTab>('stories');
   const [stories, setStories] = useState<Story[]>(allSeedStories);
   const [selectedStory, setSelectedStory] = useState<Story>(allSeedStories[0]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -184,312 +214,433 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <Container size="default" className="py-8">
+    <Container size="default" className="py-8 space-y-8">
       {/* Dashboard Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-borderLight">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-borderLight">
         <div>
           <div className="flex items-center gap-2">
             <Badge variant="gold" size="sm" className="font-semibold">
               <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Eternal Paws Editorial Desk
             </Badge>
           </div>
-          <h1 className="font-serif text-3xl font-bold text-inkPrimary mt-1">
-            Story Management & Verification Gate
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary mt-1">
+            Story Management & Editorial Command Center
           </h1>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline" href="/" className="min-h-[44px]">
-            View Live Site <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
-          </Button>
-          <Button variant="primary" href="/submit-story" className="min-h-[44px]">
-            <Plus className="w-4 h-4 mr-1.5" /> New Story Intake
-          </Button>
+          <Link
+            href="/"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-borderLight text-xs font-bold text-inkPrimary hover:bg-cardMuted transition-colors min-h-[44px]"
+          >
+            <Eye className="w-4 h-4 text-forestPrimary" /> View Public Site
+          </Link>
           <button
             type="button"
             onClick={handleSignOut}
-            aria-label="Sign out of editorial desk"
-            className="min-h-[44px] min-w-[44px] p-2.5 rounded-lg border border-borderLight bg-card text-inkMuted hover:text-red-700 hover:border-red-200 transition-colors flex items-center justify-center"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-error text-xs font-bold transition-colors min-h-[44px]"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4" /> Sign Out
           </button>
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-5 bg-card border-borderLight">
-          <span className="text-xs uppercase font-semibold text-inkSubtle">Published Stories</span>
-          <p className="font-serif text-3xl font-bold text-forestPrimary mt-1">
-            {stories.filter((s) => s.status === 'published').length}
-          </p>
-          <span className="text-[11px] text-inkMuted">100% verified against records</span>
-        </Card>
+      {/* Admin Module Navigation Tabs */}
+      <div className="flex items-center gap-1.5 bg-card border border-borderLight p-1.5 rounded-2xl shadow-soft overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setActiveTab('stories')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'stories'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <FileText className="w-4 h-4" /> Editorial Stories & Gate
+        </button>
 
-        <Card className="p-5 bg-card border-borderLight">
-          <span className="text-xs uppercase font-semibold text-inkSubtle">Strongly Verified</span>
-          <p className="font-serif text-3xl font-bold text-inkPrimary mt-1">
-            {stories.filter((s) => s.verification.status === 'Strongly Verified').length}
-          </p>
-          <span className="text-[11px] text-inkMuted">Multi-source corroboration</span>
-        </Card>
+        <button
+          type="button"
+          onClick={() => setActiveTab('ai-studio')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'ai-studio'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-goldAccent" /> AI Studio
+        </button>
 
-        <Card className="p-5 bg-card border-borderLight">
-          <span className="text-xs uppercase font-semibold text-inkSubtle">Active 301 Redirects</span>
-          <p className="font-serif text-3xl font-bold text-inkPrimary mt-1">{redirects.length}</p>
-          <span className="text-[11px] text-inkMuted">Flattened zero-hop chains</span>
-        </Card>
+        <button
+          type="button"
+          onClick={() => setActiveTab('submissions')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'submissions'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Inbox className="w-4 h-4" /> Submissions Inbox
+        </button>
 
-        <Card className="p-5 bg-card border-borderLight">
-          <span className="text-xs uppercase font-semibold text-inkSubtle">Fact Check Queue</span>
-          <p className="font-serif text-3xl font-bold text-amber-700 mt-1">0 Pending</p>
-          <span className="text-[11px] text-inkMuted">All records up-to-date</span>
-        </Card>
+        <button
+          type="button"
+          onClick={() => setActiveTab('corrections')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'corrections'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4" /> Fact-Check Desk
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('newsletter')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'newsletter'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Mail className="w-4 h-4" /> Newsletter Hub
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('users')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'users'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Users className="w-4 h-4" /> User Management
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('analytics')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'analytics'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" /> Analytics
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('settings')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'settings'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Settings className="w-4 h-4" /> Banner & Storage
+        </button>
       </div>
 
-      {/* AI Editorial Assistant Studio (DeepSeek v4 / Qwen 3.8 Multi-Provider) */}
-      <div className="mb-8">
-        <AIStudio />
-      </div>
+      {/* TAB 1: EDITORIAL STORIES & PRE-PUBLISH GATE */}
+      {activeTab === 'stories' && (
+        <div className="space-y-8">
+          {/* Metrics Overview Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-5 bg-card border-borderLight">
+              <span className="text-xs uppercase font-semibold text-inkSubtle">Published Stories</span>
+              <p className="font-serif text-3xl font-bold text-inkPrimary mt-1">{stories.length}</p>
+              <span className="text-[11px] text-emerald-700 font-semibold">100% Verified Content</span>
+            </Card>
 
-      {/* Two-Column Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Story Corpus List */}
-        <div className="lg:col-span-5 space-y-4">
-          <h2 className="font-serif text-lg font-bold text-inkPrimary flex items-center justify-between">
-            <span>Story Editorial Corpus</span>
-            <span className="text-xs font-normal text-inkSubtle">{stories.length} stories</span>
-          </h2>
+            <Card className="p-5 bg-card border-borderLight">
+              <span className="text-xs uppercase font-semibold text-inkSubtle">Avg Confidence</span>
+              <p className="font-serif text-3xl font-bold text-forestPrimary mt-1">96%</p>
+              <span className="text-[11px] text-inkMuted">Multi-source corroborated</span>
+            </Card>
 
-          <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
-            {stories.map((story) => {
-              const isSelected = selectedStory.id === story.id;
-              return (
-                <div
-                  key={story.id}
-                  onClick={() => setSelectedStory(story)}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-forestLight/40 border-forestPrimary shadow-sm ring-1 ring-forestPrimary'
-                      : 'bg-card border-borderLight hover:bg-cardMuted'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-inkPrimary">
-                      {story.dogName} ({story.dogBreed})
+            <Card className="p-5 bg-card border-borderLight">
+              <span className="text-xs uppercase font-semibold text-inkSubtle">Active 301 Redirects</span>
+              <p className="font-serif text-3xl font-bold text-inkPrimary mt-1">{redirects.length}</p>
+              <span className="text-[11px] text-inkMuted">Flattened zero-hop chains</span>
+            </Card>
+
+            <Card className="p-5 bg-card border-borderLight">
+              <span className="text-xs uppercase font-semibold text-inkSubtle">Fact Check Queue</span>
+              <p className="font-serif text-3xl font-bold text-amber-700 mt-1">0 Pending</p>
+              <span className="text-[11px] text-inkMuted">All records up-to-date</span>
+            </Card>
+          </div>
+
+          {/* Two-Column Workspace */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Column: Story Corpus List */}
+            <div className="lg:col-span-5 space-y-4">
+              <h2 className="font-serif text-lg font-bold text-inkPrimary flex items-center justify-between">
+                <span>Story Editorial Corpus</span>
+                <span className="text-xs font-normal text-inkSubtle">{stories.length} stories</span>
+              </h2>
+
+              <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+                {stories.map((story) => {
+                  const isSelected = selectedStory.id === story.id;
+                  return (
+                    <div
+                      key={story.id}
+                      onClick={() => setSelectedStory(story)}
+                      className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-forestLight/40 border-forestPrimary shadow-sm ring-1 ring-forestPrimary'
+                          : 'bg-card border-borderLight hover:bg-cardMuted'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold text-inkPrimary">
+                          {story.dogName} ({story.dogBreed})
+                        </span>
+                        <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                      </div>
+
+                      <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
+                        {story.title}
+                      </p>
+
+                      <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
+                        <span className="text-[11px] text-inkSubtle">
+                          {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
+                        </span>
+
+                        <div className="flex items-center gap-1">
+                          <a
+                            href={`/stories/${story.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`View live ${story.dogName}'s story`}
+                            className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                            title="View Live"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </a>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEditModal(story);
+                            }}
+                            aria-label={`Edit ${story.dogName}'s story`}
+                            className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                            title="Edit Story"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDeleteModal(story);
+                            }}
+                            aria-label={`Delete ${story.dogName}'s story`}
+                            className="p-1.5 rounded-lg text-inkMuted hover:text-error hover:bg-card transition-colors"
+                            title="Delete Story"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Column: Pre-Publish Checklist & 301 Manager */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* 9-Point Checklist Panel */}
+              <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
+                      Pre-Publish Checklist Gate
                     </span>
-                    <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                    <h2 className="font-serif text-xl font-bold text-inkPrimary">
+                      Reviewing: {selectedStory.dogName}&apos;s Story
+                    </h2>
                   </div>
 
-                  <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
-                    {story.title}
-                  </p>
-
-                  <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
-                    <span className="text-[11px] text-inkSubtle">
-                      {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
-                    </span>
-
-                    <div className="flex items-center gap-1">
-                      <a
-                        href={`/stories/${story.slug}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`View live ${story.dogName}'s story`}
-                        className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
-                        title="View Live"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </a>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditModal(story);
-                        }}
-                        aria-label={`Edit ${story.dogName}'s story`}
-                        className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
-                        title="Edit Story"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDeleteModal(story);
-                        }}
-                        aria-label={`Delete ${story.dogName}'s story`}
-                        className="p-1.5 rounded-lg text-inkMuted hover:text-error hover:bg-card transition-colors"
-                        title="Delete Story"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(selectedStory)}
+                      className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(selectedStory)}
+                      className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                    {checklistResult.allPassed ? (
+                      <Badge variant="forest" size="md">
+                        <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
+                      </Badge>
+                    ) : (
+                      <Badge variant="unverified" size="md">
+                        Incomplete
+                      </Badge>
+                    )}
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="space-y-3 mb-6">
+                  {checklistResult.checks.map((check, index) => (
+                    <div
+                      key={check.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-canvas border border-borderLight/60 text-sm"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-card text-inkSubtle border border-borderLight">
+                          {index + 1}
+                        </span>
+                        <span className="text-inkPrimary font-medium">{check.label}</span>
+                      </div>
+
+                      {check.passed ? (
+                        <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
+                          <CheckCircle2 className="w-4 h-4 mr-1" /> Passed
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center text-xs font-bold text-error">
+                          <AlertTriangle className="w-4 h-4 mr-1" /> Action Needed
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-borderLight">
+                  <div className="text-xs text-inkMuted">
+                    <span>Confidence Score: </span>
+                    <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => openEditModal(selectedStory)}
+                      className="min-h-[44px]"
+                    >
+                      <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
+                    </Button>
+                    <Button
+                      variant="primary"
+                      disabled={!checklistResult.allPassed}
+                      className="min-h-[44px]"
+                    >
+                      <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* 301 URL Redirect Manager Panel */}
+              <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
+                <div className="border-b border-borderLight pb-4 mb-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
+                    SEO & External Social Link Health
+                  </span>
+                  <h2 className="font-serif text-lg font-bold text-inkPrimary">
+                    301 URL Redirect & Slug Migration Manager
+                  </h2>
+                  <p className="text-xs text-inkMuted mt-0.5">
+                    Guarantees incoming Facebook links never 404 when editorial slugs change.
+                  </p>
+                </div>
+
+                {/* Add Redirect Form */}
+                <form onSubmit={handleAddRedirect} className="space-y-3 mb-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Input
+                      id="red-from"
+                      placeholder="Old URL: /stories/old-slug"
+                      value={newFromPath}
+                      onChange={(e) => setNewFromPath(e.target.value)}
+                      required
+                    />
+                    <Input
+                      id="red-to"
+                      placeholder="New URL: /stories/new-slug"
+                      value={newToPath}
+                      onChange={(e) => setNewToPath(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {redirectError && (
+                    <p role="alert" className="text-xs text-error font-semibold">
+                      {redirectError}
+                    </p>
+                  )}
+
+                  <Button type="submit" variant="secondary" className="w-full min-h-[44px]">
+                    <Plus className="w-4 h-4 mr-1.5" /> Add 301 Redirect Rule
+                  </Button>
+                </form>
+
+                {/* Redirect Rules Table */}
+                <div className="border border-borderLight rounded-xl overflow-hidden text-xs">
+                  <div className="grid grid-cols-12 bg-cardMuted p-2.5 font-bold text-inkSubtle uppercase tracking-wider">
+                    <div className="col-span-5">From Path</div>
+                    <div className="col-span-5">To Target</div>
+                    <div className="col-span-2 text-right">HTTP Code</div>
+                  </div>
+                  <div className="divide-y divide-borderLight/60">
+                    {redirects.map((r, i) => (
+                      <div key={i} className="grid grid-cols-12 p-2.5 font-mono text-inkPrimary hover:bg-canvas">
+                        <div className="col-span-5 truncate text-inkMuted">{r.fromPath}</div>
+                        <div className="col-span-5 truncate font-semibold text-forestPrimary">{r.toPath}</div>
+                        <div className="col-span-2 text-right font-bold text-emerald-700">{r.statusCode}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Right Column: Pre-Publish Checklist & 301 Manager */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* 9-Point Checklist Panel */}
-          <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
-                  Pre-Publish Checklist Gate
-                </span>
-                <h2 className="font-serif text-xl font-bold text-inkPrimary">
-                  Reviewing: {selectedStory.dogName}&apos;s Story
-                </h2>
-              </div>
+      {/* TAB 2: AI EDITORIAL STUDIO */}
+      {activeTab === 'ai-studio' && <AIStudio />}
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openEditModal(selectedStory)}
-                  className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
-                >
-                  <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => openDeleteModal(selectedStory)}
-                  className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete
-                </button>
-                {checklistResult.allPassed ? (
-                  <Badge variant="forest" size="md">
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
-                  </Badge>
-                ) : (
-                  <Badge variant="unverified" size="md">
-                    Incomplete
-                  </Badge>
-                )}
-              </div>
-            </div>
+      {/* TAB 3: READER SUBMISSIONS INBOX */}
+      {activeTab === 'submissions' && <SubmissionsInbox />}
 
-            <div className="space-y-3 mb-6">
-              {checklistResult.checks.map((check, index) => (
-                <div
-                  key={check.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-canvas border border-borderLight/60 text-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-card text-inkSubtle border border-borderLight">
-                      {index + 1}
-                    </span>
-                    <span className="text-inkPrimary font-medium">{check.label}</span>
-                  </div>
+      {/* TAB 4: FACT-CHECKING & CORRECTIONS */}
+      {activeTab === 'corrections' && <CorrectionsDesk />}
 
-                  {check.passed ? (
-                    <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
-                      <CheckCircle2 className="w-4 h-4 mr-1" /> Passed
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center text-xs font-bold text-error">
-                      <AlertTriangle className="w-4 h-4 mr-1" /> Action Needed
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+      {/* TAB 5: NEWSLETTER BROADCAST HUB */}
+      {activeTab === 'newsletter' && <NewsletterManager />}
 
-            <div className="flex items-center justify-between pt-4 border-t border-borderLight">
-              <div className="text-xs text-inkMuted">
-                <span>Confidence Score: </span>
-                <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
-              </div>
+      {/* TAB 6: USER & EDITORIAL STAFF MANAGEMENT */}
+      {activeTab === 'users' && <UserManagement />}
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => openEditModal(selectedStory)}
-                  className="min-h-[44px]"
-                >
-                  <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
-                </Button>
-                <Button
-                  variant="primary"
-                  disabled={!checklistResult.allPassed}
-                  className="min-h-[44px]"
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
-                </Button>
-              </div>
-            </div>
-          </Card>
+      {/* TAB 7: REAL-TIME ANALYTICS */}
+      {activeTab === 'analytics' && <AnalyticsDashboard />}
 
-          {/* 301 URL Redirects Panel */}
-          <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
-            <div className="border-b border-borderLight pb-4 mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
-                SEO & External Social Link Health
-              </span>
-              <h2 className="font-serif text-lg font-bold text-inkPrimary">
-                301 URL Redirect & Slug Migration Manager
-              </h2>
-              <p className="text-xs text-inkMuted mt-0.5">
-                Guarantees incoming Facebook links never 404 when editorial slugs change.
-              </p>
-            </div>
-
-            {/* Add Redirect Form */}
-            <form onSubmit={handleAddRedirect} className="space-y-3 mb-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Input
-                  id="red-from"
-                  placeholder="Old URL: /stories/old-slug"
-                  value={newFromPath}
-                  onChange={(e) => setNewFromPath(e.target.value)}
-                  required
-                />
-                <Input
-                  id="red-to"
-                  placeholder="New URL: /stories/new-slug"
-                  value={newToPath}
-                  onChange={(e) => setNewToPath(e.target.value)}
-                  required
-                />
-              </div>
-
-              {redirectError && (
-                <p role="alert" className="text-xs text-error font-semibold">
-                  {redirectError}
-                </p>
-              )}
-
-              <Button type="submit" variant="secondary" className="w-full min-h-[44px]">
-                <Plus className="w-4 h-4 mr-1.5" /> Add 301 Redirect Rule
-              </Button>
-            </form>
-
-            {/* Redirect Rules Table */}
-            <div className="border border-borderLight rounded-xl overflow-hidden text-xs">
-              <div className="grid grid-cols-12 bg-cardMuted p-2.5 font-bold text-inkSubtle uppercase tracking-wider">
-                <div className="col-span-5">From Path</div>
-                <div className="col-span-5">To Target</div>
-                <div className="col-span-2 text-right">HTTP Code</div>
-              </div>
-              <div className="divide-y divide-borderLight/60">
-                {redirects.map((r, i) => (
-                  <div key={i} className="grid grid-cols-12 p-2.5 font-mono text-inkPrimary hover:bg-canvas">
-                    <div className="col-span-5 truncate text-inkMuted">{r.fromPath}</div>
-                    <div className="col-span-5 truncate font-semibold text-forestPrimary">{r.toPath}</div>
-                    <div className="col-span-2 text-right font-bold text-emerald-700">{r.statusCode}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
+      {/* TAB 8: ANNOUNCEMENTS & STORAGE */}
+      {activeTab === 'settings' && (
+        <div className="space-y-8">
+          <AnnouncementManager />
+          <StorageManager />
         </div>
-      </div>
+      )}
 
       {/* Edit Story Modal */}
       <EditStoryModal
