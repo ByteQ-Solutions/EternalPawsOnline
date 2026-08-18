@@ -4,6 +4,7 @@ import './globals.css';
 import SkipToContent from '@/components/layout/SkipToContent';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import PublicAnnouncementBanner from '@/components/layout/PublicAnnouncementBanner';
 
 const sansFont = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -73,6 +74,9 @@ export default function RootLayout({
       <body className="bg-canvas text-inkPrimary font-sans antialiased min-h-screen flex flex-col selection:bg-forestLight selection:text-forestPrimary overflow-x-hidden">
         {/* WCAG 2.4.1 Skip Navigation Link */}
         <SkipToContent targetId="main-content" />
+
+        {/* Global Public Announcement Banner */}
+        <PublicAnnouncementBanner />
 
         {/* Global Sticky Editorial Header */}
         <Header />
