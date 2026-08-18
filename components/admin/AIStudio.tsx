@@ -1,22 +1,49 @@
 'use client';
 
 /**
- * Eternal Paws Platform - AI Editorial Studio Component
+ * Eternal Paws Platform - AI Editorial Assistant Studio
  * Path: components/admin/AIStudio.tsx
  * 
  * Multi-Provider AI Hub supporting TokenRouter (DeepSeek v4 / Qwen 3.8 Max),
  * OpenRouter, Groq, and OpenAI.
+ * 
+ * Features:
+ * 1. 🌟 Unique Story Engine with Anti-Duplication Collision Shield
+ * 2. ✨ Story Polisher (Grammar, Rhythm, Tone)
+ * 3. 🚀 1-Click Story Generator from News Links/Prompts
+ * 4. ⚡ Direct One-Click Publish to Live Database
  */
 
 import React, { useState } from 'react';
-import { Sparkles, Wand2, Copy, Check, RefreshCw, BookOpen, AlertCircle, FileText, ArrowRight, Zap } from 'lucide-react';
+import {
+  Sparkles,
+  Wand2,
+  Copy,
+  Check,
+  Zap,
+  ShieldCheck,
+  Globe,
+  ExternalLink,
+  Dice5,
+  AlertCircle,
+  Clock,
+  MapPin,
+  Send,
+} from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
-import { Card, CardContent } from '@/design-system/components/Card';
-import { GeneratedStoryDraft } from '@/lib/ai/ai-service';
+import { UniqueStoryPayload, GeneratedStoryDraft } from '@/lib/ai/ai-service';
 
 export const AIStudio: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'polish' | 'generate'>('polish');
+  const [activeTab, setActiveTab] = useState<'unique' | 'polish' | 'draft'>('unique');
+
+  // Unique Story Engine State
+  const [uniqueCategory, setUniqueCategory] = useState<string>('any');
+  const [themePrompt, setThemePrompt] = useState<string>('');
+  const [isGeneratingUnique, setIsGeneratingUnique] = useState<boolean>(false);
+  const [generatedUniqueStory, setGeneratedUniqueStory] = useState<UniqueStoryPayload | null>(null);
+  const [isPublishing, setIsPublishing] = useState<boolean>(false);
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
 
   // Polish State
   const [rawText, setRawText] = useState('');
@@ -25,16 +52,72 @@ export const AIStudio: React.FC = () => {
   const [polishedOutput, setPolishedOutput] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Generator State
+  // Draft Generator State
   const [topic, setTopic] = useState('');
   const [genDogName, setGenDogName] = useState('');
   const [genBreed, setGenBreed] = useState('');
   const [genLocation, setGenLocation] = useState('');
   const [genCategory, setGenCategory] = useState('rescues');
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [generatedDraft, setGeneratedDraft] = useState<GeneratedStoryDraft | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // 1. Handle Unique Story Generation
+  const handleGenerateUnique = async () => {
+    setIsGeneratingUnique(true);
+    setErrorMsg(null);
+    setPublishedUrl(null);
+
+    try {
+      const res = await fetch('/api/admin/ai/generate-unique', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: uniqueCategory === 'any' ? undefined : uniqueCategory,
+          themePrompt: themePrompt.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.story) {
+        setGeneratedUniqueStory(data.story);
+      } else {
+        setErrorMsg(data.error || 'Failed to generate unique story.');
+      }
+    } catch {
+      setErrorMsg('Network error while generating unique story.');
+    } finally {
+      setIsGeneratingUnique(false);
+    }
+  };
+
+  // 2. Handle 1-Click Publish to Database
+  const handlePublishUnique = async () => {
+    if (!generatedUniqueStory) return;
+    setIsPublishing(true);
+    setErrorMsg(null);
+
+    try {
+      const res = await fetch('/api/admin/stories/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generatedUniqueStory),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setPublishedUrl(data.liveUrl || `/stories/${generatedUniqueStory.slug}`);
+      } else {
+        setErrorMsg(data.error || 'Failed to publish story to live database.');
+      }
+    } catch {
+      setErrorMsg('Network error while publishing story.');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  // 3. Handle Story Polisher
   const handlePolish = async () => {
     if (!rawText.trim()) return;
     setIsPolishing(true);
@@ -59,9 +142,10 @@ export const AIStudio: React.FC = () => {
     }
   };
 
-  const handleGenerate = async () => {
+  // 4. Handle Draft Builder
+  const handleGenerateDraft = async () => {
     if (!topic.trim()) return;
-    setIsGenerating(true);
+    setIsGeneratingDraft(true);
     setErrorMsg(null);
 
     try {
@@ -85,7 +169,7 @@ export const AIStudio: React.FC = () => {
     } catch {
       setErrorMsg('Network error while generating story.');
     } finally {
-      setIsGenerating(false);
+      setIsGeneratingDraft(false);
     }
   };
 
@@ -97,8 +181,8 @@ export const AIStudio: React.FC = () => {
 
   return (
     <div className="bg-card border border-borderLight rounded-2xl p-6 shadow-soft space-y-6">
-      {/* Studio Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4">
+      {/* Studio Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-borderLight pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-goldAccent" />
@@ -106,37 +190,48 @@ export const AIStudio: React.FC = () => {
               AI Editorial Assistant Studio
             </h2>
             <Badge variant="forest" size="sm" className="font-mono text-[10px]">
-              DeepSeek v4 / Qwen 3.8
+              DeepSeek v4 / Qwen 3.8 Max
             </Badge>
           </div>
           <p className="text-xs text-inkMuted mt-1">
-            OpenAI-Compatible Gateway (TokenRouter / OpenRouter) • Hot-swappable via environment variables.
+            OpenAI-Compatible Gateway • Automatic Anti-Duplication Shield Active.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center bg-cardMuted border border-borderLight rounded-xl p-1">
+        <div className="flex items-center bg-cardMuted border border-borderLight rounded-xl p-1 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('unique')}
+            className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'unique'
+                ? 'bg-forestPrimary text-white shadow-soft'
+                : 'text-inkMuted hover:text-inkPrimary'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-goldLight" /> 100% Unique Story Generator
+          </button>
           <button
             type="button"
             onClick={() => setActiveTab('polish')}
-            className={`min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'polish'
                 ? 'bg-forestPrimary text-white shadow-soft'
                 : 'text-inkMuted hover:text-inkPrimary'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" /> Story Polisher
+            <Wand2 className="w-3.5 h-3.5" /> Story Polisher
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('generate')}
-            className={`min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'generate'
+            onClick={() => setActiveTab('draft')}
+            className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'draft'
                 ? 'bg-forestPrimary text-white shadow-soft'
                 : 'text-inkMuted hover:text-inkPrimary'
             }`}
           >
-            <Wand2 className="w-3.5 h-3.5" /> Auto-Draft Generator
+            <Zap className="w-3.5 h-3.5" /> Draft Builder
           </button>
         </div>
       </div>
@@ -148,7 +243,169 @@ export const AIStudio: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 1: STORY POLISHER */}
+      {/* TAB 1: 100% UNIQUE STORY GENERATOR WITH ANTI-DUPLICATION SHIELD */}
+      {activeTab === 'unique' && (
+        <div className="space-y-5">
+          <div className="bg-forestLight/40 border border-forestPrimary/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="w-5 h-5 text-forestPrimary flex-shrink-0" />
+              <div>
+                <span className="text-xs font-bold text-forestPrimary uppercase tracking-wider block">
+                  Anti-Duplication Collision Shield Active
+                </span>
+                <p className="text-xs text-inkMuted">
+                  Scans existing story corpus to guarantee 100% unique dog personas, plots, locations, and verification sources.
+                </p>
+              </div>
+            </div>
+            <Badge variant="verified" size="sm">
+              🛡️ Zero-Duplicate Guarantee
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="unique-cat" className="block text-xs font-bold uppercase tracking-wider text-inkSubtle mb-1">
+                Story Category
+              </label>
+              <select
+                id="unique-cat"
+                value={uniqueCategory}
+                onChange={(e) => setUniqueCategory(e.target.value)}
+                className="w-full min-h-[44px] px-3 py-2 bg-canvas border border-borderLight rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-forestPrimary"
+              >
+                <option value="any">🎲 Surprise Me (Any Category)</option>
+                <option value="rescues">Rescues</option>
+                <option value="hero-dogs">Hero Dogs</option>
+                <option value="reunions">Reunions</option>
+                <option value="survival">Survival</option>
+                <option value="loyalty">Loyalty</option>
+                <option value="lost-and-found">Lost & Found</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="unique-prompt" className="block text-xs font-bold uppercase tracking-wider text-inkSubtle mb-1">
+                Optional Theme / Setting Prompt
+              </label>
+              <input
+                id="unique-prompt"
+                type="text"
+                value={themePrompt}
+                onChange={(e) => setThemePrompt(e.target.value)}
+                placeholder="e.g. Coastal search dog during storm, senior dog adopted by veteran, shelter reunion..."
+                className="w-full min-h-[44px] px-3 py-2 bg-canvas border border-borderLight rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-forestPrimary"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleGenerateUnique}
+              isLoading={isGeneratingUnique}
+              className="min-h-[44px] font-bold text-xs shadow-soft"
+            >
+              <Sparkles className="w-4 h-4 mr-1.5 text-goldLight" /> Generate 100% Unique Story
+            </Button>
+          </div>
+
+          {/* Generated Story Live Preview & 1-Click Publish */}
+          {generatedUniqueStory && (
+            <div className="mt-6 p-6 bg-cardMuted/70 border border-borderLight rounded-2xl space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borderLight/80 pb-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="forest" size="sm">
+                    ✨ 100% Unique Story Ready
+                  </Badge>
+                  <span className="text-xs font-semibold text-emerald-800 flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Duplicate Check Passed
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(JSON.stringify(generatedUniqueStory, null, 2))}
+                    className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-canvas transition-colors flex items-center gap-1.5"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-800" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Copied JSON!' : 'Copy Data'}
+                  </button>
+
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={handlePublishUnique}
+                    isLoading={isPublishing}
+                    className="min-h-[36px] px-4 text-xs font-bold"
+                  >
+                    <Send className="w-3.5 h-3.5 mr-1.5" /> Publish to Live Site
+                  </Button>
+                </div>
+              </div>
+
+              {publishedUrl && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-semibold">
+                  <span>🎉 Story successfully published live!</span>
+                  <a
+                    href={publishedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-forestPrimary underline font-bold"
+                  >
+                    View Live Article <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
+
+              {/* Story Details Card */}
+              <div className="space-y-3 bg-canvas p-5 rounded-xl border border-borderLight">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-inkSubtle">
+                  <Badge variant="outline" size="sm">
+                    {generatedUniqueStory.category.toUpperCase()}
+                  </Badge>
+                  <span>•</span>
+                  <span className="font-bold text-inkPrimary">
+                    {generatedUniqueStory.dogName} ({generatedUniqueStory.dogBreed})
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {generatedUniqueStory.location.city}, {generatedUniqueStory.location.stateOrProvince}
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-inkPrimary">
+                  {generatedUniqueStory.title}
+                </h3>
+                <p className="text-xs text-inkMuted italic">
+                  &ldquo;{generatedUniqueStory.excerpt}&rdquo;
+                </p>
+
+                <div className="pt-3 border-t border-borderLight/80 font-serif text-sm leading-relaxed text-inkPrimary whitespace-pre-line">
+                  {generatedUniqueStory.content}
+                </div>
+
+                {/* Sources Attribution Preview */}
+                <div className="mt-4 pt-3 border-t border-borderLight/60 text-xs text-inkSubtle space-y-1">
+                  <span className="font-bold uppercase tracking-wider block text-inkPrimary">
+                    Verified Sources:
+                  </span>
+                  {generatedUniqueStory.verification.sources.map((src, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-emerald-800 font-semibold">• {src.name}</span>
+                      <span>({src.documentReference})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 2: STORY POLISHER */}
       {activeTab === 'polish' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -217,8 +474,8 @@ export const AIStudio: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 2: STORY DRAFT GENERATOR */}
-      {activeTab === 'generate' && (
+      {/* TAB 3: STORY DRAFT GENERATOR FROM TOPIC */}
+      {activeTab === 'draft' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -298,12 +555,12 @@ export const AIStudio: React.FC = () => {
             <Button
               type="button"
               variant="primary"
-              onClick={handleGenerate}
-              isLoading={isGenerating}
+              onClick={handleGenerateDraft}
+              isLoading={isGeneratingDraft}
               disabled={!topic.trim()}
               className="min-h-[44px] font-bold text-xs"
             >
-              <Wand2 className="w-4 h-4 mr-1.5" /> Build Full Story Draft
+              <Wand2 className="w-4 h-4 mr-1.5" /> Build Story Draft
             </Button>
           </div>
 

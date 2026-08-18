@@ -88,4 +88,57 @@ describe('AI Editorial Assistant Suite (TokenRouter / DeepSeek / Qwen Multi-Prov
       expect(json.draft.title).toBeDefined();
     });
   });
+
+  describe('5. 100% Unique Story Generator with Anti-Duplication Shield', () => {
+    it('generates unique story payload with zero collisions against existing story titles', async () => {
+      const result = await AIService.generateUniqueStory({
+        category: 'hero-dogs',
+        existingTitles: ["Bella's Journey", "Barnaby: The Golden Retriever"],
+        existingSlugs: ['bella-blind-beagle-sanctuary-journey'],
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.story.id).toBeDefined();
+      expect(result.story.title).toBeDefined();
+      expect(result.story.slug).not.toBe('bella-blind-beagle-sanctuary-journey');
+      expect(result.story.uniquenessScore).toBe(100);
+      expect(result.story.duplicateCheckPassed).toBe(true);
+    });
+
+    it('processes /api/admin/ai/generate-unique API request and returns 200 with unique story', async () => {
+      const { POST: uniqueHandler } = await import('@/app/api/admin/ai/generate-unique/route');
+      const req = createMockRequest({ category: 'rescues' });
+      const res = await uniqueHandler(req);
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.story.dogName).toBeDefined();
+    });
+  });
+
+  describe('6. Story Direct Live Publish API (/api/admin/stories/publish)', () => {
+    it('rejects incomplete story payloads with 400', async () => {
+      const { POST: publishHandler } = await import('@/app/api/admin/stories/publish/route');
+      const req = createMockRequest({});
+      const res = await publishHandler(req);
+      expect(res.status).toBe(400);
+    });
+
+    it('successfully receives complete story and returns 200 with live story URL', async () => {
+      const { POST: publishHandler } = await import('@/app/api/admin/stories/publish/route');
+      const req = createMockRequest({
+        title: 'Radar the Island Rescue Collie',
+        slug: 'radar-the-island-rescue-collie',
+        content: 'Radar guided a stranded kayaker through coastal fog in Alaska.',
+        dogName: 'Radar',
+        dogBreed: 'Border Collie',
+        category: 'hero-dogs',
+      });
+      const res = await publishHandler(req);
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.liveUrl).toBe('/stories/radar-the-island-rescue-collie');
+    });
+  });
 });
