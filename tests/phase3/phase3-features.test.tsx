@@ -44,7 +44,7 @@ beforeEach(() => {
 
 describe('Phase 3 Advanced Production Features Suite', () => {
   describe('1. Audio Story Narration Player Component', () => {
-    it('renders audio player with accessible region label and play button', () => {
+    it('renders audio player with accessible region label and calm storytelling badge', () => {
       render(
         <AudioNarrationPlayer
           storyTitle="Bella: The Blind Beagle Journey"
@@ -54,11 +54,11 @@ describe('Phase 3 Advanced Production Features Suite', () => {
       );
 
       expect(screen.getByRole('region', { name: /audio narration for bella/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /listen to bella/i })).toBeInTheDocument();
-      expect(screen.getByText('1x')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /listen to bella's story with calm storytelling voice/i })).toBeInTheDocument();
+      expect(screen.getAllByText(/Calm Storyteller/i).length).toBeGreaterThanOrEqual(1);
     });
 
-    it('toggles playback rate between 1x, 1.25x, and 1.5x on speed button click', () => {
+    it('allows switching between voice tone presets (Calm Storyteller, Classic Editorial, Gentle Bedtime)', () => {
       render(
         <AudioNarrationPlayer
           storyTitle="Max the Hero Dog"
@@ -67,17 +67,13 @@ describe('Phase 3 Advanced Production Features Suite', () => {
         />
       );
 
-      const speedBtn = screen.getByRole('button', { name: /change speed/i });
-      expect(speedBtn).toHaveTextContent('1x');
+      const editorialBtn = screen.getByRole('button', { name: /Classic Editorial/i });
+      fireEvent.click(editorialBtn);
+      expect(editorialBtn).toHaveAttribute('aria-pressed', 'true');
 
-      fireEvent.click(speedBtn);
-      expect(speedBtn).toHaveTextContent('1.25x');
-
-      fireEvent.click(speedBtn);
-      expect(speedBtn).toHaveTextContent('1.5x');
-
-      fireEvent.click(speedBtn);
-      expect(speedBtn).toHaveTextContent('1x');
+      const bedtimeBtn = screen.getByRole('button', { name: /Gentle & Relaxing/i });
+      fireEvent.click(bedtimeBtn);
+      expect(bedtimeBtn).toHaveAttribute('aria-pressed', 'true');
     });
   });
 
