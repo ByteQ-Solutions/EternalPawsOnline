@@ -88,8 +88,20 @@ export function normalizeCanonicalUrl(rawUrl: string): string {
  */
 export function calculateReadingTime(content: string, wordsPerMinute: number = 200): number {
   if (!content || typeof content !== 'string') return 1;
-  const wordMatches = content.match(/\S+/g);
-  const words = wordMatches ? wordMatches.length : 0;
+  let words = 0;
+  let inWord = false;
+  const len = content.length;
+  for (let i = 0; i < len; i++) {
+    const code = content.charCodeAt(i);
+    if (code > 32) {
+      if (!inWord) {
+        words++;
+        inWord = true;
+      }
+    } else {
+      inWord = false;
+    }
+  }
   if (words === 0) return 1;
   const minutes = Math.ceil(words / wordsPerMinute);
   return Math.max(1, minutes);

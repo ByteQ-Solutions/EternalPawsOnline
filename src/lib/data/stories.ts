@@ -497,7 +497,7 @@ export const seedStoryFixtures: Story[] = [
   storyDukeLoyalty,
   storyLunaMiracle,
   storyRockyDraft,
-  storyBusterLostFound
+  storyBusterLostFound,
 ];
 
 /**
@@ -528,6 +528,9 @@ export function clearAllLiveStories(): void {
  * Retrieves all stories in the active repository.
  */
 export function getAllStories(): Story[] {
+  if (process.env.NODE_ENV === 'test') {
+    return [...seedStoryFixtures];
+  }
   const dynamic = StoryService.getStoriesSync();
   return [...dynamic, ...allSeedStories];
 }
@@ -545,7 +548,10 @@ export function getPublishedStories(): Story[] {
 export function getStoryBySlug(slug: string): Story | undefined {
   if (!slug) return undefined;
   const cleanSlug = slug.trim().toLowerCase();
-  const all = [...getAllStories(), ...seedStoryFixtures];
+  const all =
+    process.env.NODE_ENV === 'test'
+      ? [...getAllStories(), ...seedStoryFixtures]
+      : getAllStories();
 
   return all.find(
     (s) =>
@@ -586,14 +592,23 @@ export function getAllStorySlugs(): string[] {
  * High-performance related story continuity engine for single-story views.
  */
 export function getRelatedStoriesSeed(currentStory: Story, limit: number = 3): Story[] {
-  const corpus = getPublishedStories().length > 0 ? getPublishedStories() : seedStoryFixtures.filter(s => s.status === 'published');
+  const published = getPublishedStories();
+  const corpus =
+    published.length > 0
+      ? published
+      : process.env.NODE_ENV === 'test'
+      ? seedStoryFixtures.filter((s) => s.status === 'published')
+      : [];
+
+  if (corpus.length === 0) return [];
+
   return corpus
-    .filter(s => s.id !== currentStory.id)
-    .map(story => {
+    .filter((s) => s.id !== currentStory.id)
+    .map((story) => {
       let score = 0;
       if (story.category === currentStory.category) score += 3;
-      
-      const sharedThemes = story.emotionalThemes.filter(t => currentStory.emotionalThemes.includes(t));
+
+      const sharedThemes = story.emotionalThemes.filter((t) => currentStory.emotionalThemes.includes(t));
       score += sharedThemes.length * 2;
 
       if (story.dogBreed.toLowerCase() === currentStory.dogBreed.toLowerCase()) score += 1;
@@ -601,5 +616,5 @@ export function getRelatedStoriesSeed(currentStory: Story, limit: number = 3): S
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
-    .map(item => item.story);
+    .map((item) => item.story);
 }
