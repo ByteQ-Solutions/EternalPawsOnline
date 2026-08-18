@@ -33,6 +33,7 @@ import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
+import { AIStudio } from './AIStudio';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { allSeedStories } from '@/lib/data/stories';
@@ -169,6 +170,11 @@ export const AdminDashboard: React.FC = () => {
           <p className="font-serif text-3xl font-bold text-amber-700 mt-1">0 Pending</p>
           <span className="text-[11px] text-inkMuted">All records up-to-date</span>
         </Card>
+      </div>
+
+      {/* AI Editorial Assistant Studio (DeepSeek v4 / Qwen 3.8 Multi-Provider) */}
+      <div className="mb-8">
+        <AIStudio />
       </div>
 
       {/* Two-Column Workspace */}
