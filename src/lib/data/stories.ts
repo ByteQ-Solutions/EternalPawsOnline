@@ -489,7 +489,7 @@ Inside was a vintage locket belonging to the property's original 1950s occupants
 // 3. Collection Exports & Data Access Utilities
 // ============================================================================
 
-export const allSeedStories: Story[] = [
+export const seedStoryFixtures: Story[] = [
   storyBellaRescue,
   storyBarnabySurvival,
   storyMaxHero,
@@ -500,20 +500,40 @@ export const allSeedStories: Story[] = [
   storyBusterLostFound
 ];
 
-export const publishedSeedStories: Story[] = allSeedStories.filter(s => s.status === 'published');
+/**
+ * Live Story Corpus: Initialized completely empty for fresh production start.
+ * New stories are generated via Admin AI Studio or Reader Submissions.
+ */
+export const allSeedStories: Story[] = [];
+
+export const publishedSeedStories: Story[] = [];
+
+let dynamicStories: Story[] = [];
+
+export function addLiveStory(story: Story): void {
+  dynamicStories = [story, ...dynamicStories.filter(s => s.id !== story.id)];
+}
+
+export function removeLiveStory(id: string): void {
+  dynamicStories = dynamicStories.filter(s => s.id !== id);
+}
+
+export function clearAllLiveStories(): void {
+  dynamicStories = [];
+}
 
 /**
- * Retrieves all stories in the repository.
+ * Retrieves all stories in the active repository.
  */
 export function getAllStories(): Story[] {
-  return [...allSeedStories];
+  return [...dynamicStories, ...allSeedStories];
 }
 
 /**
  * Retrieves all published stories visible to readers.
  */
 export function getPublishedStories(): Story[] {
-  return [...publishedSeedStories];
+  return getAllStories().filter(s => s.status === 'published');
 }
 
 /**
@@ -522,9 +542,10 @@ export function getPublishedStories(): Story[] {
 export function getStoryBySlug(slug: string): Story | undefined {
   if (!slug) return undefined;
   const cleanSlug = slug.trim().toLowerCase();
+  const all = [...dynamicStories, ...allSeedStories, ...seedStoryFixtures];
 
-  return allSeedStories.find(
-    s => s.slug === cleanSlug || (s.redirectHistory && s.redirectHistory.includes(cleanSlug))
+  return all.find(
+    s => s.slug.toLowerCase() === cleanSlug || (s.redirectHistory && s.redirectHistory.map(r => r.toLowerCase()).includes(cleanSlug))
   );
 }
 
@@ -532,37 +553,36 @@ export function getStoryBySlug(slug: string): Story | undefined {
  * Filters published stories by category.
  */
 export function getStoriesByCategory(category: StoryCategory): Story[] {
-  return publishedSeedStories.filter(s => s.category === category);
+  return getPublishedStories().filter(s => s.category === category);
 }
 
 /**
  * Filters published stories by emotional theme.
  */
 export function getStoriesByTheme(theme: EmotionalTheme): Story[] {
-  return publishedSeedStories.filter(s => s.emotionalThemes.includes(theme));
+  return getPublishedStories().filter(s => s.emotionalThemes.includes(theme));
 }
 
 /**
  * Returns featured stories for the homepage hero carousel.
  */
 export function getFeaturedStories(): Story[] {
-  return publishedSeedStories.filter(s => s.featured);
+  return getPublishedStories().filter(s => s.featured);
 }
 
 /**
  * Returns all active and redirect slugs for sitemap generation and static routing.
  */
 export function getAllStorySlugs(): string[] {
-  return publishedSeedStories.map(s => s.slug);
+  return getPublishedStories().map(s => s.slug);
 }
 
 /**
  * High-performance related story continuity engine for single-story views.
- * Combines category affinity (score 3), emotional theme Jaccard overlap (score 2),
- * and breed affinity (score 1) to recommend reading journeys without clickbait bounce.
  */
 export function getRelatedStoriesSeed(currentStory: Story, limit: number = 3): Story[] {
-  return publishedSeedStories
+  const corpus = getPublishedStories().length > 0 ? getPublishedStories() : seedStoryFixtures.filter(s => s.status === 'published');
+  return corpus
     .filter(s => s.id !== currentStory.id)
     .map(story => {
       let score = 0;

@@ -25,6 +25,9 @@ import {
   getRelatedStoriesSeed,
   allSeedStories,
   publishedSeedStories,
+  seedStoryFixtures,
+  addLiveStory,
+  clearAllLiveStories,
   storyRockyDraft,
   storyBellaRescue,
   storyBusterLostFound,
@@ -47,6 +50,9 @@ import { generateStaticParams } from '@/app/stories/[slug]/page';
 import { CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
 
 describe('Challenger M3-2: Adversarial Stress Test Suite', () => {
+  beforeEach(() => {
+    seedStoryFixtures.forEach((s) => addLiveStory(s));
+  });
   // ==========================================================================
   // Dimension 1: Route Resolution & Nonexistent Slugs
   // ==========================================================================

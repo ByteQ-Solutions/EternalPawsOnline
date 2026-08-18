@@ -33,13 +33,13 @@ import {
   validateNewsletter,
   validateCorrection
 } from '@/domain/schemas';
-import { allSeedStories, storyBellaRescue, storyLunaMiracle } from '@/lib/data/stories';
+import { seedStoryFixtures, storyBellaRescue, storyLunaMiracle } from '@/lib/data/stories';
 
 describe('Domain Schemas & Validation Engine (Unit Tests)', () => {
   describe('1. Master Seed Stories Schema Compliance', () => {
     it('validates every seed story against storySchema with 100% success', () => {
-      expect(allSeedStories.length).toBeGreaterThanOrEqual(8);
-      for (const story of allSeedStories) {
+      expect(seedStoryFixtures.length).toBeGreaterThanOrEqual(8);
+      for (const story of seedStoryFixtures) {
         const result = validateStory(story);
         if (!result.success) {
           console.error(`Validation failed for story ${story.slug}:`, result.errors);

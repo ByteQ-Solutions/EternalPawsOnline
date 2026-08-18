@@ -12,12 +12,17 @@ import {
   getFeaturedStories,
   getAllStorySlugs,
   getPublishedStories,
+  seedStoryFixtures,
+  addLiveStory,
 } from '@/lib/data/stories';
 import { generateStoryMetadata, generateCategoryMetadata } from '@/lib/seo';
 import { generateStaticParams } from '@/app/stories/[slug]/page';
 import type { StoryCategory } from '@/domain/types';
 
 describe('App Router Page Routes & Data Fetching (tests/routes/article-routes.test.ts)', () => {
+  beforeEach(() => {
+    seedStoryFixtures.forEach((s) => addLiveStory(s));
+  });
   describe('1. Single Article Route (/stories/[slug])', () => {
     it('getAllStorySlugs returns published story slugs for static pre-rendering (SSG)', () => {
       const slugs = getAllStorySlugs();

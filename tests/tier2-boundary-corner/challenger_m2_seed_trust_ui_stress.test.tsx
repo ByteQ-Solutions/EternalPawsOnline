@@ -13,7 +13,10 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 // Domain and Data Imports
 import {
   allSeedStories,
+  seedStoryFixtures,
   publishedSeedStories,
+  addLiveStory,
+  clearAllLiveStories,
   storyBellaRescue,
   storyBarnabySurvival,
   storyMaxHero,
@@ -65,6 +68,9 @@ import {
 } from '@/components/trust';
 
 describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', () => {
+  beforeEach(() => {
+    seedStoryFixtures.forEach(s => addLiveStory(s));
+  });
 
   // ==========================================================================
   // SECTION 1: SEED DATASET INTEGRITY & QUERY FUNCTIONS
@@ -72,13 +78,13 @@ describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', (
   describe('1. Seed Dataset Schema Conformance & Integrity (src/lib/data/stories.ts)', () => {
     
     it('1.1: Exactly 8 seed stories exist in master dataset', () => {
-      expect(allSeedStories).toBeDefined();
-      expect(allSeedStories.length).toBe(8);
-      expect(publishedSeedStories.length).toBe(7);
+      expect(seedStoryFixtures).toBeDefined();
+      expect(seedStoryFixtures.length).toBe(8);
+      expect(seedStoryFixtures.filter(s => s.status === 'published').length).toBe(7);
     });
 
     it('1.2: All 8 seed stories strictly pass validateStory() Zod validation with zero errors', () => {
-      for (const story of allSeedStories) {
+      for (const story of seedStoryFixtures) {
         const validation = validateStory(story);
         if (!validation.success) {
           console.error(`Validation failed for story '${story.slug}':`, validation.errors);
@@ -129,8 +135,8 @@ describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', (
         'lost-and-found'
       ];
 
-      const presentCategoriesAll = new Set(allSeedStories.map(s => s.category));
-      const presentCategoriesPublished = new Set(publishedSeedStories.map(s => s.category));
+      const presentCategoriesAll = new Set(seedStoryFixtures.map(s => s.category));
+      const presentCategoriesPublished = new Set(seedStoryFixtures.filter(s => s.status === 'published').map(s => s.category));
 
       for (const cat of requiredCategories) {
         expect(presentCategoriesAll.has(cat)).toBe(true);
@@ -138,18 +144,18 @@ describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', (
       }
 
       // Verify specific category mappings
-      expect(allSeedStories.find(s => s.category === 'reunions')?.slug).toBe(storyDaisyReunion.slug);
-      expect(allSeedStories.find(s => s.category === 'hero-dogs')?.slug).toBe(storyMaxHero.slug);
-      expect(allSeedStories.filter(s => s.category === 'rescues').length).toBe(2); // Bella & Luna
-      expect(allSeedStories.find(s => s.category === 'survival')?.slug).toBe(storyBarnabySurvival.slug);
-      expect(allSeedStories.find(s => s.category === 'loyalty')?.slug).toBe(storyDukeLoyalty.slug);
-      expect(allSeedStories.filter(s => s.category === 'lost-and-found').length).toBe(2); // Buster & Rocky
+      expect(seedStoryFixtures.find(s => s.category === 'reunions')?.slug).toBe(storyDaisyReunion.slug);
+      expect(seedStoryFixtures.find(s => s.category === 'hero-dogs')?.slug).toBe(storyMaxHero.slug);
+      expect(seedStoryFixtures.filter(s => s.category === 'rescues').length).toBe(2); // Bella & Luna
+      expect(seedStoryFixtures.find(s => s.category === 'survival')?.slug).toBe(storyBarnabySurvival.slug);
+      expect(seedStoryFixtures.find(s => s.category === 'loyalty')?.slug).toBe(storyDukeLoyalty.slug);
+      expect(seedStoryFixtures.filter(s => s.category === 'lost-and-found').length).toBe(2); // Buster & Rocky
     });
 
     it('1.5: Slug format adherence and unique identity constraints', () => {
-      const slugs = allSeedStories.map(s => s.slug);
+      const slugs = seedStoryFixtures.map(s => s.slug);
       const uniqueSlugs = new Set(slugs);
-      expect(uniqueSlugs.size).toBe(allSeedStories.length);
+      expect(uniqueSlugs.size).toBe(seedStoryFixtures.length);
 
       for (const slug of slugs) {
         expect(SLUG_REGEX.test(slug)).toBe(true);
@@ -158,13 +164,13 @@ describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', (
         expect(slug.endsWith('-')).toBe(false);
       }
 
-      const ids = allSeedStories.map(s => s.id);
+      const ids = seedStoryFixtures.map(s => s.id);
       const uniqueIds = new Set(ids);
-      expect(uniqueIds.size).toBe(allSeedStories.length);
+      expect(uniqueIds.size).toBe(seedStoryFixtures.length);
     });
 
     it('1.6: AI visual reconstruction disclosures are complete and compliant', () => {
-      const aiStories = allSeedStories.filter(s => s.heroImage.licenseType === 'ai_visual_reconstruction');
+      const aiStories = seedStoryFixtures.filter(s => s.heroImage.licenseType === 'ai_visual_reconstruction');
       expect(aiStories.length).toBeGreaterThanOrEqual(1);
 
       for (const story of aiStories) {
@@ -177,7 +183,7 @@ describe('Challenger 2 Empirical Verification Suite: Seed Dataset & Trust UI', (
     });
 
     it('1.7: Non-AI images have valid authentic license types and credits', () => {
-      const nonAiStories = allSeedStories.filter(s => s.heroImage.licenseType !== 'ai_visual_reconstruction');
+      const nonAiStories = seedStoryFixtures.filter(s => s.heroImage.licenseType !== 'ai_visual_reconstruction');
       for (const story of nonAiStories) {
         expect(story.heroImage.credit.length).toBeGreaterThanOrEqual(2);
         expect([

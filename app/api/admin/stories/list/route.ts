@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/db/supabase';
-import { allSeedStories } from '@/lib/data/stories';
+import { getAllStories } from '@/lib/data/stories';
 import { Story } from '@/domain/types';
 
 /**
  * Admin Stories List API Route
  * Path: app/api/admin/stories/list/route.ts
  * 
- * Fetches all published & draft stories from Supabase with fallback to seed corpus.
+ * Fetches all published & draft stories from Supabase with fallback to active live corpus.
  */
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     if (!supabase) {
       return NextResponse.json({
         success: true,
-        stories: allSeedStories,
+        stories: getAllStories(),
         source: 'memory_fallback',
       });
     }
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       console.warn('Supabase stories fetch note:', error.message);
       return NextResponse.json({
         success: true,
-        stories: allSeedStories,
+        stories: getAllStories(),
         source: 'fallback',
       });
     }
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     if (dbStories === null) {
       return NextResponse.json({
         success: true,
-        stories: allSeedStories,
+        stories: getAllStories(),
         source: 'seed_fallback',
       });
     }

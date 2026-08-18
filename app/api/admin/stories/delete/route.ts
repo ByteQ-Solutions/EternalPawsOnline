@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/db/supabase';
+import { removeLiveStory } from '@/lib/data/stories';
 
 /**
  * Admin Story Delete API Route
@@ -16,6 +17,10 @@ export async function DELETE(req: NextRequest) {
         { success: false, error: 'Story ID or slug is required for deletion.' },
         { status: 400 }
       );
+    }
+
+    if (id) {
+      removeLiveStory(id);
     }
 
     const supabase = getSupabase();

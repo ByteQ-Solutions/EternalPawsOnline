@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/db/supabase';
 import { EmailService } from '@/lib/services/email-service';
-import { allSeedStories } from '@/lib/data/stories';
+import { getAllStories, seedStoryFixtures } from '@/lib/data/stories';
 
 export interface SubscriberItem {
   id: string;
@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const { customStorySlug, subjectLine } = body;
 
-    const featuredStory = allSeedStories.find((s) => s.slug === customStorySlug) || allSeedStories[0];
+    const featuredStory = getAllStories().find((s) => s.slug === customStorySlug) || getAllStories()[0] || seedStoryFixtures[0];
+    const storyTitle = featuredStory?.title || 'Weekly Dog Story Digest';
+    const dogName = featuredStory?.dogName || 'Rescue Dog';
 
     const activeList = memorySubscribers.filter((s) => s.status === 'active');
     let dispatchCount = 0;
@@ -50,8 +52,8 @@ export async function POST(req: NextRequest) {
       success: true,
       message: `Sunday Newsletter Digest successfully dispatched to ${dispatchCount} subscribers.`,
       dispatchedCount: dispatchCount,
-      featuredStoryTitle: featuredStory.title,
-      subject: subjectLine || `Sunday Pack Edition: ${featuredStory.dogName}'s Incredible Story 🐾`,
+      featuredStoryTitle: storyTitle,
+      subject: subjectLine || `Sunday Pack Edition: ${dogName}'s Incredible Story 🐾`,
     });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown newsletter dispatch error';

@@ -21,6 +21,7 @@ import {
 } from '@/domain/verification';
 import {
   allSeedStories,
+  seedStoryFixtures,
   publishedSeedStories,
   getStoryBySlug,
   getStoriesByCategory,
@@ -251,8 +252,8 @@ describe('Verification Calculus Engine (Unit & Boundary Tests)', () => {
 
   describe('8. Seed Data Integrity & Editorial Completeness', () => {
     it('contains at least 8 rich seed stories covering all 6 categories', () => {
-      expect(allSeedStories.length).toBeGreaterThanOrEqual(8);
-      const categories = new Set(allSeedStories.map(s => s.category));
+      expect(seedStoryFixtures.length).toBeGreaterThanOrEqual(8);
+      const categories = new Set(seedStoryFixtures.map(s => s.category));
       expect(categories.has('reunions')).toBe(true);
       expect(categories.has('hero-dogs')).toBe(true);
       expect(categories.has('rescues')).toBe(true);
@@ -263,7 +264,7 @@ describe('Verification Calculus Engine (Unit & Boundary Tests)', () => {
 
     it('every story satisfies kebab-case slug regex and has non-empty title/content', () => {
       const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-      for (const story of allSeedStories) {
+      for (const story of seedStoryFixtures) {
         expect(slugRegex.test(story.slug)).toBe(true);
         expect(story.title.length).toBeGreaterThanOrEqual(10);
         expect(story.content.length).toBeGreaterThanOrEqual(200);
@@ -273,7 +274,7 @@ describe('Verification Calculus Engine (Unit & Boundary Tests)', () => {
     });
 
     it('AI visual reconstruction stories have mandatory complete AI disclosures', () => {
-      const aiStories = allSeedStories.filter(s => s.heroImage.licenseType === 'ai_visual_reconstruction');
+      const aiStories = seedStoryFixtures.filter(s => s.heroImage.licenseType === 'ai_visual_reconstruction');
       expect(aiStories.length).toBeGreaterThan(0);
       for (const story of aiStories) {
         expect(story.heroImage.aiDisclosure?.isAiGenerated).toBe(true);
