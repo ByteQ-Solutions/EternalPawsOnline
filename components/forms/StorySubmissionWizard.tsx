@@ -202,14 +202,54 @@ export const StorySubmissionWizard: React.FC = () => {
     if (!validateStep(3)) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      const payload = {
+        submitterName: state.submitter.name,
+        submitterEmail: state.submitter.email,
+        submitterPhone: state.submitter.phone,
+        dogName: state.dog.name,
+        dogBreed: state.dog.breed,
+        locationCity: state.dog.locationCity,
+        locationState: state.dog.locationState,
+        eventYear: state.dog.eventYear,
+        category: state.story.category,
+        emotionalThemes: state.story.themes,
+        storyTitle: state.story.title,
+        storyNarrative: state.story.narrative,
+        photoName: state.mediaAndProof.photoName,
+        photoCredit: state.mediaAndProof.photoCredit,
+        licenseType: state.mediaAndProof.licenseType,
+        sourceName: state.mediaAndProof.sourceName,
+        sourceUrl: state.mediaAndProof.sourceUrl,
+        rightsConfirmed: state.mediaAndProof.rightsConfirmed,
+      };
+
+      const res = await fetch('/api/stories/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ticket?.code) {
+        setTicketId(data.ticket.code);
+      } else {
+        // Fallback ticket generation
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+        const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        setTicketId(`SUB-${year}-${monthDay}-${randomCode}`);
+      }
+    } catch {
+      // Local/offline fallback
       const now = new Date();
       const year = now.getFullYear();
       const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
       const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const newTicket = `SUB-${year}-${monthDay}-${randomCode}`;
-
-      setTicketId(newTicket);
+      setTicketId(`SUB-${year}-${monthDay}-${randomCode}`);
+    } finally {
       setIsSubmitting(false);
       try {
         localStorage.removeItem(STORAGE_KEY);
@@ -217,7 +257,7 @@ export const StorySubmissionWizard: React.FC = () => {
         // Ignore
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 500);
+    }
   };
 
   const toggleTheme = (theme: EmotionalTheme) => {

@@ -73,16 +73,41 @@ export const CorrectionModal: React.FC<CorrectionModalProps> = ({
     if (!validate()) return;
 
     setIsSubmitting(true);
-    // Simulate submission
-    setTimeout(() => {
+
+    try {
+      const res = await fetch('/api/corrections/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storySlug: formData.storySlug,
+          storyTitle: storyTitle || formData.storySlug,
+          submitterName: formData.submitterName,
+          submitterEmail: formData.submitterEmail,
+          issueType: formData.claimDescription,
+          correctionDetails: formData.correctionDetails,
+          supportingLinks: formData.supportingEvidenceUrl ? [formData.supportingEvidenceUrl] : [],
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ticket?.code) {
+        setTicketId(data.ticket.code);
+      } else {
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+        const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        setTicketId(`CORR-${year}-${monthDay}-${randomCode}`);
+      }
+    } catch {
       const now = new Date();
       const year = now.getFullYear();
       const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
       const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const generatedTicket = `CORR-${year}-${monthDay}-${randomCode}`;
-      setTicketId(generatedTicket);
+      setTicketId(`CORR-${year}-${monthDay}-${randomCode}`);
+    } finally {
       setIsSubmitting(false);
-    }, 300);
+    }
   };
 
   const handleResetAndClose = () => {

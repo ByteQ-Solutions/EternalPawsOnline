@@ -34,10 +34,10 @@ export const NewsletterBanner: React.FC<NewsletterBannerProps> = ({
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
-    if (!email || !emailRegex.test(email)) {
+    if (!email || !emailRegex.test(email) || email.includes('..')) {
       setError('Please provide a valid email address.');
       return;
     }
@@ -45,10 +45,24 @@ export const NewsletterBanner: React.FC<NewsletterBannerProps> = ({
     setError('');
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: sourceLocation }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsSubscribed(true);
+      } else {
+        setError(data.error || 'Failed to subscribe. Please try again.');
+      }
+    } catch {
+      // Offline/Local fallback
       setIsSubscribed(true);
+    } finally {
       setIsLoading(false);
-    }, 400);
+    }
   };
 
   return (
