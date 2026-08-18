@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="pawsluvshop@gmail.com"
+              placeholder="name@example.com"
               required
             />
 
@@ -102,9 +102,9 @@ export default function AdminLoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-borderLight/80 text-center text-xs text-inkSubtle">
-            <p>Administrator Login:</p>
-            <p className="mt-1 font-mono text-[11px]">pawsluvshop@gmail.com / admin123</p>
+          <div className="mt-6 pt-5 border-t border-borderLight/80 text-center text-[11px] text-inkSubtle flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-forestPrimary" />
+            <span>Secure 256-Bit Encrypted Newsroom Portal</span>
           </div>
         </Card>
       </Container>
