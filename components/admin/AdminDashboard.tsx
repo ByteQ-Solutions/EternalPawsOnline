@@ -13,7 +13,7 @@
  * Requirements: ORIGINAL_REQUEST § R5, § 69-72, § 108-109; PROJECT.md F23, F24, F25
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
@@ -29,12 +29,18 @@ import {
   Layers,
   Settings,
   LogOut,
+  Edit3,
+  Trash2,
+  Eye,
+  PenTool,
 } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
 import { AIStudio } from './AIStudio';
+import { EditStoryModal } from './EditStoryModal';
+import { DeleteStoryModal } from './DeleteStoryModal';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { allSeedStories } from '@/lib/data/stories';
@@ -49,6 +55,11 @@ interface RedirectRule {
 export const AdminDashboard: React.FC = () => {
   const [stories, setStories] = useState<Story[]>(allSeedStories);
   const [selectedStory, setSelectedStory] = useState<Story>(allSeedStories[0]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
+  const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
+
   const [redirects, setRedirects] = useState<RedirectRule[]>([
     { fromPath: '/stories/pete-lost-ten-years', toPath: '/stories/pete-found-after-ten-years', statusCode: 301 },
     { fromPath: '/stories/max-mountain-avalanche', toPath: '/stories/max-avalanche-search-dog-aspen', statusCode: 301 },
@@ -56,6 +67,50 @@ export const AdminDashboard: React.FC = () => {
   const [newFromPath, setNewFromPath] = useState('');
   const [newToPath, setNewToPath] = useState('');
   const [redirectError, setRedirectError] = useState('');
+
+  // Live Fetch Stories from Supabase on mount
+  useEffect(() => {
+    const fetchLiveStories = async () => {
+      try {
+        const res = await fetch('/api/admin/stories/list');
+        const data = await res.json();
+        if (data.success && data.stories && data.stories.length > 0) {
+          setStories(data.stories);
+          setSelectedStory(data.stories[0]);
+        }
+      } catch (err) {
+        console.warn('Live stories fetch fallback:', err);
+      }
+    };
+    fetchLiveStories();
+  }, []);
+
+  const handleStoryUpdated = (updated: Story) => {
+    setStories((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+    if (selectedStory.id === updated.id) {
+      setSelectedStory(updated);
+    }
+  };
+
+  const handleStoryDeleted = (deletedId: string) => {
+    setStories((prev) => {
+      const remaining = prev.filter((s) => s.id !== deletedId);
+      if (selectedStory.id === deletedId && remaining.length > 0) {
+        setSelectedStory(remaining[0]);
+      }
+      return remaining;
+    });
+  };
+
+  const openEditModal = (story: Story) => {
+    setStoryToEdit(story);
+    setIsEditModalOpen(true);
+  };
+
+  const openDeleteModal = (story: Story) => {
+    setStoryToDelete(story);
+    setIsDeleteModalOpen(true);
+  };
 
   // 9-Point Pre-Publish Checklist Calculation
   const runPrePublishChecklist = (story: Story) => {
@@ -230,9 +285,48 @@ export const AdminDashboard: React.FC = () => {
                     {story.title}
                   </p>
 
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-inkSubtle">
-                    <span>{story.location.city}, {story.location.stateOrProvince}</span>
-                    <span>{story.readTimeMinutes} min read</span>
+                  <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
+                    <span className="text-[11px] text-inkSubtle">
+                      {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
+                    </span>
+
+                    <div className="flex items-center gap-1">
+                      <a
+                        href={`/stories/${story.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`View live ${story.dogName}'s story`}
+                        className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                        title="View Live"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditModal(story);
+                        }}
+                        aria-label={`Edit ${story.dogName}'s story`}
+                        className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
+                        title="Edit Story"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDeleteModal(story);
+                        }}
+                        aria-label={`Delete ${story.dogName}'s story`}
+                        className="p-1.5 rounded-lg text-inkMuted hover:text-error hover:bg-card transition-colors"
+                        title="Delete Story"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -244,7 +338,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="lg:col-span-7 space-y-6">
           {/* 9-Point Checklist Panel */}
           <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between border-b border-borderLight pb-4 mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
                   Pre-Publish Checklist Gate
@@ -254,15 +348,31 @@ export const AdminDashboard: React.FC = () => {
                 </h2>
               </div>
 
-              {checklistResult.allPassed ? (
-                <Badge variant="forest" size="md">
-                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready to Publish
-                </Badge>
-              ) : (
-                <Badge variant="unverified" size="md">
-                  <AlertTriangle className="w-4 h-4 mr-1.5" /> Gate Check Required
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openEditModal(selectedStory)}
+                  className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openDeleteModal(selectedStory)}
+                  className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                </button>
+                {checklistResult.allPassed ? (
+                  <Badge variant="forest" size="md">
+                    <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
+                  </Badge>
+                ) : (
+                  <Badge variant="unverified" size="md">
+                    Incomplete
+                  </Badge>
+                )}
+              </div>
             </div>
 
             <div className="space-y-3 mb-6">
@@ -292,22 +402,27 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-borderLight">
-              <Link
-                href={`/stories/${selectedStory.slug}`}
-                target="_blank"
-                className="text-xs font-bold text-forestPrimary hover:underline inline-flex items-center"
-              >
-                Preview Story Page <ExternalLink className="w-3 h-3 ml-1" />
-              </Link>
+              <div className="text-xs text-inkMuted">
+                <span>Confidence Score: </span>
+                <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
+              </div>
 
-              <Button
-                variant="primary"
-                disabled={!checklistResult.allPassed}
-                onClick={() => alert(`Story "${selectedStory.title}" is published & verified.`)}
-                className="min-h-[44px]"
-              >
-                <ShieldCheck className="w-4 h-4 mr-2" /> Confirm Publication
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => openEditModal(selectedStory)}
+                  className="min-h-[44px]"
+                >
+                  <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
+                </Button>
+                <Button
+                  variant="primary"
+                  disabled={!checklistResult.allPassed}
+                  className="min-h-[44px]"
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
+                </Button>
+              </div>
             </div>
           </Card>
 
@@ -375,6 +490,22 @@ export const AdminDashboard: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {/* Edit Story Modal */}
+      <EditStoryModal
+        isOpen={isEditModalOpen}
+        story={storyToEdit}
+        onClose={() => setIsEditModalOpen(false)}
+        onStoryUpdated={handleStoryUpdated}
+      />
+
+      {/* Delete Story Modal */}
+      <DeleteStoryModal
+        isOpen={isDeleteModalOpen}
+        story={storyToDelete}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onStoryDeleted={handleStoryDeleted}
+      />
     </Container>
   );
 };
