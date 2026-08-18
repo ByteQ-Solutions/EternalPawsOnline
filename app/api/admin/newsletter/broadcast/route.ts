@@ -12,10 +12,7 @@ export interface SubscriberItem {
 }
 
 let memorySubscribers: SubscriberItem[] = [
-  { id: 'sub-em-001', email: 'sarah.reader@gmail.com', subscribedAt: '2026-03-01T10:00:00Z', status: 'active', confirmedDoubleOptIn: true },
-  { id: 'sub-em-002', email: 'doglover99@yahoo.com', subscribedAt: '2026-03-05T14:30:00Z', status: 'active', confirmedDoubleOptIn: true },
-  { id: 'sub-em-003', email: 'mark.rescue@outlook.com', subscribedAt: '2026-03-10T09:15:00Z', status: 'active', confirmedDoubleOptIn: true },
-  { id: 'sub-em-004', email: 'pawsluvshop@gmail.com', subscribedAt: '2026-03-12T16:45:00Z', status: 'active', confirmedDoubleOptIn: true },
+  { id: 'sub-em-001', email: 'pawsluvshop@gmail.com', subscribedAt: new Date().toISOString(), status: 'active', confirmedDoubleOptIn: true },
 ];
 
 export async function GET() {
