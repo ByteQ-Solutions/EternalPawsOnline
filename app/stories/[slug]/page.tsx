@@ -33,6 +33,10 @@ import {
   ShareBar,
 } from '@/components/article';
 import { TrustCard } from '@/components/trust/TrustCard';
+import { AudioNarrationPlayer } from '@/components/article/AudioNarrationPlayer';
+import { StoryTimelineUpdates } from '@/components/article/StoryTimelineUpdates';
+import { AdSlot } from '@/components/ads/AdSlot';
+import { NewsletterBanner } from '@/components/engagement/NewsletterBanner';
 import { Card, CardContent } from '@/design-system/components/Card';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ArrowRight, Clock, BookOpen } from 'lucide-react';
@@ -104,6 +108,13 @@ export default function StoryPage({ params }: StoryPageProps) {
           {/* Editorial Article Masthead */}
           <ArticleHeader story={story} />
 
+          {/* Audio Story Narration Player (Phase 3) */}
+          <AudioNarrationPlayer
+            storyTitle={story.title}
+            storyContent={story.content}
+            dogName={story.dogName}
+          />
+
           {/* Hero Media with Zero-CLS aspect ratio and AI disclosure */}
           <OptimizedDogImage
             image={story.heroImage}
@@ -126,6 +137,9 @@ export default function StoryPage({ params }: StoryPageProps) {
             <ArticleContent content={story.content} enableDropCap={true} />
           </div>
 
+          {/* Controlled Safe Display Monetization (Phase 3) */}
+          <AdSlot position="after_intro" />
+
           {/* Editorial Trust & Fact-Checking Card */}
           <TrustCard
             verification={story.verification}
@@ -133,6 +147,9 @@ export default function StoryPage({ params }: StoryPageProps) {
             storyTitle={story.title}
             className="my-10"
           />
+
+          {/* Story Follow-up & 1-Year Later Timeline (Phase 3) */}
+          <StoryTimelineUpdates dogName={story.dogName} />
 
           {/* Bottom Social Share Bar */}
           <div className="pt-6 pb-8 border-t border-borderLight flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -151,6 +168,9 @@ export default function StoryPage({ params }: StoryPageProps) {
               dogName={story.dogName}
             />
           </div>
+
+          {/* Newsletter Subscription Module (Phase 3) */}
+          <NewsletterBanner sourceLocation="story_reader_bottom" />
 
           {/* Related Verified Stories Continuity Section */}
           {relatedStories.length > 0 && (
