@@ -95,6 +95,36 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
           {/* Utility Actions & Mobile Trigger */}
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Language Switcher Toggle (EN / ES) */}
+            <div
+              className="flex items-center bg-cardMuted border border-borderLight rounded-full p-0.5"
+              role="group"
+              aria-label="Language selection"
+            >
+              <Link
+                href="/"
+                aria-label="Switch to English"
+                className={`min-h-[36px] min-w-[36px] px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
+                  !pathname?.startsWith('/es')
+                    ? 'bg-forestPrimary text-white shadow-soft'
+                    : 'text-inkMuted hover:text-inkPrimary'
+                }`}
+              >
+                EN
+              </Link>
+              <Link
+                href="/es"
+                aria-label="Cambiar a Español"
+                className={`min-h-[36px] min-w-[36px] px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
+                  pathname?.startsWith('/es')
+                    ? 'bg-forestPrimary text-white shadow-soft'
+                    : 'text-inkMuted hover:text-inkPrimary'
+                }`}
+              >
+                ES
+              </Link>
+            </div>
+
             {/* Search Trigger Button */}
             <Link
               href="/search"

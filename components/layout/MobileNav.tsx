@@ -137,6 +137,35 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             </Link>
           </div>
 
+          {/* Mobile Language Switcher (EN / ES) */}
+          <div className="px-4 py-3 border-b border-borderLight/60 flex items-center justify-between">
+            <span className="text-xs font-semibold text-inkSubtle uppercase tracking-wider">Language</span>
+            <div className="flex items-center bg-cardMuted border border-borderLight rounded-full p-0.5">
+              <Link
+                href="/"
+                onClick={onClose}
+                className={`min-h-[36px] px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                  !currentPath?.startsWith('/es')
+                    ? 'bg-forestPrimary text-white shadow-soft'
+                    : 'text-inkMuted hover:text-inkPrimary'
+                }`}
+              >
+                EN
+              </Link>
+              <Link
+                href="/es"
+                onClick={onClose}
+                className={`min-h-[36px] px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                  currentPath?.startsWith('/es')
+                    ? 'bg-forestPrimary text-white shadow-soft'
+                    : 'text-inkMuted hover:text-inkPrimary'
+                }`}
+              >
+                ES
+              </Link>
+            </div>
+          </div>
+
           {/* Primary Editorial Categories */}
           <div className="px-4 py-3">
             <p className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-inkSubtle">
