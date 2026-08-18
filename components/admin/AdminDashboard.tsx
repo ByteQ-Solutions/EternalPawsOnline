@@ -28,6 +28,7 @@ import {
   ExternalLink,
   Layers,
   Settings,
+  LogOut,
 } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
@@ -117,14 +118,25 @@ export const AdminDashboard: React.FC = () => {
     setRedirectError('');
   };
 
+  const handleSignOut = () => {
+    try {
+      document.cookie = 'eternal_paws_admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      localStorage.removeItem('eternal_paws_admin_session');
+    } catch {
+      // Ignore
+    }
+    window.location.href = '/admin/login';
+  };
+
   return (
-    <Container className="py-8 sm:py-12 max-w-7xl">
-      {/* Masthead */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-borderLight pb-6 mb-8">
+    <Container size="default" className="py-8">
+      {/* Dashboard Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-borderLight">
         <div>
           <div className="flex items-center gap-2">
-            <Badge variant="forest">Editorial Trust Desk</Badge>
-            <span className="text-xs text-inkSubtle">• Master CMS Portal</span>
+            <Badge variant="gold" size="sm" className="font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Eternal Paws Editorial Desk
+            </Badge>
           </div>
           <h1 className="font-serif text-3xl font-bold text-inkPrimary mt-1">
             Story Management & Verification Gate
@@ -138,6 +150,14 @@ export const AdminDashboard: React.FC = () => {
           <Button variant="primary" href="/submit-story" className="min-h-[44px]">
             <Plus className="w-4 h-4 mr-1.5" /> New Story Intake
           </Button>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            aria-label="Sign out of editorial desk"
+            className="min-h-[44px] min-w-[44px] p-2.5 rounded-lg border border-borderLight bg-card text-inkMuted hover:text-red-700 hover:border-red-200 transition-colors flex items-center justify-center"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

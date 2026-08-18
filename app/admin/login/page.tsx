@@ -30,21 +30,21 @@ export default function AdminLoginPage() {
     const result = AuthService.authenticate(email, password);
 
     if (!result.success || !result.user) {
-      setError(result.error || 'Authentication failed.');
+      setError(result.error || 'Invalid email address or password.');
       setIsLoading(false);
       return;
     }
 
-    // Set cookie or session indicator in client
     try {
+      // Set auth cookie for Next.js edge middleware
+      document.cookie = `eternal_paws_admin_token=${result.user.id || 'admin-auth'}; path=/; max-age=604800; SameSite=Lax;`;
       localStorage.setItem('eternal_paws_admin_session', JSON.stringify(result.user));
     } catch {
-      // Ignore
+      // Ignore storage errors
     }
 
-    setTimeout(() => {
-      router.push('/admin');
-    }, 400);
+    // Direct browser redirect to admin dashboard
+    window.location.href = '/admin';
   };
 
   return (
