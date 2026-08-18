@@ -51,6 +51,7 @@ import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
 import { AIStudio } from './AIStudio';
+import { CreateStoryModal } from './CreateStoryModal';
 import { EditStoryModal } from './EditStoryModal';
 import { DeleteStoryModal } from './DeleteStoryModal';
 import { UserManagement } from './UserManagement';
@@ -85,6 +86,7 @@ export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stories');
   const [stories, setStories] = useState<Story[]>(allSeedStories);
   const [selectedStory, setSelectedStory] = useState<Story | null>(allSeedStories[0] || null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [storyToEdit, setStoryToEdit] = useState<Story | null>(null);
@@ -116,6 +118,12 @@ export const AdminDashboard: React.FC = () => {
     };
     fetchLiveStories();
   }, []);
+
+  const handleStoryCreated = (newStory: Story) => {
+    setStories((prev) => [newStory, ...prev]);
+    setSelectedStory(newStory);
+    setIsCreateModalOpen(false);
+  };
 
   const handleStoryUpdated = (updated: Story) => {
     setStories((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
@@ -234,6 +242,14 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="min-h-[44px] px-4 text-xs font-bold shadow-soft"
+          >
+            <Plus className="w-4 h-4 mr-1.5" /> Create New Story
+          </Button>
           <Link
             href="/"
             target="_blank"
@@ -384,25 +400,44 @@ export const AdminDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column: Story Corpus List */}
             <div className="lg:col-span-5 space-y-4">
-              <h2 className="font-serif text-lg font-bold text-inkPrimary flex items-center justify-between">
-                <span>Story Editorial Corpus</span>
-                <span className="text-xs font-normal text-inkSubtle">{stories.length} stories</span>
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-inkPrimary flex items-center gap-2">
+                  <span>Story Editorial Corpus</span>
+                  <span className="text-xs font-normal text-inkSubtle">({stories.length})</span>
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-forestPrimary bg-forestLight/60 hover:bg-forestLight rounded-lg transition-colors min-h-[36px]"
+                >
+                  <Plus className="w-3.5 h-3.5" /> New Story
+                </button>
+              </div>
 
               <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
                 {stories.length === 0 ? (
                   <div className="p-8 text-center bg-card border border-borderLight rounded-2xl text-inkMuted text-xs space-y-3">
                     <Sparkles className="w-8 h-8 text-goldAccent mx-auto" />
                     <p className="font-bold text-inkPrimary text-sm">No Stories in Corpus Yet</p>
-                    <p>Click the &ldquo;AI Studio&rdquo; tab above to generate your first verified story in 3 seconds!</p>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      onClick={() => setActiveTab('ai-studio')}
-                      className="min-h-[40px] text-xs font-bold shadow-soft"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 mr-1" /> Open AI Studio
-                    </Button>
+                    <p>Create a verified dog story manually or generate one with AI in 3 seconds!</p>
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="min-h-[40px] text-xs font-bold shadow-soft"
+                      >
+                        <Plus className="w-3.5 h-3.5 mr-1" /> Create Manually
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setActiveTab('ai-studio')}
+                        className="min-h-[40px] text-xs font-bold"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 mr-1" /> Open AI Studio
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   stories.map((story) => {
@@ -670,6 +705,13 @@ export const AdminDashboard: React.FC = () => {
           <StorageManager />
         </div>
       )}
+
+      {/* Create Story Modal */}
+      <CreateStoryModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onStoryCreated={handleStoryCreated}
+      />
 
       {/* Edit Story Modal */}
       <EditStoryModal
