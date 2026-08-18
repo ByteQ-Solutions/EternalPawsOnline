@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '@/lib/db/supabase';
 
 /**
- * Correction / Retraction Request Submission API Route
+ * Correction / Retraction Request Submission API Route (Live Supabase + Fallback)
  * Path: app/api/corrections/submit/route.ts
- * 
- * Features:
- * - Reader correction intake validation
- * - Ticket generation (CORR-YYYY-MMDD-XXXX)
- * - Structured issue categorization
  */
 
 export interface CorrectionPayload {
@@ -74,6 +70,27 @@ export async function POST(req: NextRequest) {
     const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
     const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
     const ticketCode = `CORR-${year}-${monthDay}-${randomHex}`;
+
+    // Try Supabase insertion
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        await supabase.from('correction_tickets').insert({
+          ticket_code: ticketCode,
+          story_slug: payload.storySlug,
+          story_title: payload.storyTitle || payload.storySlug,
+          submitter_name: payload.submitterName,
+          submitter_email: payload.submitterEmail,
+          issue_type: payload.issueType,
+          correction_details: payload.correctionDetails,
+          supporting_links: payload.supportingLinks || [],
+          status: 'open',
+          created_at: now.toISOString(),
+        });
+      } catch (dbErr) {
+        console.warn('Supabase correction insert skipped:', dbErr);
+      }
+    }
 
     return NextResponse.json(
       {

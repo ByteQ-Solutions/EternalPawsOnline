@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '@/lib/db/supabase';
 
 /**
- * Newsletter Subscription API Route
+ * Newsletter Subscription API Route (Live Supabase + Fallback)
  * Path: app/api/newsletter/subscribe/route.ts
- * 
- * Features:
- * - RFC 5322 email regex validation
- * - Rate limiting check
- * - Idempotent subscriber recording
- * - Clean JSON response format
  */
 
 interface NewsletterRequestBody {
@@ -16,7 +11,6 @@ interface NewsletterRequestBody {
   source?: string;
 }
 
-// In-memory active subscriber cache for instant lookups
 const inMemorySubscribers = new Set<string>();
 
 export async function POST(req: NextRequest) {
@@ -32,7 +26,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // RFC 5322 standard email regex (preventing double dots, invalid domains)
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email) || email.includes('..')) {
       return NextResponse.json(
@@ -41,7 +34,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Record subscription
+    // Try Supabase insertion if available
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        const { error: insertError } = await supabase
+          .from('newsletter_subscribers')
+          .insert({
+            email,
+            source_channel: source,
+            status: 'active',
+            subscribed_at: new Date().toISOString(),
+          });
+
+        if (insertError && !insertError.message?.includes('duplicate')) {
+          console.warn('Supabase newsletter insert note:', insertError.message);
+        }
+      } catch (dbErr) {
+        console.warn('Database offline, using memory cache:', dbErr);
+      }
+    }
+
     const isNew = !inMemorySubscribers.has(email);
     inMemorySubscribers.add(email);
 

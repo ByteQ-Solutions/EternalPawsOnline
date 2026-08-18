@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '@/lib/db/supabase';
 
 /**
- * Community Story Submission API Route
+ * Community Story Submission API Route (Live Supabase + Fallback)
  * Path: app/api/stories/submit/route.ts
- * 
- * Features:
- * - Multi-step payload validation (word counts, email format, rights confirmation)
- * - Safe ticket generation (SUB-YYYY-MMDD-XXXX)
- * - Status queuing for editorial desk
  */
 
 export interface StorySubmissionPayload {
@@ -35,7 +31,6 @@ export async function POST(req: NextRequest) {
   try {
     const payload: StorySubmissionPayload = await req.json();
 
-    // 1. Validation checks
     if (!payload.submitterName?.trim()) {
       return NextResponse.json(
         { success: false, error: 'Submitter name is required.' },
@@ -94,12 +89,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Generate standard ticket format: SUB-YYYY-MMDD-XXXX
+    // Generate standard ticket format: SUB-YYYY-MMDD-XXXX
     const now = new Date();
     const year = now.getFullYear();
     const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
     const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
     const ticketCode = `SUB-${year}-${monthDay}-${randomHex}`;
+
+    // Try Supabase insertion
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        await supabase.from('story_submissions').insert({
+          ticket_code: ticketCode,
+          submitter_name: payload.submitterName,
+          submitter_email: payload.submitterEmail,
+          submitter_phone: payload.submitterPhone || null,
+          dog_name: payload.dogName,
+          dog_breed: payload.dogBreed || null,
+          location_city: payload.locationCity,
+          location_state: payload.locationState || null,
+          event_year: payload.eventYear || null,
+          category: payload.category || 'reunions',
+          emotional_themes: payload.emotionalThemes || [],
+          story_title: payload.storyTitle,
+          story_narrative: payload.storyNarrative,
+          photo_name: payload.photoName || null,
+          photo_credit: payload.photoCredit,
+          license_type: payload.licenseType || 'user_submitted_verified',
+          source_name: payload.sourceName || null,
+          source_url: payload.sourceUrl || null,
+          rights_confirmed: payload.rightsConfirmed,
+          status: 'pending_review',
+          created_at: now.toISOString(),
+        });
+      } catch (dbErr) {
+        console.warn('Supabase submission insert skipped:', dbErr);
+      }
+    }
 
     return NextResponse.json(
       {
