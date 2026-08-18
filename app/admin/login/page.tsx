@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="editor@eternal-paws.org"
+              placeholder="pawsluvshop@gmail.com"
               required
             />
 
@@ -103,8 +103,8 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-6 pt-5 border-t border-borderLight/80 text-center text-xs text-inkSubtle">
-            <p>Demo accounts:</p>
-            <p className="mt-1 font-mono text-[11px]">editor@eternal-paws.org / admin123</p>
+            <p>Administrator Login:</p>
+            <p className="mt-1 font-mono text-[11px]">pawsluvshop@gmail.com / admin123</p>
           </div>
         </Card>
       </Container>

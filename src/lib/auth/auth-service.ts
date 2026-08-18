@@ -5,14 +5,21 @@
 
 import { AdminUser, UserRole, ROLE_PERMISSIONS_MAP, RolePermissions } from './types';
 
-// Default mock staff accounts for initial onboarding
+// Default staff accounts for administrator access
 const DEFAULT_STAFF: (AdminUser & { passwordHash: string })[] = [
+  {
+    id: 'user-000',
+    email: 'pawsluvshop@gmail.com',
+    name: 'Eternal Paws Administrator',
+    role: 'super_admin',
+    passwordHash: 'admin123',
+  },
   {
     id: 'user-001',
     email: 'editor@eternal-paws.org',
     name: 'Sarah Jenkins',
     role: 'super_admin',
-    passwordHash: 'admin123', // Development fallback
+    passwordHash: 'admin123',
   },
   {
     id: 'user-002',
