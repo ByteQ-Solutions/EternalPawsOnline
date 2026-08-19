@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Newsreader } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import SkipToContent from '@/components/layout/SkipToContent';
 import Header from '@/components/layout/Header';
@@ -76,8 +77,25 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://xiyudmicwbmogliiqdxf.supabase.co" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://xiyudmicwbmogliiqdxf.supabase.co" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
       </head>
       <body className="bg-canvas text-inkPrimary font-sans antialiased min-h-screen flex flex-col selection:bg-forestLight selection:text-forestPrimary overflow-x-hidden">
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-GWT084SEKZ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-GWT084SEKZ');
+          `}
+        </Script>
+
         {/* WCAG 2.4.1 Skip Navigation Link */}
         <SkipToContent targetId="main-content" />
 
