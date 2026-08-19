@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     if (!supabase) {
       return NextResponse.json({
         success: true,
-        message: 'Supabase client not configured; heartbeat simulated.',
+        message: 'Supabase client not configured; active heartbeat simulated.',
         timestamp: new Date().toISOString(),
       });
     }

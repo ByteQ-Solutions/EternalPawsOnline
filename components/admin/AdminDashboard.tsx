@@ -63,7 +63,6 @@ import { AnnouncementManager } from './AnnouncementManager';
 import { StorageManager } from './StorageManager';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
-import { allSeedStories } from '@/lib/data/stories';
 import { Story } from '@/domain/types';
 
 interface RedirectRule {
@@ -84,8 +83,8 @@ type AdminTab =
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('stories');
-  const [stories, setStories] = useState<Story[]>(allSeedStories);
-  const [selectedStory, setSelectedStory] = useState<Story | null>(allSeedStories[0] || null);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

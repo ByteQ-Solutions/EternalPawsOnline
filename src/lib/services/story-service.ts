@@ -132,19 +132,9 @@ export const StoryService = {
         status: 'published',
       }));
 
-      // Merge Supabase records with local records, preferring Supabase
-      const mergedMap = new Map<string, Story>();
-      for (const s of localStories) {
-        mergedMap.set(s.slug, s);
-      }
-      for (const s of mapped) {
-        mergedMap.set(s.slug, s);
-      }
-
-      const merged = Array.from(mergedMap.values());
-      globalThis.__ETERNAL_PAWS_MEM_STORIES__ = merged;
-      writeToFile(merged);
-      return merged;
+      globalThis.__ETERNAL_PAWS_MEM_STORIES__ = mapped;
+      writeToFile(mapped);
+      return mapped;
     } catch (err) {
       console.warn('Error fetching async stories:', err);
       return localStories;

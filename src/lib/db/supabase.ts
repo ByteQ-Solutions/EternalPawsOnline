@@ -14,6 +14,10 @@ const supabaseKey =
 let supabaseInstance: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {
+  if (process.env.NODE_ENV === 'test' && !process.env.TEST_ENABLE_SUPABASE) {
+    return null;
+  }
+
   if (!supabaseUrl || !supabaseKey) {
     return null;
   }
