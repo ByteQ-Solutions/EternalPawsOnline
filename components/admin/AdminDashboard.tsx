@@ -17,7 +17,7 @@
  * - Announcement Banner & Cloud Storage Monitor
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
@@ -101,29 +101,31 @@ export const AdminDashboard: React.FC = () => {
   const [newToPath, setNewToPath] = useState('');
   const [redirectError, setRedirectError] = useState('');
 
-  // Live Fetch Stories from Supabase on mount
-  useEffect(() => {
-    const fetchLiveStories = async () => {
-      try {
-        const res = await fetch('/api/admin/stories/list');
-        const data = await res.json();
-        if (data.success && data.stories) {
-          setStories(data.stories);
-          if (data.stories.length > 0) {
-            setSelectedStory(data.stories[0]);
-          }
+  // Live Fetch Stories from Supabase on mount & after actions
+  const fetchLiveStories = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/stories/list');
+      const data = await res.json();
+      if (data.success && data.stories) {
+        setStories(data.stories);
+        if (data.stories.length > 0) {
+          setSelectedStory((prev) => prev || data.stories[0]);
         }
-      } catch (err) {
-        console.warn('Live stories fetch fallback:', err);
       }
-    };
-    fetchLiveStories();
+    } catch (err) {
+      console.warn('Live stories fetch fallback:', err);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchLiveStories();
+  }, [fetchLiveStories]);
+
   const handleStoryCreated = (newStory: Story) => {
-    setStories((prev) => [newStory, ...prev]);
+    setStories((prev) => [newStory, ...prev.filter((s) => s.id !== newStory.id && s.slug !== newStory.slug)]);
     setSelectedStory(newStory);
     setIsCreateModalOpen(false);
+    fetchLiveStories();
   };
 
   const handleStoryUpdated = (updated: Story) => {
@@ -797,10 +799,10 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {/* TAB 3: AI EDITORIAL STUDIO */}
-      {activeTab === 'ai-studio' && <AIStudio />}
+      {activeTab === 'ai-studio' && <AIStudio onStoryPublished={fetchLiveStories} />}
 
-      {/* TAB 3: READER SUBMISSIONS INBOX */}
-      {activeTab === 'submissions' && <SubmissionsInbox />}
+      {/* TAB 4: READER SUBMISSIONS INBOX */}
+      {activeTab === 'submissions' && <SubmissionsInbox onStoryPublished={fetchLiveStories} />}
 
       {/* TAB 4: FACT-CHECKING & CORRECTIONS */}
       {activeTab === 'corrections' && <CorrectionsDesk />}

@@ -60,15 +60,18 @@ function writeToFile(stories: Story[]): void {
 
 export const StoryService = {
   /**
-   * Retrieves all stories from memory or persistent file cache.
+   * Retrieves all stories from persistent file cache or memory.
    */
   getStoriesSync(): Story[] {
-    if (globalThis.__ETERNAL_PAWS_MEM_STORIES__ !== undefined && globalThis.__ETERNAL_PAWS_MEM_STORIES__.length > 0) {
+    const fromFile = readFromFile();
+    if (fromFile && fromFile.length > 0) {
+      globalThis.__ETERNAL_PAWS_MEM_STORIES__ = fromFile;
+      return fromFile;
+    }
+    if (globalThis.__ETERNAL_PAWS_MEM_STORIES__ !== undefined) {
       return globalThis.__ETERNAL_PAWS_MEM_STORIES__;
     }
-    const fromFile = readFromFile();
-    globalThis.__ETERNAL_PAWS_MEM_STORIES__ = fromFile;
-    return fromFile;
+    return [];
   },
 
   /**
@@ -88,7 +91,7 @@ export const StoryService = {
         .select('*')
         .order('published_at', { ascending: false });
 
-      if (error || !dbStories) {
+      if (error || !dbStories || dbStories.length === 0) {
         return localStories;
       }
 
@@ -106,11 +109,11 @@ export const StoryService = {
         heroImage: {
           url: s.hero_image_url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
           altText: s.hero_image_alt || `Photo of ${s.dog_name}`,
-          credit: s.hero_image_credit || 'Verified Photo Archive',
-          licenseType: 'original_photography',
-          width: 1200,
-          height: 675,
-          aspectRatio: '16:9',
+          credit: s.hero_image_credit || 'Uploaded Photo (Admin Archive)',
+          licenseType: s.hero_image_license || 'original_photography',
+          width: s.hero_image_width || 1200,
+          height: s.hero_image_height || 675,
+          aspectRatio: s.hero_image_aspect_ratio || '16:9',
         },
         readTimeMinutes: s.read_time_minutes || 3,
         location: {
@@ -124,17 +127,21 @@ export const StoryService = {
           verifiedBy: s.verified_by || 'Elena Rostova, Fact Checker',
           verifiedAt: s.published_at || new Date().toISOString(),
           sources: [],
-          methodologyNotes: 'Verified via official record review.',
+          methodologyNotes: s.methodology_notes || 'Verified via official record review.',
         },
         publishedAt: s.published_at || new Date().toISOString(),
         updatedAt: s.updated_at || s.published_at || new Date().toISOString(),
-        featured: true,
+        featured: s.featured !== undefined ? Boolean(s.featured) : true,
         status: 'published',
       }));
 
-      globalThis.__ETERNAL_PAWS_MEM_STORIES__ = mapped;
-      writeToFile(mapped);
-      return mapped;
+      // Merge Supabase stories and any local stories not yet in DB
+      const existingSlugs = new Set(mapped.map((s) => s.slug));
+      const combined = [...mapped, ...localStories.filter((s) => !existingSlugs.has(s.slug))];
+
+      globalThis.__ETERNAL_PAWS_MEM_STORIES__ = combined;
+      writeToFile(combined);
+      return combined;
     } catch (err) {
       console.warn('Error fetching async stories:', err);
       return localStories;
@@ -153,36 +160,41 @@ export const StoryService = {
     const supabase = getSupabase();
     if (supabase) {
       try {
-        await supabase
-          .from('stories')
-          .upsert(
-            {
-              slug: story.slug,
-              title: story.title,
-              subtitle: story.subtitle || '',
-              excerpt: story.excerpt || '',
-              content: story.content,
-              dog_name: story.dogName || 'Rescue Dog',
-              dog_breed: story.dogBreed || 'Rescue Mix',
-              category: story.category || 'rescues',
-              hero_image_url: story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
-              hero_image_alt: story.heroImage?.altText || `Photo of ${story.dogName}`,
-              hero_image_credit: story.heroImage?.credit || 'Verified Photo Archive',
-              hero_image_license: 'original_photography',
-              hero_image_width: 1200,
-              hero_image_height: 675,
-              read_time_minutes: story.readTimeMinutes || 3,
-              location_city: story.location?.city || 'United States',
-              location_state: story.location?.stateOrProvince || 'General',
-              location_country: story.location?.country || 'United States',
-              verification_status: story.verification?.status || 'Strongly Verified',
-              verified_by: story.verification?.verifiedBy || 'Elena Rostova, Fact Checker',
-              confidence_score: story.verification?.confidenceScore || 95,
-              published_at: story.publishedAt || new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'slug' }
-          );
+        const payload = {
+          slug: story.slug,
+          title: story.title,
+          subtitle: story.subtitle || '',
+          excerpt: story.excerpt || (story.content ? story.content.slice(0, 180).replace(/\n/g, ' ') : 'Verified true dog story.'),
+          content: story.content,
+          dog_name: story.dogName || 'Rescue Dog',
+          dog_breed: story.dogBreed || 'Rescue Mix',
+          category: story.category || 'rescues',
+          emotional_themes: story.emotionalThemes && story.emotionalThemes.length > 0 ? story.emotionalThemes : ['heartwarming', 'inspiring'],
+          hero_image_url: story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+          hero_image_alt: story.heroImage?.altText || `Photo of ${story.dogName || 'dog'}`,
+          hero_image_credit: story.heroImage?.credit || 'Uploaded Photo (Admin Archive)',
+          hero_image_license: story.heroImage?.licenseType || 'original_photography',
+          hero_image_width: story.heroImage?.width || 1200,
+          hero_image_height: story.heroImage?.height || 675,
+          hero_image_aspect_ratio: story.heroImage?.aspectRatio || '16:9',
+          hero_image_ai_disclosure: null,
+          verification_status: story.verification?.status || 'Strongly Verified',
+          verified_by: story.verification?.verifiedBy || 'Elena Rostova, Fact Checker',
+          confidence_score: story.verification?.confidenceScore || 95,
+          methodology_notes: story.verification?.methodologyNotes || 'Verified via official record review.',
+          read_time_minutes: story.readTimeMinutes || 3,
+          location_city: story.location?.city || 'United States',
+          location_state: story.location?.stateOrProvince || 'General',
+          location_country: story.location?.country || 'United States',
+          featured: story.featured !== undefined ? story.featured : true,
+          published_at: story.publishedAt || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error } = await supabase.from('stories').upsert(payload, { onConflict: 'slug' });
+        if (error) {
+          console.warn('Supabase saveStory upsert note:', error.message);
+        }
       } catch (err) {
         console.warn('Supabase saveStory note:', err);
       }
@@ -203,10 +215,12 @@ export const StoryService = {
     const supabase = getSupabase();
     if (supabase) {
       try {
-        await supabase
-          .from('stories')
-          .delete()
-          .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug}`);
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+        if (isUuid) {
+          await supabase.from('stories').delete().eq('id', idOrSlug);
+        } else {
+          await supabase.from('stories').delete().eq('slug', idOrSlug);
+        }
       } catch (err) {
         console.warn('Supabase removeStory note:', err);
       }
@@ -258,6 +272,32 @@ export const StoryService = {
 
     globalThis.__ETERNAL_PAWS_MEM_STORIES__ = updated;
     writeToFile(updated);
+
+    const supabase = getSupabase();
+    if (supabase && targetStory) {
+      try {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+        if (isUuid) {
+          await supabase
+            .from('stories')
+            .update({
+              featured: (targetStory as Story).featured,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', idOrSlug);
+        } else {
+          await supabase
+            .from('stories')
+            .update({
+              featured: (targetStory as Story).featured,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('slug', idOrSlug);
+        }
+      } catch (err) {
+        console.warn('Supabase toggleFeatured note:', err);
+      }
+    }
 
     return targetStory;
   },

@@ -24,7 +24,11 @@ import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
 import { CommunitySubmission as SubmissionItem } from '@/lib/services/submission-service';
 
-export const SubmissionsInbox: React.FC = () => {
+export interface SubmissionsInboxProps {
+  onStoryPublished?: () => void;
+}
+
+export const SubmissionsInbox: React.FC<SubmissionsInboxProps> = ({ onStoryPublished }) => {
   const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -106,6 +110,10 @@ export const SubmissionsInbox: React.FC = () => {
         message: `Successfully polished and published ${sub.dogName}'s story!`,
         liveUrl: publishData.liveUrl || `/stories/${slug}`,
       });
+
+      if (onStoryPublished) {
+        onStoryPublished();
+      }
     } catch {
       setFeedback({
         id: sub.id,

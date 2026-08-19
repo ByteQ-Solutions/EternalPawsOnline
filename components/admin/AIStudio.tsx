@@ -38,7 +38,11 @@ import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
 import { UniqueStoryPayload, GeneratedStoryDraft } from '@/lib/ai/ai-service';
 
-export const AIStudio: React.FC = () => {
+export interface AIStudioProps {
+  onStoryPublished?: (story?: any) => void;
+}
+
+export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [activeTab, setActiveTab] = useState<'unique' | 'polish' | 'draft'>('unique');
 
   // Unique Story Engine State
@@ -143,6 +147,9 @@ export const AIStudio: React.FC = () => {
       const data = await res.json();
       if (data.success) {
         setPublishedUrl(data.liveUrl || `/stories/${generatedUniqueStory.slug}`);
+        if (onStoryPublished) {
+          onStoryPublished(generatedUniqueStory);
+        }
       } else {
         setErrorMsg(data.error || 'Failed to publish story to live database.');
       }
