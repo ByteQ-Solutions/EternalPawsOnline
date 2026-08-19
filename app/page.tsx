@@ -33,6 +33,8 @@ import {
   BookOpen,
 } from 'lucide-react';
 
+import { HeroSpotlightCarousel } from '@/components/article/HeroSpotlightCarousel';
+
 export const metadata: Metadata = {
   title: 'Eternal Paws — Verified True Dog Stories & Canine Bravery',
   description:
@@ -46,119 +48,15 @@ export const dynamic = 'force-dynamic';
 
 export default function HomePage() {
   const featuredStories = getFeaturedStories();
-  const heroStory = featuredStories[0] || getPublishedStories()[0];
   const allStories = getPublishedStories();
-  const recentStories = allStories.filter((s) => s.id !== heroStory?.id).slice(0, 6);
+  const recentStories = allStories.slice(0, 6);
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
 
   return (
     <div className="min-h-screen space-y-12 sm:space-y-16 pb-16">
-      {/* 1. Hero Featured Story Showcase */}
-      {heroStory ? (
-        <section
-          aria-labelledby="hero-story-heading"
-          className="pt-6 sm:pt-10 pb-8 bg-gradient-to-b from-cardMuted/80 to-canvas border-b border-borderLight"
-        >
-          <Container size="default">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              {/* Left Column: Hero Media */}
-              <div className="lg:col-span-7 space-y-3">
-                <div className="relative overflow-hidden rounded-2xl bg-card border border-borderLight shadow-elevated group">
-                  <OptimizedDogImage
-                    image={heroStory.heroImage}
-                    priority={true}
-                    sizes="(max-width: 1024px) 100vw, 650px"
-                    containerClassName="my-0"
-                    className="rounded-none border-0 shadow-none group-hover:scale-[1.02] transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-                    <Badge variant="forest" className="shadow-soft uppercase tracking-wider text-xs font-bold px-3 py-1">
-                      Featured Spotlight
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Editorial Deck & Story Actions */}
-              <div className="lg:col-span-5 space-y-5">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="forest" size="md">
-                      {heroStory.category.replace(/-/g, ' ')}
-                    </Badge>
-                    <VerificationBadge
-                      status={heroStory.verification.status}
-                      size="md"
-                      showScore={true}
-                      confidenceScore={heroStory.verification.confidenceScore}
-                    />
-                  </div>
-
-                  <h1
-                    id="hero-story-heading"
-                    className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-inkPrimary leading-tight group"
-                  >
-                    <Link
-                      href={`/stories/${heroStory.slug}`}
-                      className="hover:text-forestPrimary transition-colors focus-visible:outline-none focus-visible:underline"
-                    >
-                      {heroStory.title}
-                    </Link>
-                  </h1>
-
-                  {heroStory.subtitle && (
-                    <p className="font-serif italic text-base text-inkMuted leading-snug">
-                      {heroStory.subtitle}
-                    </p>
-                  )}
-                </div>
-
-                {/* Hero Dog Metadata Badge Bar */}
-                <div className="p-3.5 rounded-xl bg-canvas border border-borderLight/80 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-forestLight text-forestPrimary flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                      <Heart className="w-4 h-4 fill-forestPrimary/20 text-forestPrimary" />
-                    </div>
-                    <div>
-                      <span className="font-serif font-bold text-base text-inkPrimary block">
-                        {heroStory.dogName}
-                      </span>
-                      <span className="text-xs text-inkMuted">
-                        {heroStory.dogBreed} • {heroStory.location.city}, {heroStory.location.stateOrProvince}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right text-xs text-inkSubtle font-medium flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>{heroStory.readTimeMinutes} min read</span>
-                  </div>
-                </div>
-
-                <p className="text-sm sm:text-base text-inkMuted leading-relaxed line-clamp-3">
-                  {heroStory.excerpt}
-                </p>
-
-                <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <Link
-                    href={`/stories/${heroStory.slug}`}
-                    className="min-h-[44px] px-6 py-3 rounded-xl bg-forestPrimary hover:bg-forestPrimary/90 text-white font-bold text-sm transition-all shadow-soft inline-flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
-                    aria-label={`Read full verified story of ${heroStory.dogName}`}
-                  >
-                    <span>Read Full Verified Story</span>
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                  </Link>
-                  <Link
-                    href="/stories"
-                    className="min-h-[44px] px-4 py-3 rounded-xl bg-card hover:bg-cardMuted text-inkPrimary font-medium text-sm border border-borderLight transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
-                  >
-                    <BookOpen className="w-4 h-4 text-forestPrimary" aria-hidden="true" />
-                    <span>View All Archive</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </Container>
-        </section>
+      {/* 1. Hero Featured Spotlight Slideshow Carousel */}
+      {featuredStories.length > 0 ? (
+        <HeroSpotlightCarousel stories={featuredStories} />
       ) : (
         <section className="pt-12 sm:pt-16 pb-12 bg-gradient-to-b from-cardMuted/80 to-canvas border-b border-borderLight text-center">
           <Container size="default" className="max-w-2xl mx-auto space-y-5">

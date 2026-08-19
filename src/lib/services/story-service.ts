@@ -264,12 +264,7 @@ export const StoryService = {
 
   getFeaturedStories(): Story[] {
     const published = this.getPublishedStories();
-    const explicitlyFeatured = published.filter((s) => s.featured);
-    // If no stories are explicitly marked featured, default to the latest published stories
-    if (explicitlyFeatured.length === 0 && published.length > 0) {
-      return [published[0]];
-    }
-    return explicitlyFeatured;
+    return published.filter((s) => s.featured);
   },
 
   getAllStorySlugs(): string[] {

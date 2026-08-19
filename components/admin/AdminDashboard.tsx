@@ -61,6 +61,7 @@ import { NewsletterManager } from './NewsletterManager';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { AnnouncementManager } from './AnnouncementManager';
 import { StorageManager } from './StorageManager';
+import { HeroSlideshowManager } from './HeroSlideshowManager';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { Story } from '@/domain/types';
@@ -73,6 +74,7 @@ interface RedirectRule {
 
 type AdminTab =
   | 'stories'
+  | 'hero-slideshow'
   | 'ai-studio'
   | 'submissions'
   | 'corrections'
@@ -305,6 +307,18 @@ export const AdminDashboard: React.FC = () => {
           }`}
         >
           <FileText className="w-4 h-4" /> Editorial Stories & Gate
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('hero-slideshow')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'hero-slideshow'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-500" /> Hero Slideshow ({stories.filter((s) => s.featured).length})
         </button>
 
         <button
@@ -773,7 +787,16 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 2: AI EDITORIAL STUDIO */}
+      {/* TAB 2: HERO SLIDESHOW & SPOTLIGHT CAROUSEL */}
+      {activeTab === 'hero-slideshow' && (
+        <HeroSlideshowManager
+          stories={stories}
+          onToggleFeatured={handleToggleFeatured}
+          onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        />
+      )}
+
+      {/* TAB 3: AI EDITORIAL STUDIO */}
       {activeTab === 'ai-studio' && <AIStudio />}
 
       {/* TAB 3: READER SUBMISSIONS INBOX */}
