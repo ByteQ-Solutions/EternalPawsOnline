@@ -10,7 +10,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { getStoriesByCategory, getPublishedStories } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 import { CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
@@ -24,7 +24,7 @@ export interface CategoryHubViewProps {
   category: StoryCategory;
 }
 
-export const CategoryHubView: React.FC<CategoryHubViewProps> = ({ category }) => {
+export async function CategoryHubView({ category }: CategoryHubViewProps) {
   const config = CATEGORIES_CONFIG[category] || {
     label: category,
     slug: category,
@@ -33,7 +33,11 @@ export const CategoryHubView: React.FC<CategoryHubViewProps> = ({ category }) =>
     icon: '🐾',
   };
 
-  const stories = getStoriesByCategory(category);
+  // Fetch LIVE data from Supabase on every request to guarantee sync with admin
+  const allLive = await StoryService.getAllStoriesAsync();
+  const stories = allLive.filter(
+    (s) => s.status === 'published' && s.category === category
+  );
   const otherCategories = (Object.keys(CATEGORIES_CONFIG) as StoryCategory[]).filter(
     (c) => c !== category
   );
@@ -236,6 +240,4 @@ export const CategoryHubView: React.FC<CategoryHubViewProps> = ({ category }) =>
       </Container>
     </div>
   );
-};
-
-export default CategoryHubView;
+}

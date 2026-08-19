@@ -12,6 +12,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { StoryService } from '@/lib/services/story-service';
 import {
   getStoryBySlug,
   getAllStorySlugs,
@@ -56,7 +57,14 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 }
 
 export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
-  const story = getStoryBySlug(params.slug);
+  // Fetch from Supabase first, fall back to local seed
+  const allLive = await StoryService.getAllStoriesAsync();
+  const story =
+    allLive.find(
+      (s) =>
+        s.slug.toLowerCase() === params.slug.toLowerCase() ||
+        (s.redirectHistory && s.redirectHistory.map((r) => r.toLowerCase()).includes(params.slug.toLowerCase()))
+    ) || getStoryBySlug(params.slug);
   if (!story || story.status !== 'published') {
     return {
       title: 'Story Not Found | Eternal Paws',
@@ -66,8 +74,15 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
   return generateStoryMetadata(story);
 }
 
-export default function StoryPage({ params }: StoryPageProps) {
-  const story = getStoryBySlug(params.slug);
+export default async function StoryPage({ params }: StoryPageProps) {
+  // Fetch from Supabase first to guarantee admin-published stories are visible
+  const allLive = await StoryService.getAllStoriesAsync();
+  const story =
+    allLive.find(
+      (s) =>
+        s.slug.toLowerCase() === params.slug.toLowerCase() ||
+        (s.redirectHistory && s.redirectHistory.map((r) => r.toLowerCase()).includes(params.slug.toLowerCase()))
+    ) || getStoryBySlug(params.slug);
 
   if (!story || story.status !== 'published') {
     notFound();

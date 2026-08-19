@@ -11,11 +11,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  getFeaturedStories,
-  getPublishedStories,
-} from '@/lib/data/stories';
-import { CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
+import { StoryService } from '@/lib/services/story-service';
+import { Story, CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
@@ -46,9 +43,12 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
-  const featuredStories = getFeaturedStories();
-  const allStories = getPublishedStories();
+export default async function HomePage() {
+  // Fetch LIVE stories directly from Supabase on every request.
+  // This guarantees admin-published stories appear immediately on the client site.
+  const allLiveStories: Story[] = await StoryService.getAllStoriesAsync();
+  const allStories = allLiveStories.filter((s) => s.status === 'published');
+  const featuredStories = allStories.filter((s) => s.featured);
   const recentStories = allStories.slice(0, 6);
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
 

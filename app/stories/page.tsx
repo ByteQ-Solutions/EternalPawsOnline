@@ -10,7 +10,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getPublishedStories } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 import { generateHubMetadata } from '@/lib/seo';
 import { CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
 import { Container } from '@/design-system/components/Container';
@@ -30,8 +30,9 @@ export const metadata: Metadata = generateHubMetadata({
 
 export const dynamic = 'force-dynamic';
 
-export default function StoriesPage() {
-  const stories = getPublishedStories();
+export default async function StoriesPage() {
+  const allLive = await StoryService.getAllStoriesAsync();
+  const stories = allLive.filter((s) => s.status === 'published');
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
 
   return (
