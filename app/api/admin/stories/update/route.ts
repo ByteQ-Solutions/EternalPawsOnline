@@ -102,7 +102,7 @@ export async function PUT(req: NextRequest) {
       },
       publishedAt: existingStory?.publishedAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      featured: existingStory?.featured ?? true,
+      featured: body.featured !== undefined ? body.featured : (existingStory?.featured ?? true),
       status: 'published',
     });
 

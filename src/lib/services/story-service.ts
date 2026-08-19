@@ -239,8 +239,37 @@ export const StoryService = {
     return this.getPublishedStories().filter((s) => s.emotionalThemes.includes(theme));
   },
 
+  /**
+   * Toggles the featured status of a story for Homepage Hero Spotlight.
+   */
+  async toggleFeatured(idOrSlug: string, isFeatured?: boolean): Promise<Story | null> {
+    const current = this.getStoriesSync();
+    let targetStory: Story | null = null;
+    const updated = current.map((s) => {
+      if (s.id === idOrSlug || s.slug === idOrSlug) {
+        const nextFeatured = isFeatured !== undefined ? isFeatured : !s.featured;
+        targetStory = { ...s, featured: nextFeatured, updatedAt: new Date().toISOString() };
+        return targetStory;
+      }
+      return s;
+    });
+
+    if (!targetStory) return null;
+
+    globalThis.__ETERNAL_PAWS_MEM_STORIES__ = updated;
+    writeToFile(updated);
+
+    return targetStory;
+  },
+
   getFeaturedStories(): Story[] {
-    return this.getPublishedStories().filter((s) => s.featured);
+    const published = this.getPublishedStories();
+    const explicitlyFeatured = published.filter((s) => s.featured);
+    // If no stories are explicitly marked featured, default to the latest published stories
+    if (explicitlyFeatured.length === 0 && published.length > 0) {
+      return [published[0]];
+    }
+    return explicitlyFeatured;
   },
 
   getAllStorySlugs(): string[] {

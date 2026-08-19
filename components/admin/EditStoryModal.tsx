@@ -38,6 +38,7 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
   const [factChecker, setFactChecker] = useState('Elena Rostova, Fact Checker');
   const [heroImageUrl, setHeroImageUrl] = useState('');
   const [heroImageCredit, setHeroImageCredit] = useState('');
+  const [isFeatured, setIsFeatured] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -57,6 +58,7 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       setFactChecker(story.verification?.verifiedBy || 'Elena Rostova, Fact Checker');
       setHeroImageUrl(story.heroImage?.url || '');
       setHeroImageCredit(story.heroImage?.credit || '');
+      setIsFeatured(story.featured ?? true);
       setErrorMsg(null);
     }
   }, [story]);
@@ -108,6 +110,7 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       content,
       dogName,
       dogBreed,
+      featured: isFeatured,
       heroImage: {
         ...story.heroImage,
         url: heroImageUrl || story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
@@ -141,6 +144,7 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
           dogName,
           dogBreed,
           category,
+          featured: isFeatured,
           hero_image_url: heroImageUrl || story.heroImage?.url,
           hero_image_credit: heroImageCredit || story.heroImage?.credit,
           location: {
@@ -435,6 +439,28 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
                 className="w-full min-h-[44px] px-3 py-2 bg-canvas border border-borderLight rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-forestPrimary"
               />
             </div>
+          </div>
+
+          {/* ⭐ Featured Story / Homepage Hero Spotlight Toggle */}
+          <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-amber-600 font-bold">⭐</span>
+                <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">Feature as Homepage Hero Spotlight</span>
+              </div>
+              <p className="text-xs text-inkMuted">
+                Pin this story to the top of the homepage hero spotlight banner.
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(e) => setIsFeatured(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forestPrimary"></div>
+            </label>
           </div>
 
           {/* Modal Footer Actions */}

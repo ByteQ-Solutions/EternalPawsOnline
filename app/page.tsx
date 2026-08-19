@@ -293,10 +293,15 @@ export default function HomePage() {
                       containerClassName="my-0 h-full"
                       className="rounded-none border-0 shadow-none h-full group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 left-3 z-10">
+                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
                       <Badge variant="forest" className="shadow-soft text-[11px] uppercase tracking-wider font-semibold">
                         {story.category.replace(/-/g, ' ')}
                       </Badge>
+                      {story.featured && (
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white shadow-soft flex items-center gap-1">
+                          ⭐ Featured
+                        </span>
+                      )}
                     </div>
                   </div>
 

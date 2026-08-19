@@ -131,6 +131,33 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const [corpusFilter, setCorpusFilter] = useState<'all' | 'featured'>('all');
+  const [isTogglingFeature, setIsTogglingFeature] = useState(false);
+
+  const handleToggleFeatured = async (story: Story) => {
+    setIsTogglingFeature(true);
+    const nextFeatured = !story.featured;
+    // Optimistic UI update
+    setStories((prev) =>
+      prev.map((s) => (s.id === story.id ? { ...s, featured: nextFeatured } : s))
+    );
+    if (selectedStory && selectedStory.id === story.id) {
+      setSelectedStory({ ...selectedStory, featured: nextFeatured });
+    }
+
+    try {
+      await fetch('/api/admin/stories/feature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: story.id, slug: story.slug, featured: nextFeatured }),
+      });
+    } catch (err) {
+      console.warn('Feature toggle error:', err);
+    } finally {
+      setIsTogglingFeature(false);
+    }
+  };
+
   const handleStoryDeleted = (deletedId: string) => {
     setStories((prev) => {
       const remaining = prev.filter((s) => s.id !== deletedId);
@@ -413,6 +440,32 @@ export const AdminDashboard: React.FC = () => {
                 </button>
               </div>
 
+              {/* Filter Pills */}
+              <div className="flex items-center gap-2 pb-1">
+                <button
+                  type="button"
+                  onClick={() => setCorpusFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] ${
+                    corpusFilter === 'all'
+                      ? 'bg-forestPrimary text-white shadow-soft'
+                      : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
+                  }`}
+                >
+                  All Stories ({stories.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCorpusFilter('featured')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] flex items-center gap-1.5 ${
+                    corpusFilter === 'featured'
+                      ? 'bg-amber-500 text-white shadow-soft'
+                      : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
+                  }`}
+                >
+                  ⭐ Hero Featured ({stories.filter((s) => s.featured).length})
+                </button>
+              </div>
+
               <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
                 {stories.length === 0 ? (
                   <div className="p-8 text-center bg-card border border-borderLight rounded-2xl text-inkMuted text-xs space-y-3">
@@ -439,7 +492,7 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  stories.map((story) => {
+                  (corpusFilter === 'featured' ? stories.filter((s) => s.featured) : stories).map((story) => {
                     const isSelected = selectedStory?.id === story.id;
                     return (
                       <div
@@ -455,7 +508,24 @@ export const AdminDashboard: React.FC = () => {
                           <span className="text-xs font-bold text-inkPrimary">
                             {story.dogName} ({story.dogBreed})
                           </span>
-                          <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleFeatured(story);
+                              }}
+                              className={`text-[11px] font-bold px-2 py-0.5 rounded-full border transition-all flex items-center gap-1 ${
+                                story.featured
+                                  ? 'bg-amber-100 text-amber-800 border-amber-300 shadow-sm'
+                                  : 'bg-card text-inkSubtle border-borderLight hover:border-amber-300 hover:text-amber-700'
+                              }`}
+                              title={story.featured ? 'Click to unpin from Homepage Hero' : 'Click to pin as Homepage Hero Spotlight'}
+                            >
+                              <span>{story.featured ? '⭐ Hero' : '☆ Pin'}</span>
+                            </button>
+                            <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                          </div>
                         </div>
 
                         <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
@@ -517,6 +587,30 @@ export const AdminDashboard: React.FC = () => {
               {/* 9-Point Checklist Panel */}
               {selectedStory ? (
                 <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
+                  {/* ⭐ Hero Spotlight Status Banner */}
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200/80 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Homepage Hero Spotlight Status
+                      </span>
+                      <p className="text-xs text-inkMuted">
+                        {selectedStory.featured
+                          ? '🌟 Currently pinned as the Homepage Hero Spotlight for top reader engagement.'
+                          : '⚪ Standard story in latest feeds and category archives.'}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={selectedStory.featured ? 'outline' : 'primary'}
+                      onClick={() => handleToggleFeatured(selectedStory)}
+                      isLoading={isTogglingFeature}
+                      className="min-h-[38px] text-xs font-bold shadow-soft whitespace-nowrap"
+                    >
+                      {selectedStory.featured ? '⭐ Unpin from Hero' : '⭐ Set as Homepage Hero'}
+                    </Button>
+                  </div>
+
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
                     <div>
                       <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">

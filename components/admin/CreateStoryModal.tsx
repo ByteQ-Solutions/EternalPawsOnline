@@ -83,6 +83,7 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
   const [sourceName, setSourceName] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
 
+  const [isFeatured, setIsFeatured] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
@@ -212,7 +213,7 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
       },
       publishedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      featured: true,
+      featured: isFeatured,
       status: 'published',
     };
 
@@ -619,6 +620,28 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
                 className="w-full min-h-[40px] px-3 py-2 bg-canvas border border-borderLight rounded-lg text-xs"
               />
             </div>
+          </div>
+
+          {/* ⭐ Featured Story / Homepage Hero Spotlight Toggle */}
+          <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-amber-600 font-bold">⭐</span>
+                <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">Feature as Homepage Hero Spotlight</span>
+              </div>
+              <p className="text-xs text-inkMuted">
+                Pin this story to the top of the homepage hero spotlight banner.
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(e) => setIsFeatured(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forestPrimary"></div>
+            </label>
           </div>
 
           {/* Action Buttons */}

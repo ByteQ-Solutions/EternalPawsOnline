@@ -71,6 +71,12 @@ export default function RootLayout({
       lang="en"
       className={`${sansFont.variable} ${serifFont.variable} scroll-smooth`}
     >
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://xiyudmicwbmogliiqdxf.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://xiyudmicwbmogliiqdxf.supabase.co" />
+      </head>
       <body className="bg-canvas text-inkPrimary font-sans antialiased min-h-screen flex flex-col selection:bg-forestLight selection:text-forestPrimary overflow-x-hidden">
         {/* WCAG 2.4.1 Skip Navigation Link */}
         <SkipToContent targetId="main-content" />
