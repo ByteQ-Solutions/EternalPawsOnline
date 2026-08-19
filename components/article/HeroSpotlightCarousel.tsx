@@ -217,6 +217,7 @@ export const HeroSpotlightCarousel: React.FC<HeroSpotlightCarouselProps> = ({
                   key={currentStory.id}
                   image={currentStory.heroImage}
                   priority={true}
+                  showDisclosure={false}
                   sizes="(max-width: 1024px) 100vw, 650px"
                   containerClassName="my-0"
                   className="rounded-none border-0 shadow-none group-hover:scale-[1.03] transition-transform duration-700 ease-out"
