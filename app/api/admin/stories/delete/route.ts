@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { getSupabase } from '@/lib/db/supabase';
-import { removeLiveStory } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 
 /**
  * Admin Story Delete API Route
@@ -21,23 +20,10 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (id) {
-      removeLiveStory(id);
+      await StoryService.removeStory(id);
     }
-    if (slug) {
-      removeLiveStory(slug);
-    }
-
-    const supabase = getSupabase();
-    if (supabase) {
-      const query = id ? { id } : { slug };
-      const { error } = await supabase
-        .from('stories')
-        .delete()
-        .match(query);
-
-      if (error) {
-        console.warn('Supabase story delete error:', error.message);
-      }
+    if (slug && slug !== id) {
+      await StoryService.removeStory(slug);
     }
 
     try {
