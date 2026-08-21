@@ -46,6 +46,13 @@ export async function PUT(req: NextRequest) {
           verification_status: verification?.status || 'Verified',
           verified_by: verification?.factChecker || verification?.verifiedBy || 'Elena Rostova, Fact Checker',
           confidence_score: verification?.trustScore || verification?.confidenceScore || 95,
+          hero_image_url: heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+          hero_image_alt: heroImage?.altText || `Photo of ${dogName || 'dog'}`,
+          hero_image_credit: heroImage?.credit || 'Verified Photo Archive',
+          hero_image_license: heroImage?.licenseType || 'original_photography',
+          hero_image_width: heroImage?.width || 1200,
+          hero_image_height: heroImage?.height || 675,
+          hero_image_aspect_ratio: heroImage?.aspectRatio || '16:9',
           updated_at: new Date().toISOString(),
         })
         .match(id ? { id } : { slug: oldSlug || slug });

@@ -109,24 +109,61 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrorMsg('Image file size must be less than 5MB.');
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      setGeneratedUniqueStory({
-        ...generatedUniqueStory,
-        heroImage: {
-          ...generatedUniqueStory.heroImage,
-          url: dataUrl,
-          altText: `Photo of ${generatedUniqueStory.dogName} - ${generatedUniqueStory.title}`,
-          credit: 'Uploaded Photo (Admin Archive)',
-        },
-      });
-      setErrorMsg(null);
+      const rawDataUrl = event.target?.result as string;
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setGeneratedUniqueStory({
+            ...generatedUniqueStory,
+            heroImage: {
+              ...generatedUniqueStory.heroImage,
+              url: compressedDataUrl,
+              altText: `Photo of ${generatedUniqueStory.dogName} - ${generatedUniqueStory.title}`,
+              credit: `Photo archive / ${file.name}`,
+            },
+          });
+          setErrorMsg(null);
+        } else {
+          setGeneratedUniqueStory({
+            ...generatedUniqueStory,
+            heroImage: {
+              ...generatedUniqueStory.heroImage,
+              url: rawDataUrl,
+              altText: `Photo of ${generatedUniqueStory.dogName} - ${generatedUniqueStory.title}`,
+              credit: `Photo archive / ${file.name}`,
+            },
+          });
+        }
+      };
+      img.onerror = () => {
+        setGeneratedUniqueStory({
+          ...generatedUniqueStory,
+          heroImage: {
+            ...generatedUniqueStory.heroImage,
+            url: rawDataUrl,
+            altText: `Photo of ${generatedUniqueStory.dogName} - ${generatedUniqueStory.title}`,
+            credit: `Photo archive / ${file.name}`,
+          },
+        });
+      };
+      img.src = rawDataUrl;
     };
     reader.readAsDataURL(file);
   };

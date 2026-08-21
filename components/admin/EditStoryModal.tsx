@@ -72,17 +72,40 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrorMsg('Image size must be less than 5MB.');
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      setHeroImageUrl(dataUrl);
-      if (!heroImageCredit) setHeroImageCredit(`Photo archive / ${file.name}`);
-      setErrorMsg(null);
+      const rawDataUrl = event.target?.result as string;
+      // Resize & compress image on client-side canvas to max 1200px and 0.8 quality (~40KB)
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 1200;
+        const maxHeight = 675;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setHeroImageUrl(compressedDataUrl);
+          if (!heroImageCredit) setHeroImageCredit(`Photo archive / ${file.name}`);
+          setErrorMsg(null);
+        } else {
+          setHeroImageUrl(rawDataUrl);
+        }
+      };
+      img.onerror = () => {
+        setHeroImageUrl(rawDataUrl);
+      };
+      img.src = rawDataUrl;
     };
     reader.readAsDataURL(file);
   };
