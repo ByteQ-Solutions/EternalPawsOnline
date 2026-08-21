@@ -108,6 +108,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <li>
                 <Link
                   href="/fact-checking"
+                  prefetch={false}
                   className="text-sm text-inkMuted hover:text-forestPrimary hover:underline min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-sm"
                 >
                   Fact-Checking Charter
@@ -116,6 +117,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <li>
                 <Link
                   href="/editorial-policy"
+                  prefetch={false}
                   className="text-sm text-inkMuted hover:text-forestPrimary hover:underline min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-sm"
                 >
                   Editorial Guidelines
@@ -124,6 +126,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <li>
                 <Link
                   href="/corrections"
+                  prefetch={false}
                   className="text-sm text-inkMuted hover:text-forestPrimary hover:underline min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-sm"
                 >
                   Corrections & Retractions Log
@@ -132,6 +135,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <li>
                 <Link
                   href="/about"
+                  prefetch={false}
                   className="text-sm text-inkMuted hover:text-forestPrimary hover:underline min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-sm"
                 >
                   About Our Newsroom
@@ -140,6 +144,7 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <li>
                 <Link
                   href="/submit-story"
+                  prefetch={false}
                   className="text-sm text-forestPrimary font-semibold hover:underline min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded-sm"
                 >
                   Submit a Story for Review &rarr;
@@ -171,18 +176,21 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
           <div className="flex flex-wrap items-center gap-6">
             <Link
               href="/editorial-policy#privacy"
+              prefetch={false}
               className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
             >
               Privacy Policy
             </Link>
             <Link
               href="/editorial-policy#terms"
+              prefetch={false}
               className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
             >
               Terms of Service
             </Link>
             <Link
               href="/corrections"
+              prefetch={false}
               className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
             >
               Submit a Correction

@@ -10,8 +10,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { StoryService } from '@/lib/services/story-service';
-import { CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
+import { getStoriesByCategory } from '@/lib/data/stories';
+import { Story, CATEGORIES_CONFIG, StoryCategory } from '@/domain/types';
 import { Container } from '@/design-system/components/Container';
 import { Card, CardContent } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
@@ -22,9 +22,10 @@ import { Clock, ArrowRight, Sparkles, Heart, Search, BookOpen } from 'lucide-rea
 
 export interface CategoryHubViewProps {
   category: StoryCategory;
+  stories?: Story[];
 }
 
-export async function CategoryHubView({ category }: CategoryHubViewProps) {
+export const CategoryHubView: React.FC<CategoryHubViewProps> = ({ category, stories: propStories }) => {
   const config = CATEGORIES_CONFIG[category] || {
     label: category,
     slug: category,
@@ -33,11 +34,7 @@ export async function CategoryHubView({ category }: CategoryHubViewProps) {
     icon: '🐾',
   };
 
-  // Fetch LIVE data from Supabase on every request to guarantee sync with admin
-  const allLive = await StoryService.getAllStoriesAsync();
-  const stories = allLive.filter(
-    (s) => s.status === 'published' && s.category === category
-  );
+  const stories = propStories !== undefined ? propStories : getStoriesByCategory(category);
   const otherCategories = (Object.keys(CATEGORIES_CONFIG) as StoryCategory[]).filter(
     (c) => c !== category
   );
@@ -240,4 +237,7 @@ export async function CategoryHubView({ category }: CategoryHubViewProps) {
       </Container>
     </div>
   );
-}
+};
+
+export default CategoryHubView;
+

@@ -6,12 +6,15 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { generateCategoryMetadata } from '@/lib/seo';
+import { StoryService } from '@/lib/services/story-service';
 import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('loyalty');
 
 export const dynamic = 'force-dynamic';
 
-export default function LoyaltyPage() {
-  return <CategoryHubView category="loyalty" />;
+export default async function LoyaltyPage() {
+  const allLive = await StoryService.getAllStoriesAsync();
+  const stories = allLive.filter((s) => s.status === 'published' && s.category === 'loyalty');
+  return <CategoryHubView category="loyalty" stories={stories} />;
 }

@@ -114,6 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               </Link>
               <Link
                 href="/es"
+                prefetch={false}
                 aria-label="Cambiar a Español"
                 className={`min-h-[36px] min-w-[36px] px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
                   pathname?.startsWith('/es')
@@ -137,6 +138,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             {/* Submit Story CTA (Desktop) */}
             <Link
               href="/submit-story"
+              prefetch={false}
               className="hidden sm:inline-flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-xs md:text-sm font-semibold text-white bg-forestPrimary hover:bg-forestHover rounded-md shadow-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
             >
               <PenTool className="w-4 h-4 text-goldLight" aria-hidden="true" />

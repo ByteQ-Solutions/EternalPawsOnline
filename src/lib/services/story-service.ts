@@ -152,6 +152,26 @@ export const StoryService = {
    * Adds or updates a story in memory, file cache, and Supabase.
    */
   async saveStory(story: Story): Promise<Story> {
+    // Sanitize any Base64 data URLs to prevent multi-megabyte HTML and database bloat
+    if (story.heroImage && story.heroImage.url && story.heroImage.url.startsWith('data:image/')) {
+      try {
+        const matches = story.heroImage.url.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+        if (matches) {
+          const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+          const buffer = Buffer.from(matches[2], 'base64');
+          const filename = `${story.slug}.${ext}`;
+          const dir = path.join(process.cwd(), 'public', 'images', 'stories');
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+          fs.writeFileSync(path.join(dir, filename), buffer);
+          story.heroImage.url = `/images/stories/${filename}`;
+        }
+      } catch (err) {
+        console.warn('Could not extract base64 image to static file:', err);
+      }
+    }
+
     const current = this.getStoriesSync();
     const updated = [story, ...current.filter((s) => s.id !== story.id && s.slug !== story.slug)];
     globalThis.__ETERNAL_PAWS_MEM_STORIES__ = updated;
