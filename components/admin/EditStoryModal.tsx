@@ -168,8 +168,15 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
           dogBreed,
           category,
           featured: isFeatured,
-          hero_image_url: heroImageUrl || story.heroImage?.url,
-          hero_image_credit: heroImageCredit || story.heroImage?.credit,
+          heroImage: {
+            url: heroImageUrl || story.heroImage?.url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+            altText: story.heroImage?.altText || `Photo of ${dogName}`,
+            credit: heroImageCredit || story.heroImage?.credit || 'Editorial Photograph',
+            licenseType: story.heroImage?.licenseType || 'original_photography',
+            width: story.heroImage?.width || 1200,
+            height: story.heroImage?.height || 675,
+            aspectRatio: story.heroImage?.aspectRatio || '16:9',
+          },
           location: {
             city,
             stateOrProvince: state,
@@ -347,53 +354,78 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
               <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">
                 Hero Photograph & Attribution
               </span>
+              {heroImageUrl && (
+                <span className="ml-auto text-xs text-forestPrimary font-semibold bg-forestLight px-2 py-0.5 rounded-full">
+                  ✓ Photo Ready
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              {heroImageUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
+            {/* Live Thumbnail Preview */}
+            {heroImageUrl ? (
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-borderLight bg-cardMuted">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={heroImageUrl}
                   alt={title || 'Story photo'}
-                  className="w-28 h-20 object-cover rounded-lg border border-borderLight shadow-sm flex-shrink-0"
+                  className="w-full h-full object-cover"
+                  onError={() => {
+                    setHeroImageUrl('');
+                    setErrorMsg('Image failed to load — please try another URL or upload a file.');
+                  }}
                 />
-              ) : (
-                <div className="w-28 h-20 bg-canvas rounded-lg border border-dashed border-borderLight flex items-center justify-center text-inkSubtle text-xs">
-                  No Image
-                </div>
-              )}
+                <button
+                  type="button"
+                  onClick={() => setHeroImageUrl('')}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-xs font-bold flex items-center justify-center hover:bg-red-600 transition-colors"
+                  title="Remove photo"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <div className="w-full aspect-video rounded-lg border-2 border-dashed border-borderLight bg-canvas flex flex-col items-center justify-center gap-2 text-inkSubtle">
+                <Camera className="w-8 h-8 opacity-30" />
+                <span className="text-xs">No photo selected — upload or paste a URL below</span>
+              </div>
+            )}
 
-              <div className="flex-1 w-full space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <label
-                    htmlFor="edit-modal-photo-upload"
-                    className="min-h-[36px] px-3.5 py-1.5 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center gap-1.5 cursor-pointer hover:bg-forestDark transition-colors"
-                  >
-                    <Camera className="w-3.5 h-3.5" /> Upload New Photo
-                    <input
-                      id="edit-modal-photo-upload"
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={handleImageUpload}
-                      className="sr-only"
-                    />
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Or paste image URL (https://...)"
-                    value={heroImageUrl}
-                    onChange={(e) => setHeroImageUrl(e.target.value)}
-                    className="flex-1 min-w-[200px] min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs"
-                  />
-                </div>
+            <div className="flex flex-col gap-2">
+              {/* File upload button */}
+              <label
+                htmlFor="edit-modal-photo-upload"
+                className="min-h-[40px] w-full px-3.5 py-2 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center justify-center gap-2 cursor-pointer hover:bg-forestDark transition-colors"
+              >
+                <Camera className="w-4 h-4" />
+                {heroImageUrl ? 'Replace Photo (Upload File)' : 'Upload Photo from Device'}
+                <input
+                  id="edit-modal-photo-upload"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageUpload}
+                  className="sr-only"
+                />
+              </label>
+
+              {/* URL paste option */}
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Photo Credit / Photographer Attribution"
-                  value={heroImageCredit}
-                  onChange={(e) => setHeroImageCredit(e.target.value)}
-                  className="w-full min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs"
+                  placeholder="Or paste image URL (https://...)"
+                  value={heroImageUrl.startsWith('data:') ? '' : heroImageUrl}
+                  onChange={(e) => setHeroImageUrl(e.target.value)}
+                  className="flex-1 min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
                 />
               </div>
+
+              {/* Credit */}
+              <input
+                type="text"
+                placeholder="Photo Credit / Photographer Attribution"
+                value={heroImageCredit}
+                onChange={(e) => setHeroImageCredit(e.target.value)}
+                className="w-full min-h-[36px] px-3 py-1 bg-canvas border border-borderLight rounded-lg text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
+              />
             </div>
           </div>
 
