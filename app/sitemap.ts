@@ -8,10 +8,12 @@
  */
 
 import { MetadataRoute } from 'next';
-import { getPublishedStories } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = 'force-dynamic';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_BASE_URL;
   const now = new Date();
 
@@ -85,11 +87,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  // 3. Dynamic Published Story Articles
-  const publishedStories = getPublishedStories();
+  // 3. Dynamic Published Story Articles (Fetched live from Supabase)
+  const allStories = await StoryService.getAllStoriesAsync();
+  const publishedStories = allStories.filter((s) => s.status === 'published');
+  
   const storyRoutes: MetadataRoute.Sitemap = publishedStories.map((story) => ({
     url: `${baseUrl}/stories/${story.slug}`,
-    lastModified: new Date(story.updatedAt || story.publishedAt),
+    lastModified: new Date(story.updatedAt || story.publishedAt || now),
     changeFrequency: story.featured ? 'daily' : 'weekly',
     priority: story.featured ? 0.9 : 0.75,
   }));

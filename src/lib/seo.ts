@@ -11,7 +11,7 @@
 import type { Metadata } from 'next';
 import { Story, StoryCategory, CATEGORIES_CONFIG } from '@/domain/types';
 
-export const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://eternal-paws.com';
+export const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://eternalpaws.online';
 export const SITE_NAME = 'Eternal Paws';
 export const DEFAULT_OG_IMAGE = `${DEFAULT_BASE_URL}/brand/og-default.png`;
 export const PUBLISHER_LOGO_URL = `${DEFAULT_BASE_URL}/brand/logo.png`;
