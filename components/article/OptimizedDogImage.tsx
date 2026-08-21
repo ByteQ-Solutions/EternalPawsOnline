@@ -89,7 +89,7 @@ export const OptimizedDogImage: React.FC<OptimizedDogImageProps> = ({
           sizes={sizes}
           onError={() => setHasError(true)}
           className="w-full h-full object-cover transition-opacity duration-300"
-          unoptimized={srcUrl.startsWith('http://') || srcUrl.startsWith('https://')}
+          unoptimized={srcUrl.startsWith('http://') || srcUrl.startsWith('https://') || srcUrl.startsWith('data:')}
         />
       </div>
 
