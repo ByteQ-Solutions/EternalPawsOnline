@@ -69,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 2. Category Hub Pages (6 Core Categories + semantic alias)
+  // 2. Category Hub Pages (6 Core Categories)
   const categorySlugs = [
     'reunions',
     'hero-dogs',
@@ -77,7 +77,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'survival',
     'loyalty',
     'lost-and-found',
-    'lost-found',
   ];
 
   const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({

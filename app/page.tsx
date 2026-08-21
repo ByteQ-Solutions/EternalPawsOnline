@@ -32,12 +32,14 @@ import {
 
 import { HeroSpotlightCarousel } from '@/components/article/HeroSpotlightCarousel';
 
+import { DEFAULT_BASE_URL } from '@/lib/seo';
+
 export const metadata: Metadata = {
   title: 'Eternal Paws — Verified True Dog Stories & Canine Bravery',
   description:
     'Rigorously verified, uplifting true stories of heroic dogs, joyful reunions, loyalty, and rescue miracles. Built on radical trust and 4-tier fact-checking.',
   alternates: {
-    canonical: 'https://eternal-paws.com',
+    canonical: DEFAULT_BASE_URL,
   },
 };
 

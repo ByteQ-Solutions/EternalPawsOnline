@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Newsreader } from 'next/font/google';
 import Script from 'next/script';
+import { DEFAULT_BASE_URL } from '@/lib/seo';
 import './globals.css';
 import SkipToContent from '@/components/layout/SkipToContent';
 import Header from '@/components/layout/Header';
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
   },
   description:
     'Rigorously verified, uplifting true stories of heroic dogs, joyful reunions, loyalty, and rescue miracles. Built on trust and 4-tier fact-checking.',
-  metadataBase: new URL('https://eternal-paws.com'),
+  metadataBase: new URL(DEFAULT_BASE_URL),
   keywords: ['true dog stories', 'dog reunions', 'hero dogs', 'dog rescue', 'verified pet stories'],
   authors: [{ name: 'Eternal Paws Editorial Team' }],
   robots: {
