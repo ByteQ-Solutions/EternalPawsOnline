@@ -37,24 +37,24 @@ interface VoicePresetConfig {
 const VOICE_PRESETS: Record<StoryVoiceTone, VoicePresetConfig> = {
   calm_storyteller: {
     id: 'calm_storyteller',
-    label: 'Calm Storyteller',
-    description: 'Warm, soothing & emotional narrative tempo',
-    defaultRate: 0.90,
-    pitch: 0.96,
+    label: 'Adam (Calm Storyteller)',
+    description: 'Deep, warm baritone with soothing emotional pacing',
+    defaultRate: 0.88,
+    pitch: 0.88, // Warm, deep baritone timbre
   },
   classic_editorial: {
     id: 'classic_editorial',
     label: 'Classic Editorial',
     description: 'Clear, engaging documentary reading',
-    defaultRate: 0.98,
+    defaultRate: 0.96,
     pitch: 1.0,
   },
   gentle_bedtime: {
     id: 'gentle_bedtime',
     label: 'Gentle & Relaxing',
     description: 'Soft, slow & meditative cadence',
-    defaultRate: 0.84,
-    pitch: 0.92,
+    defaultRate: 0.82,
+    pitch: 0.85,
   },
 };
 
@@ -97,18 +97,21 @@ export const AudioNarrationPlayer: React.FC<AudioNarrationPlayerProps> = ({
   const pickBestStorytellingVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
     if (!voices || voices.length === 0) return null;
 
-    // Prioritized list of high-warmth natural voices
+    // Prioritized list of high-warmth natural voices (Prioritizing deep, calm Adam-style baritone voices)
     const preferredKeywords = [
+      'Adam',
+      'Guy',
+      'Christopher',
+      'Brian',
+      'Ryan',
+      'David',
+      'Daniel',
+      'Oliver',
       'Natural',
       'Neural',
       'Google US English',
       'Samantha',
       'Serena',
-      'Oliver',
-      'Karen',
-      'Victoria',
-      'Daniel',
-      'Moira',
       'en-US',
       'en-GB',
     ];
