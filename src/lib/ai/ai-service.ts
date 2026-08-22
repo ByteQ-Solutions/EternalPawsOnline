@@ -69,17 +69,48 @@ export interface UniqueStoryPayload {
 }
 
 export class AIService {
-  private static getBaseUrl(): string {
-    return process.env.AI_API_BASE_URL || 'https://api.tokenrouter.ai/v1';
+  private static getBaseUrl(customKey?: string): string {
+    if (process.env.AI_API_BASE_URL) return process.env.AI_API_BASE_URL;
+    const key = this.getApiKey(customKey);
+    if (!key) return 'https://api.tokenrouter.ai/v1';
+
+    if (key.startsWith('gsk_')) {
+      return 'https://api.groq.com/openai/v1';
+    }
+    if (key.startsWith('sk-or-')) {
+      return 'https://openrouter.ai/api/v1';
+    }
+    if (key.startsWith('AIza')) {
+      return 'https://generativelanguage.googleapis.com/v1beta/openai';
+    }
+    if (key.startsWith('sk-') || key.startsWith('sk-proj-')) {
+      return 'https://api.openai.com/v1';
+    }
+    return 'https://api.tokenrouter.ai/v1';
   }
 
   private static getApiKey(customKey?: string): string | undefined {
     return customKey || process.env.AI_API_KEY || process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY;
   }
 
-  private static getModelName(): string {
-    // Defaults to DeepSeek v4 or Qwen 3.8 Max on TokenRouter
-    return process.env.AI_MODEL_NAME || 'deepseek/deepseek-chat';
+  private static getModelName(customKey?: string): string {
+    if (process.env.AI_MODEL_NAME) return process.env.AI_MODEL_NAME;
+    const key = this.getApiKey(customKey);
+    if (!key) return 'deepseek/deepseek-chat';
+
+    if (key.startsWith('gsk_')) {
+      return 'llama-3.3-70b-versatile';
+    }
+    if (key.startsWith('sk-or-')) {
+      return 'deepseek/deepseek-chat';
+    }
+    if (key.startsWith('AIza')) {
+      return 'gemini-1.5-flash';
+    }
+    if (key.startsWith('sk-') || key.startsWith('sk-proj-')) {
+      return 'gpt-4o-mini';
+    }
+    return 'deepseek/deepseek-chat';
   }
 
   /**
@@ -117,14 +148,14 @@ CRITICAL HUMAN WRITING RULES:
 6. SATISFYING, INTIMATE ENDING: Conclude on a warm, intimate image of the dog today (curled up on a favorite rug, sleeping peacefully, or greeting family at the door) rather than a preachy summary.`;
 
     try {
-      const response = await fetch(`${this.getBaseUrl()}/chat/completions`, {
+      const response = await fetch(`${this.getBaseUrl(customKey)}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: this.getModelName(),
+          model: this.getModelName(customKey),
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: `Please polish this raw dog story narrative:\n\n${rawText}` },
@@ -199,14 +230,14 @@ WRITING MANDATES:
 }`;
 
     try {
-      const response = await fetch(`${this.getBaseUrl()}/chat/completions`, {
+      const response = await fetch(`${this.getBaseUrl(params.customKey)}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: this.getModelName(),
+          model: this.getModelName(params.customKey),
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: `Topic/News event to write story from:\n${JSON.stringify(params)}` },
@@ -352,14 +383,14 @@ CRITICAL HUMAN WRITING RULES:
 }`;
 
     try {
-      const response = await fetch(`${this.getBaseUrl()}/chat/completions`, {
+      const response = await fetch(`${this.getBaseUrl(params.customKey)}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: this.getModelName(),
+          model: this.getModelName(params.customKey),
           messages: [
             { role: 'system', content: systemPrompt },
             {
