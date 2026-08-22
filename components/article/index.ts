@@ -9,4 +9,6 @@ export { OptimizedDogImage, type OptimizedDogImageProps } from './OptimizedDogIm
 export { ReadingProgressBar, type ReadingProgressBarProps } from './ReadingProgressBar';
 export { ShareBar, type ShareBarProps } from './ShareBar';
 export { CategoryHubView, type CategoryHubViewProps } from './CategoryHubView';
+export { StoryLanguageBar, type StoryLanguageBarProps } from './StoryLanguageBar';
+export { InteractiveStoryReader, type InteractiveStoryReaderProps } from './InteractiveStoryReader';
 
