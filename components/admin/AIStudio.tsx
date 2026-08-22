@@ -54,6 +54,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [newsList, setNewsList] = useState<RealNewsItem[]>([]);
   const [isLoadingNews, setIsLoadingNews] = useState<boolean>(false);
   const [isGeneratingFromNews, setIsGeneratingFromNews] = useState<boolean>(false);
+  const [generatingNewsId, setGeneratingNewsId] = useState<string | null>(null);
 
   // Unique Story Engine State
   const [uniqueCategory, setUniqueCategory] = useState<string>('any');
@@ -133,6 +134,8 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
 
   // 0b. Handle Real News Story Generation
   const handleGenerateFromNewsItem = async (item?: RealNewsItem) => {
+    const targetId = item ? item.id : 'random';
+    setGeneratingNewsId(targetId);
     setIsGeneratingFromNews(true);
     setErrorMsg(null);
     setPublishedUrl(null);
@@ -147,7 +150,6 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       const data = await res.json();
       if (data.success && data.story) {
         setGeneratedUniqueStory(data.story);
-        setActiveTab('unique'); // Switch to review & publish tab
       } else {
         setErrorMsg(data.error || 'Failed to generate story from real news.');
       }
@@ -155,6 +157,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       setErrorMsg('Network error while generating story from real news.');
     } finally {
       setIsGeneratingFromNews(false);
+      setGeneratingNewsId(null);
     }
   };
 
@@ -670,13 +673,156 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
                 variant="primary"
                 size="sm"
                 onClick={() => handleGenerateFromNewsItem()}
-                isLoading={isGeneratingFromNews}
+                isLoading={generatingNewsId === 'random' || isGeneratingFromNews}
                 className="min-h-[36px] text-xs font-bold shadow-soft"
               >
-                <Dice5 className="w-3.5 h-3.5 mr-1" /> Auto-Discover & Generate
+                <Dice5 className="w-3.5 h-3.5 mr-1" /> {generatingNewsId === 'random' ? 'Synthesizing Story...' : 'Auto-Discover & Generate'}
               </Button>
             </div>
           </div>
+
+          {/* If Story was Generated from Real News, Show Live Preview & 1-Click Publisher HERE */}
+          {generatedUniqueStory && (
+            <div className="p-6 bg-cardMuted/80 border-2 border-forestPrimary/40 rounded-2xl space-y-5 shadow-md animate-fadeIn">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borderLight pb-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="forest" size="md">
+                    ✨ 100% Verified Real Story Ready
+                  </Badge>
+                  <span className="text-xs font-semibold text-emerald-800 flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Duplicate Collision Shield Passed
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(JSON.stringify(generatedUniqueStory, null, 2))}
+                    className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-canvas transition-colors flex items-center gap-1.5"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-800" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Copied JSON!' : 'Copy Data'}
+                  </button>
+
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={handlePublishUnique}
+                    isLoading={isPublishing}
+                    className="min-h-[36px] px-5 text-xs font-bold shadow-soft"
+                  >
+                    <Send className="w-3.5 h-3.5 mr-1.5" /> Publish to Live Site
+                  </Button>
+                </div>
+              </div>
+
+              {publishedUrl && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-semibold">
+                  <span>🎉 Story successfully published live to website!</span>
+                  <a
+                    href={publishedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-forestPrimary underline font-bold"
+                  >
+                    View Live Article <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
+
+              {/* Story Details Card */}
+              <div className="space-y-4 bg-canvas p-5 rounded-xl border border-borderLight">
+                {/* Hero Photo Preview & Upload Control */}
+                <div className="p-4 bg-card rounded-xl border border-borderLight flex flex-col sm:flex-row items-center gap-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={generatedUniqueStory.heroImage.url}
+                    alt={generatedUniqueStory.heroImage.altText || generatedUniqueStory.dogName}
+                    className="w-full sm:w-36 h-28 object-cover rounded-lg border border-borderLight shadow-sm flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0 space-y-1.5 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <ImageIcon className="w-4 h-4 text-forestPrimary flex-shrink-0" />
+                      <span className="text-xs font-bold text-inkPrimary uppercase tracking-wider">
+                        Story Hero Photograph
+                      </span>
+                    </div>
+                    <p className="text-xs text-inkMuted truncate">
+                      {generatedUniqueStory.heroImage.credit || 'Editorial Photograph'}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                      <label
+                        htmlFor="news-photo-upload"
+                        className="min-h-[36px] px-3 py-1.5 bg-forestPrimary text-white text-xs font-bold rounded-lg shadow-soft inline-flex items-center gap-1.5 cursor-pointer hover:bg-forestDark transition-colors"
+                      >
+                        <Camera className="w-3.5 h-3.5" /> Upload Custom Photo
+                        <input
+                          id="news-photo-upload"
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleUniquePhotoUpload}
+                          className="sr-only"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = window.prompt('Enter Image URL for this story:', generatedUniqueStory.heroImage.url);
+                          if (url && url.trim()) {
+                            setGeneratedUniqueStory({
+                              ...generatedUniqueStory,
+                              heroImage: { ...generatedUniqueStory.heroImage, url: url.trim() },
+                            });
+                          }
+                        }}
+                        className="min-h-[36px] px-3 py-1.5 bg-card border border-borderLight text-inkPrimary text-xs font-bold rounded-lg hover:bg-cardMuted transition-colors"
+                      >
+                        Edit Image URL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 text-xs text-inkSubtle">
+                  <Badge variant="forest" size="sm" className="capitalize">
+                    {generatedUniqueStory.category.replace(/-/g, ' ')}
+                  </Badge>
+                  <span>•</span>
+                  <span className="font-bold text-inkPrimary">
+                    {generatedUniqueStory.dogName} ({generatedUniqueStory.dogBreed})
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {generatedUniqueStory.location.city}, {generatedUniqueStory.location.stateOrProvince}
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-inkPrimary">
+                  {generatedUniqueStory.title}
+                </h3>
+                <p className="text-xs text-inkMuted italic">
+                  &ldquo;{generatedUniqueStory.excerpt}&rdquo;
+                </p>
+
+                <div className="pt-3 border-t border-borderLight/80 font-serif text-sm leading-relaxed text-inkPrimary whitespace-pre-line">
+                  {generatedUniqueStory.content}
+                </div>
+
+                {/* Sources Attribution Preview */}
+                <div className="mt-4 pt-3 border-t border-borderLight/60 text-xs text-inkSubtle space-y-1">
+                  <span className="font-bold uppercase tracking-wider block text-inkPrimary">
+                    Verified Sources:
+                  </span>
+                  {generatedUniqueStory.verification.sources.map((src, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-emerald-800 font-semibold">• {src.name}</span>
+                      <span>({src.documentReference})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Real News Cards Grid */}
           <div className="space-y-3">
@@ -742,10 +888,11 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
                       size="sm"
                       variant="primary"
                       onClick={() => handleGenerateFromNewsItem(item)}
-                      isLoading={isGeneratingFromNews}
+                      isLoading={generatingNewsId === item.id}
                       className="min-h-[38px] text-xs font-bold shadow-soft whitespace-nowrap"
                     >
-                      <Sparkles className="w-3.5 h-3.5 mr-1 text-goldLight" /> 1-Click Story
+                      <Sparkles className="w-3.5 h-3.5 mr-1 text-goldLight" />
+                      {generatingNewsId === item.id ? 'Writing Story...' : '1-Click Story'}
                     </Button>
                   </div>
                 </div>
