@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useCallback } from 'react';
 import { Story } from '@/domain/types';
@@ -15,6 +15,7 @@ export interface InteractiveStoryReaderProps {
 
 interface TranslatedStoryState {
   title: string;
+  subtitle: string;
   excerpt: string;
   content: string;
 }
@@ -25,6 +26,7 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
   const [translationsCache, setTranslationsCache] = useState<Record<string, TranslatedStoryState>>({
     en: {
       title: story.title,
+      subtitle: story.subtitle || '',
       excerpt: story.excerpt,
       content: story.content,
     },
@@ -32,6 +34,7 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
 
   const activeStoryState = translationsCache[currentLang] || {
     title: story.title,
+    subtitle: story.subtitle || '',
     excerpt: story.excerpt,
     content: story.content,
   };
@@ -51,6 +54,7 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: story.title,
+          subtitle: story.subtitle || '',
           excerpt: story.excerpt,
           content: story.content,
           targetLang: langCode,
@@ -61,6 +65,7 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
       if (data.success && data.translatedContent) {
         const newState: TranslatedStoryState = {
           title: data.translatedTitle || story.title,
+          subtitle: data.translatedSubtitle || story.subtitle || '',
           excerpt: data.translatedExcerpt || story.excerpt,
           content: data.translatedContent,
         };
@@ -72,18 +77,19 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
     } finally {
       setIsTranslating(false);
     }
-  }, [currentLang, story.title, story.excerpt, story.content, translationsCache]);
+  }, [currentLang, story.title, story.subtitle, story.excerpt, story.content, translationsCache]);
 
   const dynamicStory: Story = {
     ...story,
     title: activeStoryState.title,
+    subtitle: activeStoryState.subtitle,
     excerpt: activeStoryState.excerpt,
     content: activeStoryState.content,
   };
 
   return (
     <>
-      {/* Editorial Article Masthead */}
+      {/* Editorial Article Masthead with Active Translation */}
       <ArticleHeader story={dynamicStory} />
 
       {/* Multi-Language Instant AI Translation Strip */}
@@ -93,11 +99,12 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
         onLanguageChange={handleLanguageChange}
       />
 
-      {/* Audio Story Narration Player (with Adam-style Calm Voice) */}
+      {/* Audio Story Narration Player (Synced to active language) */}
       <AudioNarrationPlayer
         storyTitle={activeStoryState.title}
         storyContent={activeStoryState.content}
         dogName={story.dogName}
+        lang={currentLang}
       />
 
       {/* Hero Media with Zero-CLS aspect ratio and AI disclosure */}
@@ -118,7 +125,10 @@ export const InteractiveStoryReader: React.FC<InteractiveStoryReaderProps> = ({ 
       />
 
       {/* Main Story Narrative Body with Active Language Translation */}
-      <div id="article-body" className="my-8 transition-opacity duration-300">
+      <div
+        id="article-body"
+        className={`my-8 transition-opacity duration-300 ${isTranslating ? 'opacity-40 animate-pulse' : 'opacity-100'}`}
+      >
         <ArticleContent content={activeStoryState.content} enableDropCap={true} />
       </div>
     </>

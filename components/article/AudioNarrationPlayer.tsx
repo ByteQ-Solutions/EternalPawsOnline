@@ -23,6 +23,7 @@ export interface AudioNarrationPlayerProps {
   storyTitle: string;
   storyContent: string;
   dogName: string;
+  lang?: string;
   className?: string;
 }
 
@@ -62,6 +63,7 @@ export const AudioNarrationPlayer: React.FC<AudioNarrationPlayerProps> = ({
   storyTitle,
   storyContent,
   dogName,
+  lang = 'en',
   className,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -81,7 +83,7 @@ export const AudioNarrationPlayer: React.FC<AudioNarrationPlayerProps> = ({
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      const best = pickBestStorytellingVoice(voices);
+      const best = pickBestStorytellingVoice(voices, lang);
       if (best) {
         setAvailableVoiceName(best.name);
       }
@@ -89,13 +91,19 @@ export const AudioNarrationPlayer: React.FC<AudioNarrationPlayerProps> = ({
 
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
-  }, []);
+  }, [lang]);
 
   /**
    * Intelligently selects warm, high-quality human/natural voices over mechanical TTS
    */
-  const pickBestStorytellingVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+  const pickBestStorytellingVoice = (voices: SpeechSynthesisVoice[], targetLang: string = 'en'): SpeechSynthesisVoice | null => {
     if (!voices || voices.length === 0) return null;
+
+    if (targetLang !== 'en') {
+      const matchingVoices = voices.filter((v) => v.lang.toLowerCase().startsWith(targetLang.toLowerCase()));
+      const naturalMatch = matchingVoices.find((v) => v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Google'));
+      return naturalMatch || matchingVoices[0] || voices[0];
+    }
 
     // Prioritized list of high-warmth natural voices (Prioritizing deep, calm Adam-style baritone voices)
     const preferredKeywords = [
