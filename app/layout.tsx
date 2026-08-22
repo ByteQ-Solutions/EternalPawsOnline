@@ -76,8 +76,6 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://xiyudmicwbmogliiqdxf.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://xiyudmicwbmogliiqdxf.supabase.co" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
       </head>
