@@ -13,7 +13,7 @@ import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_BASE_URL;
   const now = new Date();
 
@@ -104,8 +104,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  // 3. Dynamic Published Story Articles (Fetched live from Supabase)
-  const allStories = await StoryService.getAllStoriesAsync();
+  // 3. Dynamic Published Story Articles
+  const allStories = StoryService.getStoriesSync();
   const publishedStories = allStories.filter((s) => s.status === 'published');
   
   const storyRoutes: MetadataRoute.Sitemap = publishedStories.map((story) => ({

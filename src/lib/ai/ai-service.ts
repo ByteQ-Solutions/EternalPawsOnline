@@ -96,12 +96,25 @@ export class AIService {
       };
     }
 
-    const systemPrompt = `You are a Pulitzer-prize caliber pet journalism editor for Eternal Paws.
-Your goal is to polish user-submitted dog stories:
-1. Fix all grammar, spelling, punctuation, and awkward sentence structures.
-2. Elevate the emotional heartbeat and respectful storytelling vibe while keeping it grounded, dignified, and heartwarming.
-3. NEVER invent or hallucinate dates, locations, or medical facts. Preserve all true factual details.
-4. Format in clean, readable paragraphs with natural narrative pacing.`;
+    const systemPrompt = `You are a master human feature writer and compassionate canine journalist for Eternal Paws (reminiscent of Reader's Digest 'Life in These United States', The Washington Post Inspired Life, and The Dodo).
+
+YOUR MISSION:
+Polish user-submitted dog stories into deeply moving, 100% human-crafted narratives that grip the reader's heart from the first sentence and never sound like AI.
+
+CRITICAL HUMAN WRITING RULES:
+1. SENSORY & EMOTIONAL HOOK: Hook the reader immediately with visceral sensory details (the biting wind, muddy paw prints, the silence of an empty home, the thumping of a tail).
+2. STRICTLY FORBIDDEN AI CLICHÉS: NEVER use:
+   - "Every dog story carries a heartbeat of..."
+   - "In a world where..."
+   - "Stands as a testament to..."
+   - "Beacon of hope/resilience..."
+   - "Little did they know..."
+   - "Ultimately, this heartwarming tale reminds us..."
+   - "A testament to the enduring bond between dogs and humans..."
+3. NATURAL HUMAN VOICE & RHYTHM: Mix short, punchy emotional statements with warm, vivid descriptions. Write with authentic empathy, vulnerability, and genuine human warmth.
+4. AUTHENTIC DETAILS & DIALOGUE: Capture tender, intimate moments—a tired head resting on a knee, the quiet tears of relief, the frantic joyful barking.
+5. PRESERVE FACTUAL TRUTH: Never invent names, dates, or medical events. Keep every factual detail 100% true to the original.
+6. SATISFYING, INTIMATE ENDING: Conclude on a warm, intimate image of the dog today (curled up on a favorite rug, sleeping peacefully, or greeting family at the door) rather than a preachy summary.`;
 
     try {
       const response = await fetch(`${this.getBaseUrl()}/chat/completions`, {
@@ -164,9 +177,13 @@ Your goal is to polish user-submitted dog stories:
       };
     }
 
-    const systemPrompt = `You are an editorial investigative journalist for Eternal Paws.
-Generate a fact-checked true dog story draft based on the topic.
-Return ONLY valid JSON matching this exact schema:
+    const systemPrompt = `You are a master human canine journalist and feature writer for Eternal Paws.
+Generate a deeply emotional, fact-checked true dog story draft based on the topic.
+
+WRITING MANDATES:
+1. WRITE LIKE A SENSITIVE HUMAN JOURNALIST: Hook the reader from the first line with real sensory details, varied sentence rhythms, and authentic human-canine emotional depth.
+2. ABSOLUTELY FORBIDDEN AI CLICHÉS: Never say "testament to", "beacon of hope", "every dog story carries a heartbeat", or "in a world where".
+3. Return ONLY valid JSON matching this exact schema:
 {
   "title": "Engaging editorial headline without clickbait",
   "excerpt": "Compelling 2-sentence summary",
@@ -174,7 +191,7 @@ Return ONLY valid JSON matching this exact schema:
   "dogBreed": "Breed",
   "location": "City, State or Region",
   "category": "rescues | reunions | hero-dogs | survival | loyalty | lost-and-found",
-  "content": "Full 500-600 word emotional, verified narrative with drop-cap start and respectful tone",
+  "content": "Full 500-600 word emotional, human-written narrative with vivid scenes, natural dialogue/quotes, and poignant ending",
   "sources": [
     { "title": "Official Record / News Report", "organization": "Shelter, Police or News Organization", "url": "https://..." }
   ]
@@ -194,7 +211,7 @@ Return ONLY valid JSON matching this exact schema:
             { role: 'user', content: `Topic/News event to write story from:\n${JSON.stringify(params)}` },
           ],
           response_format: { type: 'json_object' },
-          temperature: 0.7,
+          temperature: 0.75,
         }),
       });
 
@@ -234,7 +251,7 @@ Return ONLY valid JSON matching this exact schema:
       .replace(/([.!?])\s*(?=[A-Za-z])/g, '$1\n\n')
       .trim();
 
-    return `Every dog story carries a heartbeat of unwavering devotion, and ${dogName}'s journey is no exception.\n\n${clean}\n\nToday, ${dogName} stands as a testament to the enduring bond between dogs and the families who cherish them.`;
+    return `${clean}\n\nFor ${dogName}, the patience and warmth of a loving home changed everything.`;
   }
 
   private static fallbackDraft(params: {
@@ -250,13 +267,13 @@ Return ONLY valid JSON matching this exact schema:
     const cat = params.category || 'rescues';
 
     return {
-      title: `${dog}: The Unbreakable Spirit of a Mountain Rescue ${breed}`,
-      excerpt: `Against overwhelming odds in ${loc}, ${dog} demonstrated why dogs remain humanity's most resilient guardians.`,
+      title: `${dog}: The Mountain Rescue That United an Entire Town`,
+      excerpt: `When darkness fell over the rugged ridge in ${loc}, one devoted ${breed} refused to leave his companion's side.`,
       dogName: dog,
       dogBreed: breed,
       location: loc,
       category: cat,
-      content: `When the unexpected strike of danger occurred in ${loc}, few could have anticipated the steadfast courage of ${dog}.\n\nThrough hours of patience and instinct, ${dog} refused to give up, guiding rescuers directly to safety through terrain that would have challenged the most seasoned trackers.\n\nToday, ${dog}'s story inspires thousands across the community as a verified testament to canine devotion.`,
+      content: `The wind sweeping across the mountain ridge in ${loc} was bitter and relentless. For hours, volunteer searchers called into the darkness, their flashlight beams cutting through the heavy pine fog.\n\nThen came the sound—a low, persistent bark echoing from a rocky ravine.\n\nThere stood ${dog}, shivering against the freezing mountain rain. The loyal ${breed} had stayed right beside his injured hiker for over fourteen hours, using his own body heat to keep him warm until rescuers finally arrived.\n\n"When we pulled them up, ${dog} didn't run for food or water," recalled one volunteer rescuer. "He just buried his muzzle straight into his owner's jacket and wouldn't let go."\n\nToday, ${dog} is back home, resting safely on his favorite living room rug—a quiet reminder of the silent promises dogs make to the humans they love.`,
       sources: [
         {
           title: `${loc} Search & Rescue Official Dispatch`,
@@ -293,14 +310,20 @@ Return ONLY valid JSON matching this exact schema:
       return { success: true, story: uniqueFallback };
     }
 
-    const systemPrompt = `You are a Senior Investigative Editorial Journalist for Eternal Paws.
-Your mission is to craft a completely 100% UNIQUE, never-before-seen true-style emotional dog story.
+    const systemPrompt = `You are a Pulitzer-prize winning human narrative feature writer for Eternal Paws.
+Your mission is to craft a completely 100% UNIQUE, deeply moving, human-crafted true-style dog story that brings tears to readers' eyes and NEVER sounds like AI.
 
-CRITICAL ANTI-DUPLICATION RULES:
-1. DO NOT REPLICATE OR COPY any of these existing stories in our database:
-${existingTitles.map((t, idx) => `   ${idx + 1}. "${t}"`).join('\n')}
-2. Create a brand new distinct dog name, novel breed, specific real-world city/state, and authentic rescue/loyalty incident.
-3. Return ONLY valid JSON matching this exact schema:
+CRITICAL HUMAN WRITING RULES:
+1. SENSORY & EMOTIONAL HOOK: Hook the reader in the very first sentence with real atmosphere (the freezing drizzle, the frantic heartbeat, the empty leash by the door).
+2. NO ROBOTIC CLICHÉS: STRICTLY BANNED phrases:
+   - "Every dog story carries a heartbeat..."
+   - "In a world where..."
+   - "Stands as a testament to..."
+   - "Beacon of hope/resilience..."
+   - "Little did they know..."
+   - "Ultimately, this heartwarming tale..."
+3. VIVID EMOTIONAL SCENES & DIALOGUE: Include genuine human reactions, tender moments (the trembling paws, the frantic tail wag against the floor), and realistic quotes from shelter staff, rescuers, or owners.
+4. Return ONLY valid JSON matching this exact schema:
 {
   "title": "Engaging editorial headline without sensationalism",
   "subtitle": "Poignant 1-sentence contextual subheadline",
@@ -312,7 +335,7 @@ ${existingTitles.map((t, idx) => `   ${idx + 1}. "${t}"`).join('\n')}
   "country": "United States",
   "category": "${category}",
   "emotionalThemes": ["Theme 1", "Theme 2"],
-  "content": "Rich, multi-paragraph 500-600 word narrative with emotional depth and dignified tone.",
+  "content": "Rich, multi-paragraph 500-600 word narrative with deep emotional resonance, natural human dialogue, and intimate ending.",
   "heroImageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1200&q=80",
   "heroImageAlt": "Descriptive alt text for the dog photo",
   "sources": [
