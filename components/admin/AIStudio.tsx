@@ -14,7 +14,7 @@
  * 4. ⚡ Direct One-Click Publish to Live Database
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sparkles,
   Wand2,
@@ -33,17 +33,27 @@ import {
   Image as ImageIcon,
   Camera,
   RefreshCw,
+  Newspaper,
+  Compass,
+  Radio,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
 import { UniqueStoryPayload, GeneratedStoryDraft } from '@/lib/ai/ai-service';
+import { RealNewsItem } from '@/lib/services/news-discovery';
 
 export interface AIStudioProps {
   onStoryPublished?: (story?: any) => void;
 }
 
 export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
-  const [activeTab, setActiveTab] = useState<'unique' | 'polish' | 'draft'>('unique');
+  const [activeTab, setActiveTab] = useState<'news' | 'unique' | 'polish' | 'draft'>('news');
+
+  // Real Web News Discovery State
+  const [newsList, setNewsList] = useState<RealNewsItem[]>([]);
+  const [isLoadingNews, setIsLoadingNews] = useState<boolean>(false);
+  const [isGeneratingFromNews, setIsGeneratingFromNews] = useState<boolean>(false);
 
   // Unique Story Engine State
   const [uniqueCategory, setUniqueCategory] = useState<string>('any');
@@ -69,6 +79,54 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [generatedDraft, setGeneratedDraft] = useState<GeneratedStoryDraft | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // 0. Fetch Live Dog News on Mount & Refresh
+  const fetchLiveNews = useCallback(async () => {
+    setIsLoadingNews(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/admin/ai/discover-news');
+      const data = await res.json();
+      if (data.success && data.news) {
+        setNewsList(data.news);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch live news:', err);
+    } finally {
+      setIsLoadingNews(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLiveNews();
+  }, [fetchLiveNews]);
+
+  // 0b. Handle Real News Story Generation
+  const handleGenerateFromNewsItem = async (item?: RealNewsItem) => {
+    setIsGeneratingFromNews(true);
+    setErrorMsg(null);
+    setPublishedUrl(null);
+    try {
+      const res = await fetch('/api/admin/ai/discover-news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newsItem: item || (newsList.length > 0 ? newsList[Math.floor(Math.random() * newsList.length)] : undefined),
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.story) {
+        setGeneratedUniqueStory(data.story);
+        setActiveTab('unique'); // Switch to review & publish tab
+      } else {
+        setErrorMsg(data.error || 'Failed to generate story from real news.');
+      }
+    } catch {
+      setErrorMsg('Network error while generating story from real news.');
+    } finally {
+      setIsGeneratingFromNews(false);
+    }
+  };
 
   // 1. Handle Unique Story Generation
   const handleGenerateUnique = async () => {
@@ -451,6 +509,17 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
         <div className="flex items-center bg-cardMuted border border-borderLight rounded-xl p-1 overflow-x-auto">
           <button
             type="button"
+            onClick={() => setActiveTab('news')}
+            className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'news'
+                ? 'bg-forestPrimary text-white shadow-soft'
+                : 'text-inkMuted hover:text-inkPrimary'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5 text-goldLight" /> 🌐 Live Web News Discovery
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('unique')}
             className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'unique'
@@ -458,7 +527,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
                 : 'text-inkMuted hover:text-inkPrimary'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-goldLight" /> 100% Unique Story Generator
+            <Sparkles className="w-3.5 h-3.5 text-goldLight" /> 100% Unique Generator
           </button>
           <button
             type="button"
@@ -489,6 +558,122 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
         <div role="alert" className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-error font-semibold flex items-center gap-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* TAB 0: LIVE REAL NEWS DISCOVERY FROM WEB */}
+      {activeTab === 'news' && (
+        <div className="space-y-5">
+          <div className="bg-gradient-to-r from-forestLight/60 to-amber-50 border border-forestPrimary/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Compass className="w-5 h-5 text-forestPrimary flex-shrink-0 animate-spin-slow" />
+              <div>
+                <span className="text-xs font-bold text-forestPrimary uppercase tracking-wider block">
+                  Live Web Search & Verified News Discovery
+                </span>
+                <p className="text-xs text-inkMuted">
+                  Automatically pulls fresh true dog rescues & reunions from major news agencies (NBC, FOX, ABC, CBS, Shelters).
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={fetchLiveNews}
+                isLoading={isLoadingNews}
+                className="min-h-[36px] text-xs font-bold"
+              >
+                <RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh Web News
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={() => handleGenerateFromNewsItem()}
+                isLoading={isGeneratingFromNews}
+                className="min-h-[36px] text-xs font-bold shadow-soft"
+              >
+                <Dice5 className="w-3.5 h-3.5 mr-1" /> Auto-Discover & Generate
+              </Button>
+            </div>
+          </div>
+
+          {/* Real News Cards Grid */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" /> Discovered Live Real Events ({newsList.length})
+              </span>
+              <span className="text-[11px] text-inkMuted">Click any item to synthesize a 100% verified emotional story</span>
+            </div>
+
+            {isLoadingNews ? (
+              <div className="p-8 text-center bg-canvas border border-borderLight rounded-2xl space-y-2">
+                <Loader2 className="w-6 h-6 animate-spin text-forestPrimary mx-auto" />
+                <p className="text-xs font-bold text-inkPrimary">Searching the web for fresh dog rescue news...</p>
+              </div>
+            ) : newsList.length === 0 ? (
+              <div className="p-8 text-center bg-canvas border border-borderLight rounded-2xl space-y-2">
+                <Globe className="w-6 h-6 text-inkSubtle mx-auto" />
+                <p className="text-xs font-bold text-inkPrimary">No fresh news found right now.</p>
+                <Button type="button" size="sm" variant="outline" onClick={fetchLiveNews}>
+                  Try Again
+                </Button>
+              </div>
+            ) : (
+              newsList.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-4 bg-card border border-borderLight rounded-xl shadow-sm hover:border-forestPrimary/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge variant="forest" size="sm" className="capitalize text-[10px]">
+                        {item.categorySuggestion.replace(/-/g, ' ')}
+                      </Badge>
+                      <Badge variant="outline" size="sm" className="font-semibold text-[10px]">
+                        {item.source}
+                      </Badge>
+                      <span className="text-[10px] text-inkSubtle">{item.pubDate}</span>
+                    </div>
+
+                    <h4 className="font-serif text-sm font-bold text-inkPrimary leading-snug">
+                      {item.headline}
+                    </h4>
+
+                    <p className="text-xs text-inkMuted line-clamp-1">{item.summarySnippet}</p>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {item.url && (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2 rounded-lg text-inkSubtle hover:text-forestPrimary hover:bg-cardMuted transition-colors text-xs"
+                        title="View Original News Article"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="primary"
+                      onClick={() => handleGenerateFromNewsItem(item)}
+                      isLoading={isGeneratingFromNews}
+                      className="min-h-[38px] text-xs font-bold shadow-soft whitespace-nowrap"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 mr-1 text-goldLight" /> 1-Click Story
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
 
