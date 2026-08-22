@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { NewsDiscoveryService } from '@/lib/services/news-discovery';
 import { AIService } from '@/lib/ai/ai-service';
 import { StoryService } from '@/lib/services/story-service';
@@ -40,11 +40,14 @@ export async function POST(req: NextRequest) {
       promptContext = `Based on this real-world news event: "${newsItem.headline}". Reported by ${newsItem.source}. URL: ${newsItem.url}. ${customTheme ? `Theme note: ${customTheme}` : ''}`;
     }
 
+    const customKey = req.headers.get('x-custom-ai-key') || body.customKey || undefined;
+
     const result = await AIService.generateUniqueStory({
       category,
       themePrompt: promptContext,
       existingTitles,
       existingSlugs,
+      customKey,
     });
 
     // If newsItem had a real source, override with the real source

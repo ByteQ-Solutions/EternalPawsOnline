@@ -18,12 +18,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const customKey = req.headers.get('x-custom-ai-key') || body.customKey || undefined;
     const result = await AIService.generateDraft({
       topic,
       dogName,
       dogBreed,
       location,
       category,
+      customKey,
     });
 
     return NextResponse.json(result);

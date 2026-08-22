@@ -36,11 +36,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const customKey = req.headers.get('x-custom-ai-key') || body.customKey || undefined;
+
     const result = await AIService.generateUniqueStory({
       category,
       themePrompt,
       existingTitles,
       existingSlugs,
+      customKey,
     });
 
     return NextResponse.json(result);

@@ -70,6 +70,36 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [polishedOutput, setPolishedOutput] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // Custom AI Key (Optional - allows user to plug in Groq, OpenAI, or DeepSeek directly)
+  const [customApiKey, setCustomApiKey] = useState<string>('');
+  const [showKeySettings, setShowKeySettings] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('eternal_paws_custom_ai_key') || '';
+      setCustomApiKey(saved);
+    }
+  }, []);
+
+  const handleSaveApiKey = (val: string) => {
+    setCustomApiKey(val);
+    if (typeof window !== 'undefined') {
+      if (val.trim()) {
+        localStorage.setItem('eternal_paws_custom_ai_key', val.trim());
+      } else {
+        localStorage.removeItem('eternal_paws_custom_ai_key');
+      }
+    }
+  };
+
+  const getHeaders = () => {
+    const h: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (customApiKey.trim()) {
+      h['x-custom-ai-key'] = customApiKey.trim();
+    }
+    return h;
+  };
+
   // Draft Generator State
   const [topic, setTopic] = useState('');
   const [genDogName, setGenDogName] = useState('');
@@ -109,7 +139,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
     try {
       const res = await fetch('/api/admin/ai/discover-news', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
           newsItem: item || (newsList.length > 0 ? newsList[Math.floor(Math.random() * newsList.length)] : undefined),
         }),
@@ -137,7 +167,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
     try {
       const res = await fetch('/api/admin/ai/generate-unique', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
           category: uniqueCategory === 'any' ? undefined : uniqueCategory,
           themePrompt: themePrompt.trim() || undefined,
@@ -264,7 +294,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
     try {
       const res = await fetch('/api/admin/ai/polish', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({ text: rawText, dogName }),
       });
       const data = await res.json();
@@ -458,7 +488,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
     try {
       const res = await fetch('/api/admin/ai/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
           topic,
           dogName: genDogName,
@@ -500,9 +530,18 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
               DeepSeek v4 / Qwen 3.8 Max
             </Badge>
           </div>
-          <p className="text-xs text-inkMuted mt-1">
-            OpenAI-Compatible Gateway • Automatic Anti-Duplication Shield Active.
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <p className="text-xs text-inkMuted">
+              OpenAI-Compatible Gateway • Automatic Anti-Duplication Shield Active.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowKeySettings(!showKeySettings)}
+              className="text-[11px] font-bold text-forestPrimary hover:underline inline-flex items-center gap-1"
+            >
+              ⚙️ {customApiKey ? 'Custom Key Set' : 'Add AI Key (Optional)'}
+            </button>
+          </div>
         </div>
 
         {/* Tab Switcher */}
@@ -553,6 +592,45 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
           </button>
         </div>
       </div>
+
+      {/* Optional AI Key Settings Accordion */}
+      {showKeySettings && (
+        <div className="p-4 bg-cardMuted border border-borderLight rounded-xl space-y-2 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-inkPrimary">🔑 Custom AI Provider Key (Groq / OpenAI / DeepSeek)</span>
+            <button
+              type="button"
+              onClick={() => setShowKeySettings(false)}
+              className="text-inkSubtle hover:text-inkPrimary font-bold"
+            >
+              Close ✕
+            </button>
+          </div>
+          <p className="text-inkMuted text-[11px]">
+            Optional: Paste your own API key (e.g. free Groq <code className="bg-canvas px-1 rounded">gsk_...</code>, OpenAI <code className="bg-canvas px-1 rounded">sk-...</code>, or DeepSeek). Saved safely in your browser.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="password"
+              placeholder="Paste API Key here (or leave blank for built-in news engine)..."
+              value={customApiKey}
+              onChange={(e) => handleSaveApiKey(e.target.value)}
+              className="flex-1 min-h-[38px] px-3 py-1.5 bg-canvas border border-borderLight rounded-lg text-xs"
+            />
+            {customApiKey && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSaveApiKey('')}
+                className="text-xs text-error font-bold"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {errorMsg && (
         <div role="alert" className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-error font-semibold flex items-center gap-2">
