@@ -9,6 +9,7 @@
 
 import { MetadataRoute } from 'next';
 import { StoryService } from '@/lib/services/story-service';
+import { allFoodSafetyItems } from '@/lib/data/food-safety';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/stories`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/can-dogs-eat`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
@@ -115,5 +122,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: story.featured ? 0.9 : 0.75,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes];
+  // 4. Food Safety Authority & Programmatic SEO Pages
+  const foodRoutes: MetadataRoute.Sitemap = allFoodSafetyItems.map((food) => ({
+    url: `${baseUrl}/can-dogs-eat/${food.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes];
 }

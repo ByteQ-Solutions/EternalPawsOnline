@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 
 import { HeroSpotlightCarousel } from '@/components/article/HeroSpotlightCarousel';
+import { FoodSafetyHeroWidget } from '@/components/food-safety/FoodSafetyHeroWidget';
 
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
@@ -268,6 +269,13 @@ export default async function HomePage() {
               </p>
             </div>
           )}
+        </Container>
+      </section>
+
+      {/* 3b. Canine Food Safety & Nutrition Authority Hub Widget */}
+      <section aria-label="Canine Food Safety Checker">
+        <Container size="default">
+          <FoodSafetyHeroWidget />
         </Container>
       </section>
 
