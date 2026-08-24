@@ -43,6 +43,7 @@ export default function AdminLoginPage() {
       }
 
       try {
+        document.cookie = `eternal_paws_admin_token=${data.user.id || 'admin-auth'}; path=/; max-age=604800; SameSite=Lax;`;
         localStorage.setItem('eternal_paws_admin_session', JSON.stringify(data.user));
       } catch {
         // Ignore storage errors

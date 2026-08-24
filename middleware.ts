@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
   }
 
   // 3. Admin API Endpoints Protection (/api/admin/*)
-  if (pathname.startsWith('/api/admin')) {
+  if (pathname.startsWith('/api/admin') && !pathname.startsWith('/api/admin/auth')) {
     const authHeader = request.headers.get('authorization');
     const cookieToken = request.cookies.get('eternal_paws_admin_token')?.value;
 
