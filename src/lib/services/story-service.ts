@@ -30,7 +30,10 @@ function readFromFile(): Story[] {
   try {
     const file = getDataFilePath();
     if (file && fs.existsSync(file)) {
-      const content = fs.readFileSync(file, 'utf-8');
+      let content = fs.readFileSync(file, 'utf-8');
+      if (content.charCodeAt(0) === 0xfeff) {
+        content = content.slice(1);
+      }
       if (content.trim()) {
         const parsed = JSON.parse(content);
         if (Array.isArray(parsed)) return parsed;

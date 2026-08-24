@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - Dynamic XML Sitemap Generator
  * Path: app/sitemap.ts
  * 
@@ -12,7 +12,7 @@ import { StoryService } from '@/lib/services/story-service';
 import { allFoodSafetyItems } from '@/lib/data/food-safety';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_BASE_URL;
@@ -132,3 +132,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes];
 }
+

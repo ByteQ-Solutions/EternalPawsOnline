@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - SSR/SSG Story Article Reader Route
  * Path: app/stories/[slug]/page.tsx
  * 
@@ -49,7 +49,7 @@ interface StoryPageProps {
   };
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -245,3 +245,4 @@ export default async function StoryPage({ params }: StoryPageProps) {
     </>
   );
 }
+

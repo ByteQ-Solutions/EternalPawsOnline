@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - Survival Category Hub Route
  * Path: app/survival/page.tsx
  */
@@ -11,10 +11,11 @@ import { CategoryHubView } from '@/components/article/CategoryHubView';
 
 export const metadata: Metadata = generateCategoryMetadata('survival');
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function SurvivalPage() {
   const allLive = await StoryService.getAllStoriesAsync();
   const stories = allLive.filter((s) => s.status === 'published' && s.category === 'survival');
   return <CategoryHubView category="survival" stories={stories} />;
 }
+

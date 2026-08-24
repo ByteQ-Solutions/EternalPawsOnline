@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function HomePage() {
   // Fetch LIVE stories directly from Supabase on every request.
