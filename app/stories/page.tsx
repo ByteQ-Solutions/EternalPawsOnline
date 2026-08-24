@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - Stories Archive & Catalog Directory
  * Path: app/stories/page.tsx
  * 
@@ -28,7 +28,7 @@ export const metadata: Metadata = generateHubMetadata({
   keywords: ['dog stories archive', 'verified pet stories', 'hero dogs', 'dog rescues', 'canine reunions'],
 });
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function StoriesPage() {
   const allLive = await StoryService.getAllStoriesAsync();
@@ -203,3 +203,4 @@ export default async function StoriesPage() {
     </div>
   );
 }
+

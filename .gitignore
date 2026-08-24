@@ -35,3 +35,7 @@ next-env.d.ts.bak
 
 # Local Netlify folder
 .netlify
+
+# Local runtime data cache (Supabase is source of truth on Vercel)
+src/data/live_stories.json
+*.tsbuildinfo

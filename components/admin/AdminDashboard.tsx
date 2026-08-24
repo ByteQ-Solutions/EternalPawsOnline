@@ -45,6 +45,10 @@ import {
   BarChart3,
   Megaphone,
   HardDrive,
+  Copy,
+  Check,
+  Share2,
+  Filter,
 } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
 import { Card } from '@/design-system/components/Card';
@@ -136,7 +140,41 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const [corpusFilter, setCorpusFilter] = useState<'all' | 'featured'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [isTogglingFeature, setIsTogglingFeature] = useState(false);
+
+  const handleCopyLink = (slug: string) => {
+    const url = `https://eternalpaws.online/stories/${slug}`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2000);
+    }
+  };
+
+  const filteredStories = stories.filter((story) => {
+    // 1. Category Filter
+    if (selectedCategory !== 'all' && story.category !== selectedCategory) {
+      return false;
+    }
+    // 2. Featured Filter
+    if (corpusFilter === 'featured' && !story.featured) {
+      return false;
+    }
+    // 3. Search Query Filter
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase().trim();
+      const matchName = (story.dogName || '').toLowerCase().includes(q);
+      const matchTitle = (story.title || '').toLowerCase().includes(q);
+      const matchBreed = (story.dogBreed || '').toLowerCase().includes(q);
+      const matchLoc = `${story.location?.city || ''} ${story.location?.stateOrProvince || ''}`.toLowerCase().includes(q);
+      const matchSlug = (story.slug || '').toLowerCase().includes(q);
+      return matchName || matchTitle || matchBreed || matchLoc || matchSlug;
+    }
+    return true;
+  });
 
   const handleToggleFeatured = async (story: Story) => {
     setIsTogglingFeature(true);
@@ -440,12 +478,12 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Two-Column Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left Column: Story Corpus List */}
+            {/* Left Column: Story Corpus List & Management Controls */}
             <div className="lg:col-span-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-lg font-bold text-inkPrimary flex items-center gap-2">
                   <span>Story Editorial Corpus</span>
-                  <span className="text-xs font-normal text-inkSubtle">({stories.length})</span>
+                  <span className="text-xs font-normal text-inkSubtle">({filteredStories.length} of {stories.length})</span>
                 </h2>
                 <button
                   type="button"
@@ -456,59 +494,109 @@ export const AdminDashboard: React.FC = () => {
                 </button>
               </div>
 
-              {/* Filter Pills */}
-              <div className="flex items-center gap-2 pb-1">
-                <button
-                  type="button"
-                  onClick={() => setCorpusFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] ${
-                    corpusFilter === 'all'
-                      ? 'bg-forestPrimary text-white shadow-soft'
-                      : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
-                  }`}
-                >
-                  All Stories ({stories.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCorpusFilter('featured')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[34px] flex items-center gap-1.5 ${
-                    corpusFilter === 'featured'
-                      ? 'bg-amber-500 text-white shadow-soft'
-                      : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
-                  }`}
-                >
-                  ⭐ Hero Featured ({stories.filter((s) => s.featured).length})
-                </button>
+              {/* Real-Time Live Search Bar */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-inkSubtle absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+                <input
+                  type="text"
+                  placeholder="Search by dog name, breed, title, city..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-8 py-2 bg-card border border-borderLight rounded-xl text-xs text-inkPrimary placeholder:text-inkSubtle focus:outline-none focus:ring-2 focus:ring-forestPrimary/40 transition-all shadow-sm"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-inkSubtle hover:text-inkPrimary text-xs p-1"
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
+              {/* Filter Pills (All / Hero / Categories) */}
+              <div className="space-y-2 pb-1">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                  <button
+                    type="button"
+                    onClick={() => setCorpusFilter('all')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all min-h-[32px] whitespace-nowrap ${
+                      corpusFilter === 'all'
+                        ? 'bg-forestPrimary text-white shadow-soft'
+                        : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
+                    }`}
+                  >
+                    All ({stories.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCorpusFilter('featured')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all min-h-[32px] flex items-center gap-1 whitespace-nowrap ${
+                      corpusFilter === 'featured'
+                        ? 'bg-amber-500 text-white shadow-soft'
+                        : 'bg-card border border-borderLight text-inkMuted hover:text-inkPrimary'
+                    }`}
+                  >
+                    ⭐ Hero Featured ({stories.filter((s) => s.featured).length})
+                  </button>
+                </div>
+
+                {/* Category Filter Pills */}
+                <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[11px]">
+                  {[
+                    { id: 'all', label: 'All Categories' },
+                    { id: 'rescues', label: 'Rescues' },
+                    { id: 'reunions', label: 'Reunions' },
+                    { id: 'hero-dogs', label: 'Hero Dogs' },
+                    { id: 'survival', label: 'Survival' },
+                    { id: 'loyalty', label: 'Loyalty' },
+                    { id: 'lost-and-found', label: 'Lost & Found' },
+                  ].map((cat) => {
+                    const count = cat.id === 'all' ? stories.length : stories.filter((s) => s.category === cat.id).length;
+                    const isActive = selectedCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className={`px-2.5 py-1 rounded-md font-semibold transition-all whitespace-nowrap ${
+                          isActive
+                            ? 'bg-forestLight text-forestPrimary border border-forestPrimary/40 font-bold'
+                            : 'bg-card text-inkSubtle border border-borderLight hover:text-inkPrimary'
+                        }`}
+                      >
+                        {cat.label} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Story Cards List */}
               <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
-                {stories.length === 0 ? (
+                {filteredStories.length === 0 ? (
                   <div className="p-8 text-center bg-card border border-borderLight rounded-2xl text-inkMuted text-xs space-y-3">
-                    <Sparkles className="w-8 h-8 text-goldAccent mx-auto" />
-                    <p className="font-bold text-inkPrimary text-sm">No Stories in Corpus Yet</p>
-                    <p>Create a verified dog story manually or generate one with AI in 3 seconds!</p>
-                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                      <Button
-                        type="button"
-                        variant="primary"
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="min-h-[40px] text-xs font-bold shadow-soft"
-                      >
-                        <Plus className="w-3.5 h-3.5 mr-1" /> Create Manually
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setActiveTab('ai-studio')}
-                        className="min-h-[40px] text-xs font-bold"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 mr-1" /> Open AI Studio
-                      </Button>
-                    </div>
+                    <Search className="w-8 h-8 text-inkSubtle mx-auto" />
+                    <p className="font-bold text-inkPrimary text-sm">No Matching Stories Found</p>
+                    <p>{searchTerm ? `No stories matching "${searchTerm}".` : 'Try selecting a different filter.'}</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSelectedCategory('all');
+                        setCorpusFilter('all');
+                      }}
+                      className="min-h-[36px] text-xs font-bold"
+                    >
+                      Reset All Filters
+                    </Button>
                   </div>
                 ) : (
-                  (corpusFilter === 'featured' ? stories.filter((s) => s.featured) : stories).map((story) => {
+                  filteredStories.map((story) => {
                     const isSelected = selectedStory?.id === story.id;
                     return (
                       <div
@@ -520,40 +608,84 @@ export const AdminDashboard: React.FC = () => {
                             : 'bg-card border-borderLight hover:bg-cardMuted'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-bold text-inkPrimary">
-                            {story.dogName} ({story.dogBreed})
+                        <div className="flex items-start gap-3">
+                          {/* Dog Image Thumbnail */}
+                          <div className="w-14 h-14 rounded-lg overflow-hidden bg-canvas border border-borderLight flex-shrink-0 relative">
+                            {story.heroImage?.url ? (
+                              <img
+                                src={story.heroImage.url}
+                                alt={story.dogName}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-inkSubtle font-bold text-xs">
+                                🐾
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs font-bold text-inkPrimary truncate">
+                                {story.dogName} <span className="font-normal text-inkSubtle">({story.dogBreed})</span>
+                              </span>
+                              <div className="flex items-center gap-1.5 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleFeatured(story);
+                                  }}
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition-all flex items-center gap-1 ${
+                                    story.featured
+                                      ? 'bg-amber-100 text-amber-800 border-amber-300 shadow-sm'
+                                      : 'bg-card text-inkSubtle border-borderLight hover:border-amber-300 hover:text-amber-700'
+                                  }`}
+                                  title={story.featured ? 'Click to unpin from Homepage Hero' : 'Click to pin as Homepage Hero Spotlight'}
+                                >
+                                  <span>{story.featured ? '⭐ Hero' : '☆ Pin'}</span>
+                                </button>
+                                <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
+                              </div>
+                            </div>
+
+                            <p className="text-xs font-semibold text-inkPrimary line-clamp-2 leading-snug">
+                              {story.title}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Story Card Bottom Action Strip */}
+                        <div className="mt-3 pt-2.5 border-t border-borderLight/60 flex items-center justify-between">
+                          <span className="text-[11px] text-inkSubtle capitalize">
+                            {story.category.replace(/-/g, ' ')} • {story.location.city}, {story.location.stateOrProvince}
                           </span>
-                          <div className="flex items-center gap-1.5">
+
+                          <div className="flex items-center gap-1">
+                            {/* 1-Click Copy Public URL */}
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleToggleFeatured(story);
+                                handleCopyLink(story.slug);
                               }}
-                              className={`text-[11px] font-bold px-2 py-0.5 rounded-full border transition-all flex items-center gap-1 ${
-                                story.featured
-                                  ? 'bg-amber-100 text-amber-800 border-amber-300 shadow-sm'
-                                  : 'bg-card text-inkSubtle border-borderLight hover:border-amber-300 hover:text-amber-700'
-                              }`}
-                              title={story.featured ? 'Click to unpin from Homepage Hero' : 'Click to pin as Homepage Hero Spotlight'}
+                              className="px-2 py-1 rounded-md text-[11px] font-bold text-inkMuted hover:text-forestPrimary hover:bg-card border border-borderLight/80 transition-colors flex items-center gap-1"
+                              title="Copy Public Story URL"
                             >
-                              <span>{story.featured ? '⭐ Hero' : '☆ Pin'}</span>
+                              {copiedSlug === story.slug ? (
+                                <>
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <span className="text-emerald-600">Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3" />
+                                  <span>Copy Link</span>
+                                </>
+                              )}
                             </button>
-                            <VerificationBadge status={story.verification.status} size="sm" showScore={false} />
-                          </div>
-                        </div>
 
-                        <p className="text-sm font-semibold text-inkPrimary line-clamp-2 leading-snug">
-                          {story.title}
-                        </p>
-
-                        <div className="mt-2.5 pt-2 border-t border-borderLight/60 flex items-center justify-between">
-                          <span className="text-[11px] text-inkSubtle">
-                            {story.location.city}, {story.location.stateOrProvince} • {story.readTimeMinutes}m
-                          </span>
-
-                          <div className="flex items-center gap-1">
                             <a
                               href={`/stories/${story.slug}`}
                               target="_blank"
@@ -561,7 +693,7 @@ export const AdminDashboard: React.FC = () => {
                               onClick={(e) => e.stopPropagation()}
                               aria-label={`View live ${story.dogName}'s story`}
                               className="p-1.5 rounded-lg text-inkMuted hover:text-forestPrimary hover:bg-card transition-colors"
-                              title="View Live"
+                              title="View Live Article"
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </a>
@@ -598,13 +730,95 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Pre-Publish Checklist & 301 Manager */}
+            {/* Right Column: Story Inspector, Pre-Publish Gate & 301 Manager */}
             <div className="lg:col-span-7 space-y-6">
-              {/* 9-Point Checklist Panel */}
+              {/* Selected Story Inspector Panel */}
               {selectedStory ? (
-                <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm">
+                <Card className="bg-card border-borderLight rounded-2xl p-6 shadow-sm space-y-5">
+                  {/* Story Overview Header Card */}
+                  <div className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl bg-canvas border border-borderLight">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden bg-card border border-borderLight flex-shrink-0 relative">
+                      {selectedStory.heroImage?.url ? (
+                        <img
+                          src={selectedStory.heroImage.url}
+                          alt={selectedStory.dogName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-inkSubtle text-2xl">🐾</div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="forest" size="sm" className="capitalize">
+                          {selectedStory.category.replace(/-/g, ' ')}
+                        </Badge>
+                        <VerificationBadge status={selectedStory.verification.status} size="sm" showScore={true} />
+                        {selectedStory.featured && (
+                          <Badge variant="gold" size="sm">
+                            ⭐ Hero Spotlight
+                          </Badge>
+                        )}
+                      </div>
+
+                      <h3 className="font-serif text-lg font-bold text-inkPrimary leading-tight">
+                        {selectedStory.title}
+                      </h3>
+
+                      <p className="text-xs text-inkMuted">
+                        <strong>{selectedStory.dogName}</strong> ({selectedStory.dogBreed}) • {selectedStory.location.city}, {selectedStory.location.stateOrProvince}
+                      </p>
+
+                      <div className="pt-2 flex flex-wrap items-center gap-2 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(selectedStory.slug)}
+                          className="px-3 py-1.5 bg-card border border-borderLight hover:bg-cardMuted rounded-lg font-bold text-inkPrimary flex items-center gap-1.5 transition-colors"
+                        >
+                          {copiedSlug === selectedStory.slug ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span className="text-emerald-600">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Public URL</span>
+                            </>
+                          )}
+                        </button>
+
+                        <a
+                          href={`/stories/${selectedStory.slug}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3 py-1.5 bg-forestPrimary hover:bg-forestHover text-white rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-soft"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" /> View Live Article
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(selectedStory)}
+                          className="px-3 py-1.5 bg-card border border-borderLight hover:bg-cardMuted rounded-lg font-bold text-inkPrimary flex items-center gap-1.5 transition-colors"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit Story
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openDeleteModal(selectedStory)}
+                          className="px-3 py-1.5 bg-card border border-borderLight hover:bg-red-50 text-error rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* ⭐ Hero Spotlight Status Banner */}
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200/80 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="space-y-0.5">
                       <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Homepage Hero Spotlight Status
@@ -627,31 +841,17 @@ export const AdminDashboard: React.FC = () => {
                     </Button>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borderLight pb-4 mb-5">
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
-                        Pre-Publish Checklist Gate
-                      </span>
-                      <h2 className="font-serif text-xl font-bold text-inkPrimary">
-                        Reviewing: {selectedStory.dogName}&apos;s Story
-                      </h2>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(selectedStory)}
-                        className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-inkPrimary hover:bg-cardMuted flex items-center gap-1.5 transition-colors"
-                      >
-                        <Edit3 className="w-3.5 h-3.5 text-forestPrimary" /> Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => openDeleteModal(selectedStory)}
-                        className="min-h-[36px] px-3 py-1 bg-card border border-borderLight rounded-lg text-xs font-bold text-error hover:bg-red-50 flex items-center gap-1.5 transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete
-                      </button>
+                  {/* 9-Point Checklist Gate */}
+                  <div>
+                    <div className="flex items-center justify-between border-b border-borderLight pb-3 mb-4">
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
+                          Pre-Publish Checklist Gate
+                        </span>
+                        <h4 className="font-serif text-base font-bold text-inkPrimary">
+                          Editorial Quality & Compliance Standards
+                        </h4>
+                      </div>
                       {checklistResult.allPassed ? (
                         <Badge variant="forest" size="md">
                           <CheckCircle2 className="w-4 h-4 mr-1.5" /> 9/9 Ready
@@ -662,63 +862,39 @@ export const AdminDashboard: React.FC = () => {
                         </Badge>
                       )}
                     </div>
-                  </div>
 
-                  <div className="space-y-3 mb-6">
-                    {checklistResult.checks.map((check, index) => (
-                      <div
-                        key={check.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-canvas border border-borderLight/60 text-sm"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-card text-inkSubtle border border-borderLight">
-                            {index + 1}
-                          </span>
-                          <span className="text-inkPrimary font-medium">{check.label}</span>
+                    <div className="space-y-2.5 mb-5">
+                      {checklistResult.checks.map((check, index) => (
+                        <div
+                          key={check.id}
+                          className="flex items-center justify-between p-2.5 rounded-lg bg-canvas border border-borderLight/60 text-xs"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold bg-card text-inkSubtle border border-borderLight">
+                              {index + 1}
+                            </span>
+                            <span className="text-inkPrimary font-medium">{check.label}</span>
+                          </div>
+
+                          {check.passed ? (
+                            <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
+                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Passed
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center text-xs font-bold text-error">
+                              <AlertTriangle className="w-3.5 h-3.5 mr-1" /> Action Needed
+                            </span>
+                          )}
                         </div>
-
-                        {check.passed ? (
-                          <span className="inline-flex items-center text-xs font-bold text-forestPrimary">
-                            <CheckCircle2 className="w-4 h-4 mr-1" /> Passed
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center text-xs font-bold text-error">
-                            <AlertTriangle className="w-4 h-4 mr-1" /> Action Needed
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-borderLight">
-                    <div className="text-xs text-inkMuted">
-                      <span>Confidence Score: </span>
-                      <span className="font-bold text-forestPrimary">{selectedStory.verification.confidenceScore}%</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => openEditModal(selectedStory)}
-                        className="min-h-[44px]"
-                      >
-                        <Edit3 className="w-4 h-4 mr-1.5" /> Edit Full Story
-                      </Button>
-                      <Button
-                        variant="primary"
-                        disabled={!checklistResult.allPassed}
-                        className="min-h-[44px]"
-                      >
-                        <CheckCircle2 className="w-4 h-4 mr-1.5" /> Publish Story
-                      </Button>
+                      ))}
                     </div>
                   </div>
                 </Card>
               ) : (
                 <Card className="bg-card border-borderLight rounded-2xl p-8 shadow-sm text-center text-inkMuted text-xs space-y-2">
                   <FileText className="w-8 h-8 text-forestPrimary/40 mx-auto" />
-                  <p className="font-bold text-inkPrimary text-sm">Editorial Gate Ready</p>
-                  <p>Publish a story from AI Studio or Reader Submissions to review the 9-point checklist.</p>
+                  <p className="font-bold text-inkPrimary text-sm">Select a Story to Inspect</p>
+                  <p>Click any story from the list on the left to review details, copy links, and verify checklist.</p>
                 </Card>
               )}
 

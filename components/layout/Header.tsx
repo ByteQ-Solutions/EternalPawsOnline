@@ -22,7 +22,7 @@ export const CATEGORY_NAV_ITEMS: NavItem[] = [
   { label: 'Rescues', href: '/rescues', categorySlug: 'rescues' },
   { label: 'Survival', href: '/survival', categorySlug: 'survival' },
   { label: 'Loyalty', href: '/loyalty', categorySlug: 'loyalty' },
-  { label: 'Lost & Found', href: '/lost-and-found', categorySlug: 'lost-and-found' },
+  { label: '🍏 Food Safety', href: '/can-dogs-eat' },
 ];
 
 export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
