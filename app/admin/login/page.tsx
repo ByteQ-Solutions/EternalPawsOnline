@@ -22,29 +22,38 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const result = AuthService.authenticate(email, password);
-
-    if (!result.success || !result.user) {
-      setError(result.error || 'Invalid email address or password.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Set auth cookie for Next.js edge middleware
-      document.cookie = `eternal_paws_admin_token=${result.user.id || 'admin-auth'}; path=/; max-age=604800; SameSite=Lax;`;
-      localStorage.setItem('eternal_paws_admin_session', JSON.stringify(result.user));
-    } catch {
-      // Ignore storage errors
-    }
+      const res = await fetch('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password: password.trim() }),
+      });
 
-    // Direct browser redirect to admin dashboard
-    window.location.href = '/admin';
+      const data = await res.json();
+
+      if (!res.ok || !data.success || !data.user) {
+        setError(data.error || 'Invalid email address or password.');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        localStorage.setItem('eternal_paws_admin_session', JSON.stringify(data.user));
+      } catch {
+        // Ignore storage errors
+      }
+
+      // Direct browser redirect to admin dashboard
+      window.location.href = '/admin';
+    } catch {
+      setError('Network error during authentication. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
