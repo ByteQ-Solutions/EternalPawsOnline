@@ -18,6 +18,35 @@ declare global {
 
 const IS_VERCEL = process.env.VERCEL === '1';
 
+const FALLBACK_CATEGORY_IMAGES: Record<string, string> = {
+  rescues: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80',
+  reunions: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1200&q=80',
+  'hero-dogs': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80',
+  'lost-found': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80',
+  'lost-and-found': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80',
+  loyalty: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80',
+  survival: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=1200&q=80',
+  default: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1200&q=80',
+};
+
+export function sanitizeImageUrl(url?: string, category?: string): string {
+  if (!url || typeof url !== 'string') {
+    return FALLBACK_CATEGORY_IMAGES.default;
+  }
+  const trimmed = url.trim();
+  // Strip heavy base64 strings (which bloat HTML and cause massive Fast Origin Transfer)
+  if (trimmed.startsWith('data:image') || trimmed.length > 500) {
+    const cat = (category || 'rescues').toLowerCase();
+    return FALLBACK_CATEGORY_IMAGES[cat] || FALLBACK_CATEGORY_IMAGES.default;
+  }
+  // Replace old local static image paths with CDN images
+  if (trimmed.startsWith('/images/stories/')) {
+    const cat = (category || 'rescues').toLowerCase();
+    return FALLBACK_CATEGORY_IMAGES[cat] || FALLBACK_CATEGORY_IMAGES.default;
+  }
+  return trimmed;
+}
+
 function getDataFilePath(): string | null {
   if (typeof window !== 'undefined') return null;
   if (IS_VERCEL) return null; // Vercel serverless — no disk persistence
@@ -115,9 +144,9 @@ export const StoryService = {
         category: s.category || 'rescues',
         emotionalThemes: s.emotional_themes || ['heartwarming', 'inspiring'],
         heroImage: {
-          url: s.hero_image_url || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
+          url: sanitizeImageUrl(s.hero_image_url, s.category),
           altText: s.hero_image_alt || `Photo of ${s.dog_name}`,
-          credit: s.hero_image_credit || 'Uploaded Photo (Admin Archive)',
+          credit: s.hero_image_credit || 'Editorial Dog Photography Archive',
           licenseType: s.hero_image_license || 'original_photography',
           width: s.hero_image_width || 1200,
           height: s.hero_image_height || 675,
