@@ -26,7 +26,7 @@ export interface AdminUser {
 let memoryAdminUsers: AdminUser[] = [
   {
     id: 'user-admin-001',
-    email: 'pawsluvshop@gmail.com',
+    email: 'admin@eternal-paws.org',
     name: 'Super Admin',
     role: 'super_admin',
     status: 'active',
@@ -157,7 +157,7 @@ export async function DELETE(req: NextRequest) {
 
     // Protect Super Admin from deletion
     const target = memoryAdminUsers.find((u) => u.id === id);
-    if (target?.email === 'pawsluvshop@gmail.com') {
+    if (target?.role === 'super_admin') {
       return NextResponse.json(
         { success: false, error: 'Cannot delete the primary Super Admin account.' },
         { status: 403 }

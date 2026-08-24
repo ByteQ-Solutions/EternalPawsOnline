@@ -22,13 +22,13 @@ function createMockRequest(body: unknown, method: string = 'POST'): NextRequest 
 
 describe('Admin Editorial Operations & User Management Suite', () => {
   describe('1. User & Staff Management (/api/admin/users)', () => {
-    it('fetches admin staff list and includes super admin pawsluvshop@gmail.com', async () => {
+    it('fetches admin staff list and includes super admin admin@eternal-paws.org', async () => {
       const res = await getUsers();
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(Array.isArray(json.users)).toBe(true);
-      const superAdmin = json.users.find((u: any) => u.email === 'pawsluvshop@gmail.com');
+      const superAdmin = json.users.find((u: any) => u.email === 'admin@eternal-paws.org');
       expect(superAdmin).toBeDefined();
       expect(superAdmin.role).toBe('super_admin');
     });

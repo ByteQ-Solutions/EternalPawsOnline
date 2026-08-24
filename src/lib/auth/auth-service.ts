@@ -5,42 +5,50 @@
 
 import { AdminUser, UserRole, ROLE_PERMISSIONS_MAP, RolePermissions } from './types';
 
-// Default staff accounts for administrator access
-const DEFAULT_STAFF: (AdminUser & { passwordHash: string })[] = [
-  {
-    id: 'user-000',
-    email: 'pawsluvshop@gmail.com',
-    name: 'Eternal Paws Administrator',
-    role: 'super_admin',
-    passwordHash: 'admin123',
-  },
-  {
-    id: 'user-001',
-    email: 'editor@eternal-paws.org',
-    name: 'Sarah Jenkins',
-    role: 'super_admin',
-    passwordHash: 'admin123',
-  },
-  {
-    id: 'user-002',
-    email: 'factcheck@eternal-paws.org',
-    name: 'Elena Rostova',
-    role: 'fact_checker',
-    passwordHash: 'verify123',
-  },
-];
-
 export class AuthService {
   static authenticate(email: string, password: string): { success: boolean; user?: AdminUser; error?: string } {
     const trimmedEmail = email.trim().toLowerCase();
-    const userRecord = DEFAULT_STAFF.find((u) => u.email.toLowerCase() === trimmedEmail);
+    const envAdminEmail = (process.env.ADMIN_EMAIL || process.env.ADMIN_DEFAULT_EMAIL || 'admin@eternal-paws.org').trim().toLowerCase();
+    const envAdminPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_DEFAULT_PASSWORD || 'EternalAdmin2026!';
 
-    if (!userRecord || userRecord.passwordHash !== password) {
-      return { success: false, error: 'Invalid email address or password.' };
+    // 1. Check dynamic Super Admin configured in Vercel Environment Variables
+    if (trimmedEmail === envAdminEmail && password === envAdminPassword) {
+      return {
+        success: true,
+        user: {
+          id: 'super-admin-master',
+          email: envAdminEmail,
+          name: 'Eternal Paws Chief Editor',
+          role: 'super_admin',
+        },
+      };
     }
 
-    const { passwordHash: _, ...safeUser } = userRecord;
-    return { success: true, user: safeUser };
+    // 2. Editorial Staff Fallback (customizable via env)
+    const staffAccounts: (AdminUser & { passwordHash: string })[] = [
+      {
+        id: 'staff-editor-01',
+        email: 'editor@eternal-paws.org',
+        name: 'Sarah Jenkins (Senior Editor)',
+        role: 'super_admin',
+        passwordHash: envAdminPassword,
+      },
+      {
+        id: 'staff-factcheck-01',
+        email: 'factcheck@eternal-paws.org',
+        name: 'Elena Rostova (Fact Checker)',
+        role: 'fact_checker',
+        passwordHash: envAdminPassword,
+      },
+    ];
+
+    const staffRecord = staffAccounts.find((u) => u.email.toLowerCase() === trimmedEmail);
+    if (staffRecord && staffRecord.passwordHash === password) {
+      const { passwordHash: _, ...safeUser } = staffRecord;
+      return { success: true, user: safeUser };
+    }
+
+    return { success: false, error: 'Invalid email address or password.' };
   }
 
   static getPermissions(role: UserRole): RolePermissions {

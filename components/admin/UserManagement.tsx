@@ -220,7 +220,7 @@ export const UserManagement: React.FC = () => {
                         {user.status === 'active' ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5 text-emerald-700" />}
                       </button>
 
-                      {user.email !== 'pawsluvshop@gmail.com' && (
+                      {user.role !== 'super_admin' && (
                         <button
                           type="button"
                           onClick={() => handleDeleteUser(user.id)}

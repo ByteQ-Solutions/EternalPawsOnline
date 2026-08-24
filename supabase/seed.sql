@@ -13,12 +13,12 @@ CREATE TABLE IF NOT EXISTS admin_users (
 
 INSERT INTO admin_users (id, email, name, role, status)
 VALUES
-    ('user-admin-001', 'pawsluvshop@gmail.com', 'Super Admin', 'super_admin', 'active'),
+    ('user-admin-001', 'admin@eternal-paws.org', 'Super Admin', 'super_admin', 'active'),
     ('user-admin-002', 'elena.rostova@eternal-paws.com', 'Elena Rostova', 'fact_checker', 'active'),
     ('user-admin-003', 'sarah.miller@eternal-paws.com', 'Sarah Miller', 'editor', 'active')
 ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
 
 -- 2. Clean Initial Production Newsletter Subscriber
 INSERT INTO newsletter_subscribers (email, status, source_channel, subscribed_at)
-VALUES ('pawsluvshop@gmail.com', 'active', 'super_admin_verified', NOW())
+VALUES ('admin@eternal-paws.org', 'active', 'super_admin_verified', NOW())
 ON CONFLICT (email) DO NOTHING;

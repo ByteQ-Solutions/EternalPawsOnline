@@ -12,7 +12,7 @@ export interface SubscriberItem {
 }
 
 let memorySubscribers: SubscriberItem[] = [
-  { id: 'sub-em-001', email: 'pawsluvshop@gmail.com', subscribedAt: new Date().toISOString(), status: 'active', confirmedDoubleOptIn: true },
+  { id: 'sub-em-001', email: 'subscriber@eternal-paws.org', subscribedAt: new Date().toISOString(), status: 'active', confirmedDoubleOptIn: true },
 ];
 
 export async function GET() {
