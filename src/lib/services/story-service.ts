@@ -16,8 +16,11 @@ declare global {
   var __ETERNAL_PAWS_MEM_STORIES__: Story[] | undefined;
 }
 
+const IS_VERCEL = process.env.VERCEL === '1';
+
 function getDataFilePath(): string | null {
   if (typeof window !== 'undefined') return null;
+  if (IS_VERCEL) return null; // Vercel serverless — no disk persistence
   try {
     return path.join(process.cwd(), 'src', 'data', 'live_stories.json');
   } catch {
@@ -27,6 +30,7 @@ function getDataFilePath(): string | null {
 
 function readFromFile(): Story[] {
   if (typeof window !== 'undefined') return [];
+  if (IS_VERCEL) return []; // Vercel — always use Supabase
   try {
     const file = getDataFilePath();
     if (file && fs.existsSync(file)) {
@@ -47,6 +51,7 @@ function readFromFile(): Story[] {
 
 function writeToFile(stories: Story[]): void {
   if (typeof window !== 'undefined') return;
+  if (IS_VERCEL) return; // Vercel — no disk writes, Supabase is source of truth
   try {
     const file = getDataFilePath();
     if (file) {
