@@ -68,7 +68,9 @@ export const SubmissionsInbox: React.FC<SubmissionsInboxProps> = ({ onStoryPubli
       const polishData = await polishRes.json();
       const polishedContent = polishData.polishedText || sub.storyText;
 
-      const slug = `${sub.dogName.toLowerCase()}-${sub.city.toLowerCase()}-rescue-${Date.now().toString().slice(-4)}`;
+      const cleanDogName = (sub.dogName || 'dog').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const cleanCity = (sub.city || 'rescue').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const slug = `${cleanDogName}-${cleanCity}-story-${Date.now().toString().slice(-4)}`;
 
       // 2. Publish to Live Stories with submitted image
       const publishRes = await fetch('/api/admin/stories/publish', {

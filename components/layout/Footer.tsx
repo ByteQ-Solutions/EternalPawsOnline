@@ -175,18 +175,25 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
           </p>
           <div className="flex flex-wrap items-center gap-6">
             <Link
-              href="/editorial-policy#privacy"
+              href="/privacy-policy"
               prefetch={false}
               className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
             >
               Privacy Policy
             </Link>
             <Link
-              href="/editorial-policy#terms"
+              href="/terms"
               prefetch={false}
               className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
             >
               Terms of Service
+            </Link>
+            <Link
+              href="/contact"
+              prefetch={false}
+              className="hover:text-inkPrimary min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary"
+            >
+              Contact Us
             </Link>
             <Link
               href="/corrections"

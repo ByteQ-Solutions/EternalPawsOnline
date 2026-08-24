@@ -31,17 +31,20 @@ import {
 } from 'lucide-react';
 
 import { HeroSpotlightCarousel } from '@/components/article/HeroSpotlightCarousel';
+import { FoodSafetyHeroWidget } from '@/components/food-safety/FoodSafetyHeroWidget';
+
+import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Eternal Paws — Verified True Dog Stories & Canine Bravery',
   description:
     'Rigorously verified, uplifting true stories of heroic dogs, joyful reunions, loyalty, and rescue miracles. Built on radical trust and 4-tier fact-checking.',
   alternates: {
-    canonical: 'https://eternal-paws.com',
+    canonical: DEFAULT_BASE_URL,
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function HomePage() {
   // Fetch LIVE stories directly from Supabase on every request.
@@ -266,6 +269,13 @@ export default async function HomePage() {
               </p>
             </div>
           )}
+        </Container>
+      </section>
+
+      {/* 3b. Canine Food Safety & Nutrition Authority Hub Widget */}
+      <section aria-label="Canine Food Safety Checker">
+        <Container size="default">
+          <FoodSafetyHeroWidget />
         </Container>
       </section>
 

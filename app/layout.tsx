@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Newsreader } from 'next/font/google';
 import Script from 'next/script';
+import { DEFAULT_BASE_URL } from '@/lib/seo';
 import './globals.css';
 import SkipToContent from '@/components/layout/SkipToContent';
 import Header from '@/components/layout/Header';
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
   },
   description:
     'Rigorously verified, uplifting true stories of heroic dogs, joyful reunions, loyalty, and rescue miracles. Built on trust and 4-tier fact-checking.',
-  metadataBase: new URL('https://eternal-paws.com'),
+  metadataBase: new URL(DEFAULT_BASE_URL),
   keywords: ['true dog stories', 'dog reunions', 'hero dogs', 'dog rescue', 'verified pet stories'],
   authors: [{ name: 'Eternal Paws Editorial Team' }],
   robots: {
@@ -75,10 +76,17 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://xiyudmicwbmogliiqdxf.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://xiyudmicwbmogliiqdxf.supabase.co" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        {/* Google AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5469656732511321"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className="bg-canvas text-inkPrimary font-sans antialiased min-h-screen flex flex-col selection:bg-forestLight selection:text-forestPrimary overflow-x-hidden">
         {/* Google tag (gtag.js) */}

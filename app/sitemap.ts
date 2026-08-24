@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - Dynamic XML Sitemap Generator
  * Path: app/sitemap.ts
  * 
@@ -8,8 +8,11 @@
  */
 
 import { MetadataRoute } from 'next';
-import { getPublishedStories } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
+import { allFoodSafetyItems } from '@/lib/data/food-safety';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
+
+export const revalidate = 60;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_BASE_URL;
@@ -25,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/stories`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/can-dogs-eat`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
@@ -60,6 +69,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
       url: `${baseUrl}/corrections`,
       lastModified: now,
       changeFrequency: 'weekly',
@@ -67,7 +94,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // 2. Category Hub Pages (6 Core Categories + semantic alias)
+  // 2. Category Hub Pages (6 Core Categories)
   const categorySlugs = [
     'reunions',
     'hero-dogs',
@@ -75,7 +102,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'survival',
     'loyalty',
     'lost-and-found',
-    'lost-found',
   ];
 
   const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
@@ -86,13 +112,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // 3. Dynamic Published Story Articles
-  const publishedStories = getPublishedStories();
+  const allStories = StoryService.getStoriesSync();
+  const publishedStories = allStories.filter((s) => s.status === 'published');
+  
   const storyRoutes: MetadataRoute.Sitemap = publishedStories.map((story) => ({
     url: `${baseUrl}/stories/${story.slug}`,
-    lastModified: new Date(story.updatedAt || story.publishedAt),
+    lastModified: new Date(story.updatedAt || story.publishedAt || now),
     changeFrequency: story.featured ? 'daily' : 'weekly',
     priority: story.featured ? 0.9 : 0.75,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes];
+  // 4. Food Safety Authority & Programmatic SEO Pages
+  const foodRoutes: MetadataRoute.Sitemap = allFoodSafetyItems.map((food) => ({
+    url: `${baseUrl}/can-dogs-eat/${food.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes];
 }
+

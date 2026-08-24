@@ -7,8 +7,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xiyudmicwbmogliiqdxf.supabase.co';
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_U8OoSRK4Bvr-kJBpopE36A_kY_cWtg5';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
 
 console.log('🚀 Connecting to Supabase at:', SUPABASE_URL);
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);

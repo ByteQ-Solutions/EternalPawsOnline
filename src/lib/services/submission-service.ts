@@ -1,10 +1,6 @@
-/**
- * Eternal Paws Platform - Shared Submissions Ingestion & Moderation Service
- * Path: src/lib/services/submission-service.ts
- * 
- * Provides unified storage for community story submissions across Supabase and in-memory fallback.
- */
-
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import { getSupabase } from '@/lib/db/supabase';
 
 export interface CommunitySubmission {
@@ -34,12 +30,54 @@ export interface CommunitySubmission {
   reviewNotes?: string;
 }
 
+function getSubmissionsFilePath(): string | null {
+  if (typeof window !== 'undefined') return null;
+  try {
+    return path.join(process.cwd(), 'src', 'data', 'live_submissions.json');
+  } catch {
+    return null;
+  }
+}
+
+function readSubmissionsFromFile(): CommunitySubmission[] {
+  if (typeof window !== 'undefined') return [];
+  try {
+    const file = getSubmissionsFilePath();
+    if (file && fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf-8');
+      if (content.trim()) {
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not read from live_submissions.json:', err);
+  }
+  return [];
+}
+
+function writeSubmissionsToFile(items: CommunitySubmission[]): void {
+  if (typeof window !== 'undefined') return;
+  try {
+    const file = getSubmissionsFilePath();
+    if (file) {
+      const dir = path.dirname(file);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(file, JSON.stringify(items, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.warn('Could not write to live_submissions.json:', err);
+  }
+}
+
 // In-Memory live submission repository
-const liveSubmissions: CommunitySubmission[] = [];
+const liveSubmissions: CommunitySubmission[] = readSubmissionsFromFile();
 
 export const SubmissionService = {
   /**
-   * Records a new user story submission into memory and Supabase.
+   * Records a new user story submission into memory, file cache, and Supabase.
    */
   async recordSubmission(payload: {
     submitterName: string;
@@ -66,7 +104,7 @@ export const SubmissionService = {
     const monthDay = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
     const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
     const ticketCode = `SUB-${year}-${monthDay}-${randomHex}`;
-    const id = `sub-${Date.now()}-${randomHex.toLowerCase()}`;
+    const id = crypto.randomUUID();
 
     const submission: CommunitySubmission = {
       id,
@@ -94,14 +132,15 @@ export const SubmissionService = {
       submittedAt: now.toISOString(),
     };
 
-    // Prepend to memory store so it appears at top of Admin Inbox
+    // Prepend to memory and file store so it appears at top of Admin Inbox immediately
     liveSubmissions.unshift(submission);
+    writeSubmissionsToFile(liveSubmissions);
 
     // Save to Supabase if connected
     const supabase = getSupabase();
     if (supabase) {
       try {
-        await supabase.from('story_submissions').insert({
+        const { error: insertErr } = await supabase.from('story_submissions').insert({
           id,
           ticket_code: ticketCode,
           submitter_name: payload.submitterName,
@@ -117,6 +156,7 @@ export const SubmissionService = {
           story_title: payload.storyTitle,
           story_narrative: payload.storyNarrative,
           photo_name: payload.photoName || null,
+          photo_url: payload.photoUrl || null,
           photo_credit: payload.photoCredit || `Photo by ${payload.submitterName}`,
           license_type: payload.licenseType || 'user_submitted_verified',
           source_name: payload.sourceName || null,
@@ -125,6 +165,9 @@ export const SubmissionService = {
           status: 'pending_review',
           created_at: now.toISOString(),
         });
+        if (insertErr) {
+          console.warn('Supabase submission insert error:', insertErr.message);
+        }
       } catch (dbErr) {
         console.warn('Supabase submission insert skipped:', dbErr);
       }
@@ -195,18 +238,30 @@ export const SubmissionService = {
     if (item) {
       item.status = status;
       if (notes) item.reviewNotes = notes;
+      writeSubmissionsToFile(liveSubmissions);
     }
 
     const supabase = getSupabase();
     if (supabase) {
       try {
-        await supabase
-          .from('story_submissions')
-          .update({
-            status: status === 'pending' ? 'pending_review' : status,
-            review_notes: notes,
-          })
-          .or(`id.eq.${id},ticket_code.eq.${id}`);
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        if (isUuid) {
+          await supabase
+            .from('story_submissions')
+            .update({
+              status: status === 'pending' ? 'pending_review' : status,
+              review_notes: notes,
+            })
+            .eq('id', id);
+        } else {
+          await supabase
+            .from('story_submissions')
+            .update({
+              status: status === 'pending' ? 'pending_review' : status,
+              review_notes: notes,
+            })
+            .eq('ticket_code', id);
+        }
       } catch (err) {
         console.warn('Supabase submission status update note:', err);
       }

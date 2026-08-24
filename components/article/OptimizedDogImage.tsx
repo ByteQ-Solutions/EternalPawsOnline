@@ -27,7 +27,7 @@ export interface OptimizedDogImageProps {
   aspectRatio?: '16:9' | '3:2' | '4:3' | '1:1' | string;
 }
 
-const DEFAULT_PLACEHOLDER = '/images/placeholder-dog-editorial.webp';
+const DEFAULT_PLACEHOLDER = '/images/placeholder-dog-editorial.svg';
 
 export const OptimizedDogImage: React.FC<OptimizedDogImageProps> = ({
   image: imageProp,

@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await AIService.polishStory(text, dogName);
+    const customKey = req.headers.get('x-custom-ai-key') || body.customKey || undefined;
+    const result = await AIService.polishStory(text, dogName, customKey);
     return NextResponse.json(result);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown AI error';

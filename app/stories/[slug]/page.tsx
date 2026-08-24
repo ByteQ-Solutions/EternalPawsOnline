@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Eternal Paws Platform - SSR/SSG Story Article Reader Route
  * Path: app/stories/[slug]/page.tsx
  * 
@@ -32,6 +32,7 @@ import {
   OptimizedDogImage,
   ReadingProgressBar,
   ShareBar,
+  InteractiveStoryReader,
 } from '@/components/article';
 import { TrustCard } from '@/components/trust/TrustCard';
 import { AudioNarrationPlayer } from '@/components/article/AudioNarrationPlayer';
@@ -48,7 +49,7 @@ interface StoryPageProps {
   };
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -123,37 +124,8 @@ export default async function StoryPage({ params }: StoryPageProps) {
           {/* Breadcrumb Navigation */}
           <Breadcrumbs items={breadcrumbItems} className="mb-6" />
 
-          {/* Editorial Article Masthead */}
-          <ArticleHeader story={story} />
-
-          {/* Audio Story Narration Player (Phase 3) */}
-          <AudioNarrationPlayer
-            storyTitle={story.title}
-            storyContent={story.content}
-            dogName={story.dogName}
-          />
-
-          {/* Hero Media with Zero-CLS aspect ratio and AI disclosure */}
-          <OptimizedDogImage
-            image={story.heroImage}
-            priority={true}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 768px"
-            containerClassName="my-6 sm:my-8"
-          />
-
-          {/* Social Sharing Bar (Top) */}
-          <ShareBar
-            url={`/stories/${story.slug}`}
-            title={story.title}
-            excerpt={story.excerpt}
-            dogName={story.dogName}
-            className="my-4"
-          />
-
-          {/* Main Story Narrative Body */}
-          <div id="article-body" className="my-8">
-            <ArticleContent content={story.content} enableDropCap={true} />
-          </div>
+          {/* Interactive Multi-Language Story Reader, Audio Player & Narrative */}
+          <InteractiveStoryReader story={story} />
 
           {/* Controlled Safe Display Monetization (Phase 3) */}
           <AdSlot position="after_intro" />
@@ -273,3 +245,4 @@ export default async function StoryPage({ params }: StoryPageProps) {
     </>
   );
 }
+

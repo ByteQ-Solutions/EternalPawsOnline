@@ -1,0 +1,11 @@
+# Agent analysis files (dev-only, not needed in production build)
+.agents/
+
+# Test files (not needed in production)
+tests/
+
+# Scripts (local dev utilities)
+scripts/
+
+# Local data cache
+src/data/live_stories.json

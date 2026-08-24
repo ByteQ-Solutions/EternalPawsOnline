@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+﻿import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { SearchInterface } from '@/components/search/SearchInterface';
 import { Container } from '@/design-system/components/Container';
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Search documented true stories of dog loyalty, survival, heroic rescues, and miraculous reunions.',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default function SearchPage() {
   return (
@@ -36,3 +36,4 @@ export default function SearchPage() {
     </main>
   );
 }
+
