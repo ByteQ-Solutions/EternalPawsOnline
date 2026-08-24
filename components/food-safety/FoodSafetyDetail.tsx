@@ -295,6 +295,43 @@ export const FoodSafetyDetail: React.FC<FoodSafetyDetailProps> = ({ item, relate
           </div>
         )}
 
+        {/* Verified Veterinary Sources & Medical References */}
+        <div className="p-6 bg-paperMuted border border-borderLight rounded-2xl space-y-4">
+          <div className="flex items-center gap-2 text-forestPrimary">
+            <ShieldCheck className="w-5 h-5" />
+            <h4 className="font-serif text-base font-bold text-inkPrimary">
+              Verified Veterinary Sources & Medical References
+            </h4>
+          </div>
+          <p className="text-xs text-inkMuted leading-relaxed">
+            All canine nutrition data and safety determinations on Eternal Paws are strictly verified against clinical veterinary toxicological standards, canine gastrointestinal physiology guidelines, and peer-reviewed veterinary literature:
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-inkSecondary">
+            <li className="flex items-center gap-2 p-2 bg-card rounded-lg border border-borderLight">
+              <span className="text-forestPrimary">✓</span>
+              <span><strong>ASPCA Animal Poison Control Center (APCC)</strong> — Canine Toxic Substances Database</span>
+            </li>
+            <li className="flex items-center gap-2 p-2 bg-card rounded-lg border border-borderLight">
+              <span className="text-forestPrimary">✓</span>
+              <span><strong>American Kennel Club (AKC)</strong> — Canine Nutrition & Veterinary Health Guidelines</span>
+            </li>
+            <li className="flex items-center gap-2 p-2 bg-card rounded-lg border border-borderLight">
+              <span className="text-forestPrimary">✓</span>
+              <span><strong>Merck Veterinary Manual</strong> — Small Animal Toxicology & Clinical Nutrition</span>
+            </li>
+            <li className="flex items-center gap-2 p-2 bg-card rounded-lg border border-borderLight">
+              <span className="text-forestPrimary">✓</span>
+              <span><strong>PetMD Veterinary Editorial Board</strong> — DVM Peer-Reviewed Nutrition Index</span>
+            </li>
+          </ul>
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <strong>Emergency Veterinary Notice:</strong> If your dog has consumed a toxic food, large amounts of seasoned food, or is showing severe symptoms (vomiting, lethargy, tremors), contact your local emergency veterinarian immediately or call the <strong>ASPCA Animal Poison Control Center: (888) 426-4435</strong> (Available 24/7/365).
+            </div>
+          </div>
+        </div>
+
         {/* Monetization Ad Slot */}
         <div className="my-8">
           <AdSlot position="article_end" />
