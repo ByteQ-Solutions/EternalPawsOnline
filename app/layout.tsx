@@ -44,6 +44,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(DEFAULT_BASE_URL),
   keywords: ['true dog stories', 'dog reunions', 'hero dogs', 'dog rescue', 'verified pet stories'],
   authors: [{ name: 'Eternal Paws Editorial Team' }],
+  other: {
+    monetag: 'b8f22c9d7f8f34eb753e20578505f13c',
+  },
   robots: {
     index: true,
     follow: true,
@@ -79,7 +82,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        {/* Monetag Publisher Verification */}
+        <meta name="monetag" content="b8f22c9d7f8f34eb753e20578505f13c" />
         {/* Google AdSense Script */}
         <Script
           async
