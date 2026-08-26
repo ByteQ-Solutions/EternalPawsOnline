@@ -84,13 +84,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
         {/* Monetag Publisher Verification */}
         <meta name="monetag" content="b8f22c9d7f8f34eb753e20578505f13c" />
-        {/* Monetag Multitag Auto-Monetization Script */}
+        {/* Monetag In-Page Push (Clean Non-Intrusive Banner Ads) */}
         <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="273542"
-          async
-          data-cfasync="false"
+          id="monetag-inpage-push"
           strategy="afterInteractive"
+          src="https://nap5k.com/tag.min.js"
+          data-zone="11662854"
         />
         {/* Google AdSense Script */}
         <Script
