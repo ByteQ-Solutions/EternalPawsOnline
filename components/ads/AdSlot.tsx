@@ -69,6 +69,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({
 }) => {
   const config = POSITION_CONFIGS[position];
   const effectiveId = slotId || config.id;
+  const monetagDirectUrl = 'https://omg10.com/4/11662888';
 
   return (
     <aside
@@ -89,23 +90,38 @@ export const AdSlot: React.FC<AdSlotProps> = ({
       </span>
 
       {/* Reserved Layout-Stable Container (CLS = 0.000) */}
-      <div
-        className="w-full max-w-full flex items-center justify-center bg-cardMuted/60 border border-dashed border-borderLight rounded-lg overflow-hidden transition-all"
+      <a
+        href={monetagDirectUrl}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="w-full max-w-[420px] group block bg-gradient-to-br from-paperWarm to-card border border-borderLight hover:border-forestPrimary/60 rounded-2xl p-5 shadow-soft hover:shadow-elevated transition-all text-left"
         style={{
-          minHeight: `${config.minHeightPx}px`,
-          maxWidth: `${config.minWidthPx}px`,
-          aspectRatio: config.aspectRatio,
+          minHeight: `${Math.min(config.minHeightPx, 180)}px`,
         }}
       >
-        <div className="text-center p-4">
-          <p className="text-xs text-inkSubtle font-medium">
-            {isTestMode ? `[Safe Ad Placement: ${position}]` : 'Eternal Paws Partner Network'}
-          </p>
-          <p className="text-[10px] text-inkSubtle/80 mt-1">
-            Supporting verified rescue & reunion journalism
-          </p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1.5 flex-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-forestPrimary bg-forestLight/60 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              ⭐ Featured Partner
+            </span>
+            <h4 className="font-serif text-base font-bold text-inkPrimary group-hover:text-forestPrimary transition-colors leading-snug">
+              Special Pet Care & Canine Wellness Spotlight
+            </h4>
+            <p className="text-xs text-inkMuted leading-relaxed">
+              Explore trusted resources, exclusive offers, and verified dog care insights from our partners.
+            </p>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-3 pt-3 border-t border-borderLight/60 flex items-center justify-between">
+          <span className="text-[11px] text-inkSubtle font-medium">
+            Supporting verified rescue journalism
+          </span>
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-forestPrimary group-hover:translate-x-0.5 transition-transform">
+            Learn More →
+          </span>
+        </div>
+      </a>
     </aside>
   );
 };
