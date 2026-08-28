@@ -7,10 +7,10 @@
  * Implements CLS-safe display advertisement bounding boxes with explicit
  * min-height, min-width, accessible micro-labels, and safe CTA separation.
  * 
- * Requirements: ORIGINAL_REQUEST § R6, § 83-85; PROJECT.md F26, F27
+ * Powered by Adsterra High-CPM Native Image Banner Widgets + Monetag Multitags.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export type AdSlotPosition = 'after_intro' | 'mid_article' | 'article_end' | 'sidebar';
@@ -43,14 +43,14 @@ const POSITION_CONFIGS: Record<AdSlotPosition, PositionConfig> = {
     minHeightPx: 280,
     minWidthPx: 336,
     aspectRatio: '336/280',
-    label: 'Advertisement',
+    label: 'Sponsored Stories',
   },
   article_end: {
     id: 'ad-slot-article-end',
     minHeightPx: 250,
     minWidthPx: 300,
     aspectRatio: '300/250',
-    label: 'Advertisement',
+    label: 'Sponsored Recommendations',
   },
   sidebar: {
     id: 'ad-slot-sidebar',
@@ -69,7 +69,25 @@ export const AdSlot: React.FC<AdSlotProps> = ({
 }) => {
   const config = POSITION_CONFIGS[position];
   const effectiveId = slotId || config.id;
-  const monetagDirectUrl = 'https://omg10.com/4/11662888';
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current || isTestMode) return;
+
+    // Prevent duplicate script injection
+    if (containerRef.current.querySelector('script')) return;
+
+    try {
+      const script = document.createElement('script');
+      script.async = true;
+      script.setAttribute('data-cfasync', 'false');
+      script.src = 'https://pl31063857.profitableratecpmnetwork.com/3891b5aff6fd937505e5115cfc5fdc1c/invoke.js';
+
+      containerRef.current.appendChild(script);
+    } catch {
+      // Graceful fallback
+    }
+  }, [isTestMode]);
 
   return (
     <aside
@@ -80,48 +98,22 @@ export const AdSlot: React.FC<AdSlotProps> = ({
         className
       )}
       style={{
-        marginTop: '32px',
-        marginBottom: '32px',
+        marginTop: '28px',
+        marginBottom: '28px',
       }}
     >
       {/* Accessible Micro-Label */}
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-inkSubtle mb-2">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-inkSubtle mb-2">
         {config.label}
       </span>
 
       {/* Reserved Layout-Stable Container (CLS = 0.000) */}
-      <a
-        href={monetagDirectUrl}
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        className="w-full max-w-[420px] group block bg-gradient-to-br from-paperWarm to-card border border-borderLight hover:border-forestPrimary/60 rounded-2xl p-5 shadow-soft hover:shadow-elevated transition-all text-left"
-        style={{
-          minHeight: `${Math.min(config.minHeightPx, 180)}px`,
-        }}
+      <div
+        ref={containerRef}
+        className="w-full max-w-[650px] min-h-[160px] flex items-center justify-center bg-card border border-borderLight rounded-2xl overflow-hidden shadow-soft transition-all p-2"
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1.5 flex-1">
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-forestPrimary bg-forestLight/60 px-2 py-0.5 rounded-full uppercase tracking-wider">
-              ⭐ Featured Partner
-            </span>
-            <h4 className="font-serif text-base font-bold text-inkPrimary group-hover:text-forestPrimary transition-colors leading-snug">
-              Special Pet Care & Canine Wellness Spotlight
-            </h4>
-            <p className="text-xs text-inkMuted leading-relaxed">
-              Explore trusted resources, exclusive offers, and verified dog care insights from our partners.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-3 pt-3 border-t border-borderLight/60 flex items-center justify-between">
-          <span className="text-[11px] text-inkSubtle font-medium">
-            Supporting verified rescue journalism
-          </span>
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-forestPrimary group-hover:translate-x-0.5 transition-transform">
-            Learn More →
-          </span>
-        </div>
-      </a>
+        <div id="container-3891b5aff6fd937505e5115cfc5fdc1c" className="w-full min-h-[140px]" />
+      </div>
     </aside>
   );
 };
