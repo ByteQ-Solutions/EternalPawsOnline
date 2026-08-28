@@ -88,6 +88,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
         {/* RSS Feed Alternate Link */}
         <link rel="alternate" type="application/rss+xml" title="Eternal Paws RSS Feed" href="/feed.xml" />
+        {/* Adsterra High-CPM Social Bar */}
+        <Script
+          id="adsterra-social-bar"
+          strategy="afterInteractive"
+          src="https://pl31065671.profitableratecpmnetwork.com/35/d0/9d/35d09d666e1a17157318deb1d420c662.js"
+        />
         {/* Google AdSense Script */}
         <Script
           async
