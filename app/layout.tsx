@@ -50,6 +50,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
     type: 'website',
@@ -82,6 +89,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        {/* RSS Feed Alternate Link */}
+        <link rel="alternate" type="application/rss+xml" title="Eternal Paws RSS Feed" href="/feed.xml" />
         {/* Monetag Publisher Verification */}
         <meta name="monetag" content="b8f22c9d7f8f34eb753e20578505f13c" />
         {/* Monetag In-Page Push (Clean Non-Intrusive Banner Ads) */}

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Eternal Paws Platform - Master Canine Food Safety & Nutrition Database
  * Path: src/lib/data/food-safety.ts
  * 
@@ -716,4 +716,581 @@ export const allFoodSafetyItems: FoodSafetyItem[] = [
       credit: 'Unsplash Food Archive',
     },
   },
+  {
+    id: 'food-mango',
+    slug: 'mango',
+    name: 'Mango',
+    emoji: '🥭',
+    category: 'fruits',
+    status: 'safe',
+    shortVerdict: 'Sweet & Vitamin-Rich (Remove Peel & Pit)',
+    quickAnswer: 'Yes! Dogs can safely eat mango flesh. It is packed with vitamins A, B6, C, and E, as well as beta-carotene and potassium.',
+    vetReviewSummary: 'Mango is an exceptional sweet treat. Always remove the fibrous peel and large pit, which poses a severe choking and cyanide-precursor hazard.',
+    benefits: [
+      'Loaded with Vitamin A, C, B6, and E for immune vitality and lustrous coat',
+      'Contains beta-carotene and alpha-carotene antioxidants for eye health',
+      'High natural dietary fiber aiding regular canine digestion',
+    ],
+    risks: [
+      'Mango pit is a major surgical foreign body choking hazard and contains cyanide',
+      'Tough mango skin is difficult for dogs to digest and contains urushiol allergen',
+      'High natural sugar requires portion moderation for diabetic or overweight dogs',
+    ],
+    prepInstructions: [
+      'Peel skin completely and discard',
+      'Slice flesh away from the large inner hard seed',
+      'Cut into bite-sized 1/2-inch cubes',
+      'Serve fresh or frozen as a hydrating summer reward',
+    ],
+    servingSize: {
+      smallDog: '1 to 2 small cubes',
+      mediumDog: '3 to 4 cubes',
+      largeDog: 'A few slices (1/4 cup) max',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat dried mango?',
+        answer: 'Dried mango is not chemically toxic, but it has highly concentrated sugar and tough fibers that can cause stomach upset. Fresh sliced mango is much safer.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh sliced golden mango',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-pineapple',
+    slug: 'pineapple',
+    name: 'Pineapple',
+    emoji: '🍍',
+    category: 'fruits',
+    status: 'safe',
+    shortVerdict: 'Safe & Enzymatic Superfood (Flesh Only)',
+    quickAnswer: 'Yes! Fresh pineapple in small amounts is a fantastic treat rich in vitamin C, thiamin, riboflavin, and bromelain enzyme.',
+    vetReviewSummary: 'Pineapple contains bromelain, a natural enzyme that aids protein digestion and helps deter coprophagia (stool eating). Remove the prickly rind and tough core completely.',
+    benefits: [
+      'Contains bromelain enzyme supporting healthy protein breakdown and joint comfort',
+      'High in Vitamin C, thiamin, and minerals copper and potassium',
+      'Helps discourage stool-eating behavior naturally in some dogs',
+    ],
+    risks: [
+      'Tough core and spiky skin can lacerate mouths or cause intestinal obstruction',
+      'Canned pineapple contains excessive heavy sugary syrup — feed fresh only',
+    ],
+    prepInstructions: [
+      'Slice off all prickly outer skin and eyes',
+      'Cut out the fibrous inner wooden core',
+      'Cut golden flesh into small cubes',
+    ],
+    servingSize: {
+      smallDog: '1 to 2 small chunks',
+      mediumDog: '2 to 3 chunks',
+      largeDog: 'Small handful of chunks',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat canned pineapple?',
+        answer: 'Avoid canned pineapple. It is usually soaked in heavy sugary syrup that can trigger diarrhea, weight gain, and dental cavities in dogs. Always choose fresh.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh sliced pineapple',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-pumpkin',
+    slug: 'pumpkin',
+    name: 'Canned & Plain Pumpkin',
+    emoji: '🎃',
+    category: 'vegetables',
+    status: 'safe',
+    shortVerdict: 'Veterinary #1 Digestive Miracle Food',
+    quickAnswer: 'Yes! Plain pureed pumpkin is the gold-standard veterinary home remedy for both canine diarrhea and constipation.',
+    vetReviewSummary: 'Pumpkin contains soluble and insoluble fiber that regulates bowel motility and absorbs excess liquid in loose stools. Feed 100% pure pumpkin puree (NEVER pumpkin pie mix).',
+    benefits: [
+      'Soluble fiber absorbs excess bowel water, quickly soothing diarrhea and firming stool',
+      'Insoluble fiber draws moisture into hard stools to relieve constipation',
+      'Rich in prebiotics feeding beneficial gut microbiota in the canine colon',
+      'Packed with beta-carotene, Vitamin E, iron, and potassium',
+    ],
+    risks: [
+      'NEVER feed pumpkin pie mix (contains toxic nutmeg, allspice, and sugars/xylitol)',
+      'Raw pumpkin stem and hard rind are indigestible choking hazards',
+    ],
+    prepInstructions: [
+      'Use 100% pure canned pumpkin puree (single ingredient: pumpkin)',
+      'Or bake fresh pumpkin plain and mash until smooth',
+      'Stir directly into your dog’s regular meal',
+    ],
+    servingSize: {
+      smallDog: '1 to 2 teaspoons per meal',
+      mediumDog: '1 to 2 tablespoons per meal',
+      largeDog: '2 to 4 tablespoons per meal',
+    },
+    faq: [
+      {
+        question: 'Is pumpkin good for an upset dog stomach?',
+        answer: 'Yes! Veterinarians recommend 100% pure pumpkin puree as the first-line gentle dietary aid for resolving mild digestive upset, gas, and irregular stools.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1506917728037-b6af01a7d403?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh whole and sliced orange pumpkins',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-sweet-potatoes',
+    slug: 'sweet-potatoes',
+    name: 'Cooked Sweet Potatoes',
+    emoji: '🍠',
+    category: 'vegetables',
+    status: 'safe',
+    shortVerdict: 'Nutrient-Dense Complex Carbohydrate Superfood',
+    quickAnswer: 'Yes! Cooked sweet potatoes are one of the best whole-food dietary fibers and complex carbohydrate sources for canines.',
+    vetReviewSummary: 'Cooked sweet potatoes deliver high concentrations of dietary fiber, vitamins A, B6, and C, and essential minerals. Never feed raw sweet potatoes as they are hard to digest.',
+    benefits: [
+      'Rich in beta-carotene supporting healthy immune defense, eyes, and skin',
+      'Low glycemic complex carbohydrate delivering steady, sustained physical energy',
+      'High dietary fiber promotes healthy gut bacteria and solid bowel movements',
+    ],
+    risks: [
+      'Never feed raw — raw sweet potatoes are tough, can cause intestinal blockage and indigestion',
+      'Do not prepare with butter, brown sugar, marshmallows, or salt',
+    ],
+    prepInstructions: [
+      'Peel skin and steam or bake plain until completely fork-tender',
+      'Mash or slice into soft round coins',
+      'Allow to cool completely before feeding',
+    ],
+    servingSize: {
+      smallDog: '1 tablespoon mashed',
+      mediumDog: '2 to 3 tablespoons mashed',
+      largeDog: '1/4 to 1/3 cup mashed',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat raw sweet potato?',
+        answer: 'No. Raw sweet potatoes are fibrous and difficult for a dog’s gastrointestinal tract to break down, leading to choking or bowel obstruction. Always cook thoroughly.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh organic sweet potatoes',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-salmon',
+    slug: 'salmon',
+    name: 'Cooked Salmon (Boneless)',
+    emoji: '🐟',
+    category: 'meats_proteins',
+    status: 'safe',
+    shortVerdict: 'Omega-3 Fatty Acid Coat & Joint Champion',
+    quickAnswer: 'Yes! Plain cooked boneless salmon is an incredible source of Omega-3 EPA/DHA fatty acids for canine skin, coat, and joints.',
+    vetReviewSummary: 'Cooked salmon is among the healthiest fish for dogs. NEVER feed raw salmon from the Pacific Northwest due to lethal Salmon Poisoning Disease (Nanophyetus salmincola).',
+    benefits: [
+      'Exceptional levels of Omega-3 EPA/DHA fatty acids reduce joint inflammation',
+      'Promotes an intensely glossy, dandruff-free coat and soothes dry, itchy skin',
+      'High quality, easily digestible marine protein for muscle recovery',
+    ],
+    risks: [
+      'NEVER FEED RAW SALMON — can carry Neorickettsia helminthoeca parasite (fatal Salmon Poisoning Disease)',
+      'Cooked fish bones can lodge in throat or tear stomach lining — remove all pin bones',
+    ],
+    prepInstructions: [
+      'Bake, steam, or poach plain until fully cooked through (145°F / 63°C internal)',
+      'Thoroughly check and remove 100% of pin bones and skin scales',
+      'Flake into regular kibble as a nutrient-dense topper',
+    ],
+    servingSize: {
+      smallDog: '1 tablespoon flaked',
+      mediumDog: '2 tablespoons flaked',
+      largeDog: '1/4 cup flaked 1-2 times per week',
+    },
+    faq: [
+      {
+        question: 'What is Salmon Poisoning Disease in dogs?',
+        answer: 'Raw fish from the Pacific Northwest can contain a fluke infected with bacteria that causes Salmon Poisoning Disease. It is life-threatening if untreated. Always cook salmon thoroughly.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1499125562588-29fb8a56b5d0?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh cooked salmon fillet',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-popcorn',
+    slug: 'popcorn',
+    name: 'Plain Air-Popped Popcorn',
+    emoji: '🍿',
+    category: 'human_foods',
+    status: 'moderate',
+    shortVerdict: 'Safe ONLY if Plain, Air-Popped (No Butter/Salt)',
+    quickAnswer: 'Yes, in moderation, ONLY if it is plain and air-popped with zero butter, oil, or salt. Unpopped kernels are a hazard.',
+    vetReviewSummary: 'Plain air-popped corn contains fiber, zinc, and magnesium. Movie theater or microwave buttered popcorn causes severe digestive upset and pancreatitis due to high fats and sodium.',
+    benefits: [
+      'Light, crunchy low-calorie reward for trick training',
+      'Contains small amounts of iron, magnesium, and B vitamins',
+    ],
+    risks: [
+      'Hard unpopped kernels can crack canine teeth or become stuck between gums',
+      'Butter, oil, and salt cause dehydration, vomiting, and pancreatitis',
+    ],
+    prepInstructions: [
+      'Air-pop plain kernels in a hot air popper without oil',
+      'Pick out and discard all unpopped hard kernels',
+      'Feed individual popped flakes as catch rewards',
+    ],
+    servingSize: {
+      smallDog: 'Small pinch (3 to 5 popped kernels)',
+      mediumDog: 'Small handful',
+      largeDog: '1 cup popped maximum',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat microwave buttered popcorn?',
+        answer: 'No. Microwave popcorn contains hydrogenated oils, artificial butter flavorings (diacetyl), and high sodium, which can trigger severe vomiting and pancreatitis.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Plain popped popcorn bowl',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-bread',
+    slug: 'bread',
+    name: 'Plain Cooked Bread',
+    emoji: '🍞',
+    category: 'dairy_grains',
+    status: 'moderate',
+    shortVerdict: 'Safe in Small Amounts (NEVER Raw Yeast Dough)',
+    quickAnswer: 'Yes, plain baked white or wheat bread is safe as an occasional treat, but offers minimal nutritional value. Raw yeast dough is DEADLY.',
+    vetReviewSummary: 'Plain baked bread is harmless in small bites. However, unbaked yeast dough expands in a dog’s warm stomach and produces toxic ethanol, creating a surgical emergency.',
+    benefits: [
+      'Helpful for padding stomach after swallowing small sharp objects (under vet instruction)',
+      'Inoffensive vehicle for administering oral medications',
+    ],
+    risks: [
+      'RAW YEAST DOUGH IS FATAL — expands causing gastric dilation and produces lethal alcohol poisoning',
+      'High in simple carbohydrates and empty calories contributing to weight gain',
+      'Check for raisins, garlic, onion, or xylitol in specialty breads',
+    ],
+    prepInstructions: [
+      'Feed only fully baked, plain, unseasoned bread',
+      'Tear into bite-sized morsels',
+      'Never feed moldy bread (mycotoxins cause severe tremors)',
+    ],
+    servingSize: {
+      smallDog: '1 small crust piece',
+      mediumDog: 'Half a slice',
+      largeDog: '1 full slice maximum occasional',
+    },
+    faq: [
+      {
+        question: 'Why is raw bread dough dangerous to dogs?',
+        answer: 'Yeast multiplies in the warm stomach environment, producing carbon dioxide gas that causes life-threatening stomach bloat (GDV) and ethanol alcohol that causes acute alcohol poisoning.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh sliced rustic baked bread',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-honey',
+    slug: 'honey',
+    name: 'Pure Raw Honey',
+    emoji: '🍯',
+    category: 'human_foods',
+    status: 'moderate',
+    shortVerdict: 'Safe in Minute Dabs (Antimicrobial & Allergy Aid)',
+    quickAnswer: 'Yes, in small dabs. Honey contains natural antioxidants, pollen enzymes, and antimicrobial properties.',
+    vetReviewSummary: 'Local raw honey can help build environmental pollen immunity and soothe kennel cough throats. Never feed honey to puppies under 1 year due to botulism spore risks.',
+    benefits: [
+      'Local wildflower honey contains micro-pollens that can soothe seasonal canine allergies',
+      'Natural soothing demulcent coat for irritated kennel cough throats',
+      'Contains flavonoids, phenolic acids, and natural antibacterial enzymes',
+    ],
+    risks: [
+      'NEVER feed to puppies under 12 months (risk of botulism spores)',
+      'Extremely high sugar content can cause dental cavities and weight gain',
+      'Unsuitable for diabetic canines',
+    ],
+    prepInstructions: [
+      'Use 100% pure raw unfiltered honey',
+      'Dab onto a teaspoon for the dog to lick directly',
+      'Or dissolve in lukewarm water as a soothing throat rinse',
+    ],
+    servingSize: {
+      smallDog: '1/4 teaspoon occasionally',
+      mediumDog: '1/2 teaspoon occasionally',
+      largeDog: '1 teaspoon occasionally',
+    },
+    faq: [
+      {
+        question: 'Can puppies eat honey?',
+        answer: 'No. Puppies under one year old do not have fully developed immune systems to neutralize Clostridium botulinum spores that can naturally exist in raw honey.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Pure golden honey jar',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-macadamia-nuts',
+    slug: 'macadamia-nuts',
+    name: 'Macadamia Nuts',
+    emoji: '🌰',
+    category: 'human_foods',
+    status: 'toxic',
+    shortVerdict: 'STRICTLY TOXIC — Severe Neurological & Muscular Weakness',
+    quickAnswer: 'NO! Macadamia nuts are HIGHLY TOXIC to all dogs. Ingestion causes hind limb paralysis, muscle tremors, and high fever.',
+    vetReviewSummary: 'Even minute quantities of macadamias cause acute neurotoxicity in dogs. Symptoms appear within 12 hours and include weakness, inability to walk, vomiting, and hyperthermia.',
+    benefits: ['NONE — Toxic to dogs.'],
+    risks: [
+      'Hind limb weakness, ataxia, and inability to stand or walk',
+      'Severe muscle tremors, stiffness, and joint swelling',
+      'Hyperthermia (dangerously high body temperature) and acute pancreatitis',
+    ],
+    prepInstructions: [
+      'NEVER FEED. Keep all cookies, nut mixes, and trail mixes locked away.',
+    ],
+    servingSize: {
+      smallDog: 'ZERO (Toxic)',
+      mediumDog: 'ZERO (Toxic)',
+      largeDog: 'ZERO (Toxic)',
+    },
+    symptomsIfIngested: [
+      'Weakness in back legs / stumbling within 6 to 12 hours',
+      'Inability to walk or bear weight on hind legs',
+      'Vomiting, fever, and muscle tremors',
+    ],
+    faq: [
+      {
+        question: 'How many macadamia nuts can harm a dog?',
+        answer: 'As little as 1 to 2 nuts per 10 pounds of body weight can cause severe toxic symptoms. Contact an emergency veterinarian immediately if ingested.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1536591375315-1b8380b2a59a?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Toxic macadamia nuts warning',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-coffee-caffeine',
+    slug: 'coffee-and-caffeine',
+    name: 'Coffee, Tea & Caffeine',
+    emoji: '☕',
+    category: 'human_foods',
+    status: 'toxic',
+    shortVerdict: 'STRICTLY TOXIC — Central Nervous & Heart Hazard',
+    quickAnswer: 'NO! Caffeine is a potent methylxanthine stimulant that is toxic to dogs, causing severe cardiac arrhythmias and seizures.',
+    vetReviewSummary: 'Canine cardiovascular systems are hypersensitive to caffeine. Ingestion of coffee grounds, tea bags, energy drinks, or soda requires emergency veterinary intervention.',
+    benefits: ['NONE — Poisonous stimulant to dogs.'],
+    risks: [
+      'Tachycardia (dangerously elevated heart rate) and fatal arrhythmias',
+      'Neurological hyperactivity, severe muscle tremors, and seizures',
+      'High blood pressure, hyperthermia, and cardiovascular collapse',
+    ],
+    prepInstructions: [
+      'NEVER FEED. Discard coffee grounds, K-cups, and tea bags in closed bins.',
+    ],
+    servingSize: {
+      smallDog: 'ZERO (Toxic)',
+      mediumDog: 'ZERO (Toxic)',
+      largeDog: 'ZERO (Toxic)',
+    },
+    symptomsIfIngested: [
+      'Extreme restlessness, panting, and pacing within 30 minutes',
+      'Rapid heart rate, muscle twitching, vomiting',
+      'Seizures, collapse, and cardiac arrest',
+    ],
+    faq: [
+      {
+        question: 'What if my dog licked a few drops of coffee?',
+        answer: 'A small lick of milky coffee is unlikely to be fatal for a medium/large dog, but coffee grounds or caffeine pills are highly concentrated and require immediate veterinary attention.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Coffee beans and hot coffee warning for dogs',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-white-rice',
+    slug: 'white-rice',
+    name: 'Cooked White Rice',
+    emoji: '🍚',
+    category: 'dairy_grains',
+    status: 'safe',
+    shortVerdict: 'Gentle Bland Diet Digestive Staple',
+    quickAnswer: 'Yes! Plain boiled white rice is the standard veterinarian-recommended carbohydrate for dogs recovering from gastrointestinal upset.',
+    vetReviewSummary: 'White rice has a high starch content that is easily broken down, binding loose stools without taxing an inflamed digestive system.',
+    benefits: [
+      'Gentlest carbohydrate for calming gastritis and settling acute diarrhea',
+      'Easily digestible source of quick energy for convalescing dogs',
+      'Pairs perfectly with plain boiled chicken for a 3-day recovery diet',
+    ],
+    risks: [
+      'Do not cook with salt, butter, oils, or bouillon seasonings',
+      'High glycemic index — feed in moderation for diabetic dogs',
+    ],
+    prepInstructions: [
+      'Boil in plain water without any added salt, butter, or spices',
+      'Ensure rice is thoroughly cooked until soft',
+      'Mix 2 parts white rice with 1 part plain boiled shredded chicken breast',
+    ],
+    servingSize: {
+      smallDog: '1 to 2 tablespoons',
+      mediumDog: '1/4 to 1/2 cup',
+      largeDog: '1 cup mixed with protein',
+    },
+    faq: [
+      {
+        question: 'Why is white rice better than brown rice for diarrhea?',
+        answer: 'Brown rice contains tough outer fibrous husk that requires more digestive effort. White rice is easily absorbed and immediately calms an inflamed canine bowel.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1516684732162-798a0062be99?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Cooked plain white rice bowl',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-shrimp',
+    slug: 'shrimp',
+    name: 'Cooked Shrimp (Peeled & Deveined)',
+    emoji: '🦐',
+    category: 'meats_proteins',
+    status: 'safe',
+    shortVerdict: 'Safe & Low-Calorie Seafood Protein (Fully Cooked)',
+    quickAnswer: 'Yes! Plain cooked, peeled, and deveined shrimp is a safe, high-protein treat rich in B vitamins, phosphorus, and antioxidants.',
+    vetReviewSummary: 'Shrimp is a fantastic low-fat, nutrient-dense reward. Always cook thoroughly and remove 100% of the hard shell, tail, and head to prevent choking.',
+    benefits: [
+      'Packed with antioxidant astaxanthin and Vitamin B12 for metabolic health',
+      'Contains phosphorus supporting strong bones and healthy teeth',
+      'Extremely lean protein with virtually zero carbohydrates',
+    ],
+    risks: [
+      'NEVER feed raw shrimp (contains harmful bacteria like Vibrio and parasites)',
+      'Shells and tails can puncture the mouth and esophagus or cause bowel blockage',
+      'Fried or battered shrimp (tempura, coconut shrimp) is high in toxic fats and oils',
+    ],
+    prepInstructions: [
+      'Remove shell, tail, head, and black intestinal vein completely',
+      'Steam, boil, or grill plain with zero seasoning, butter, or garlic',
+      'Chop into bite-sized pieces before serving',
+    ],
+    servingSize: {
+      smallDog: 'Half to 1 small shrimp',
+      mediumDog: '1 to 2 shrimp',
+      largeDog: '2 to 3 shrimp',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat shrimp tails or shells?',
+        answer: 'No. Shrimp shells and tails are made of chitin which is brittle and sharp, posing a severe choking hazard and intestinal puncture risk.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh cooked pink shrimp',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-mushrooms',
+    slug: 'mushrooms',
+    name: 'Mushrooms (Store-Bought vs Wild)',
+    emoji: '🍄',
+    category: 'vegetables',
+    status: 'moderate',
+    shortVerdict: 'Store White/Cremini Safe — WILD MUSHROOMS ARE LETHAL',
+    quickAnswer: 'Caution. Plain, cooked grocery store mushrooms (white button, portobello) are safe, but WILD outdoor mushrooms can cause rapid fatal toxicity.',
+    vetReviewSummary: 'While plain store-bought culinary mushrooms are safe in small bites, dogs cannot distinguish safe mushrooms from lethal wild species (Amanita phalloides). Extreme caution advised outdoors.',
+    benefits: [
+      'Store-bought cooked mushrooms provide B vitamins, selenium, and copper',
+    ],
+    risks: [
+      'WILD MUSHROOMS ARE EXTREMELY TOXIC — causes acute liver and kidney failure within hours',
+      'Store mushrooms cooked in butter, garlic, or wine are toxic',
+    ],
+    prepInstructions: [
+      'Only feed certified culinary grocery store mushrooms (Button, Cremini, Portobello)',
+      'Wash and cook thoroughly plain without butter, garlic, or salt',
+      'Rake yard regularly to remove all wild yard mushrooms immediately',
+    ],
+    servingSize: {
+      smallDog: '1 small cooked slice',
+      mediumDog: '2 cooked slices',
+      largeDog: 'Small spoonful cooked plain',
+    },
+    symptomsIfIngested: [
+      'If wild mushroom eaten: Salivation, severe vomiting, jaundice, seizures, coma. Immediate ER rush.',
+    ],
+    faq: [
+      {
+        question: 'What if my dog eats a wild mushroom in the backyard?',
+        answer: 'Treat it as a medical emergency. Pluck a sample of the mushroom in a paper towel for veterinary identification and rush your dog to the nearest emergency clinic immediately.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1504544750208-dc0358e63f7f?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh culinary mushrooms',
+      credit: 'Unsplash Food Archive',
+    },
+  },
+  {
+    id: 'food-almonds',
+    slug: 'almonds',
+    name: 'Almonds',
+    emoji: '🌰',
+    category: 'human_foods',
+    status: 'moderate',
+    shortVerdict: 'Not Toxic But Not Recommended (Choking & Pancreatitis)',
+    quickAnswer: 'Almonds are not chemically toxic like macadamias, but dogs do not digest nuts well. They present a major choking and pancreatitis hazard.',
+    vetReviewSummary: 'Canine digestive systems are not equipped to break down dense nut fats. Whole almonds often pass undigested, risking esophageal obstruction and gastric distress.',
+    benefits: [
+      'Contains Vitamin E and magnesium (but poorly absorbed by canines)',
+    ],
+    risks: [
+      'Rigid oval shape easily blocks windpipes and intestines in small breeds',
+      'High dense fat content can trigger painful acute pancreatitis',
+      'Salted, smoked, or seasoned almonds cause sodium ion toxicity',
+    ],
+    prepInstructions: [
+      'Best to avoid entirely. If an almond is dropped, monitor for choking.',
+    ],
+    servingSize: {
+      smallDog: 'ZERO (Not recommended)',
+      mediumDog: '1 accidental almond is safe',
+      largeDog: '1 to 2 occasional max',
+    },
+    faq: [
+      {
+        question: 'Can dogs drink almond milk?',
+        answer: 'A small sip of plain unsweetened almond milk is not toxic, but offers no real nutritional value to dogs. Avoid flavored or xylitol-sweetened varieties.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1508061252966-f72fb98abc22?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Raw whole almonds in wooden bowl',
+      credit: 'Unsplash Food Archive',
+    },
+  },
 ];
+
