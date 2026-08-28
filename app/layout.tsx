@@ -44,9 +44,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(DEFAULT_BASE_URL),
   keywords: ['true dog stories', 'dog reunions', 'hero dogs', 'dog rescue', 'verified pet stories'],
   authors: [{ name: 'Eternal Paws Editorial Team' }],
-  other: {
-    monetag: 'b8f22c9d7f8f34eb753e20578505f13c',
-  },
   robots: {
     index: true,
     follow: true,
@@ -91,15 +88,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
         {/* RSS Feed Alternate Link */}
         <link rel="alternate" type="application/rss+xml" title="Eternal Paws RSS Feed" href="/feed.xml" />
-        {/* Monetag Publisher Verification */}
-        <meta name="monetag" content="b8f22c9d7f8f34eb753e20578505f13c" />
-        {/* Monetag In-Page Push (Clean Non-Intrusive Banner Ads) */}
-        <Script
-          id="monetag-inpage-push"
-          strategy="afterInteractive"
-          src="https://nap5k.com/tag.min.js"
-          data-zone="11662854"
-        />
         {/* Google AdSense Script */}
         <Script
           async
