@@ -40,6 +40,8 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
   const [heroImageCredit, setHeroImageCredit] = useState('');
   const [isFeatured, setIsFeatured] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
+  const [titleSuggestions, setTitleSuggestions] = useState<{ title: string; style: string; explanation: string }[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -245,9 +247,52 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
           {/* Primary Metadata */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label htmlFor="edit-title" className="block text-xs font-bold uppercase tracking-wider text-inkSubtle mb-1">
-                Headline Title (10-120 chars)
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="edit-title" className="block text-xs font-bold uppercase tracking-wider text-inkSubtle">
+                  Headline Title (10-120 chars) <span className="text-error">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      setIsGeneratingTitle(true);
+                      const res = await fetch('/api/admin/generate-title', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          rawTitle: title,
+                          dogName,
+                          dogBreed,
+                          location: city ? `${city}, ${state}` : 'Wilderness',
+                          category,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (data.success && data.suggestions) {
+                        setTitleSuggestions(data.suggestions);
+                      }
+                    } catch {
+                      // Fallback
+                    } finally {
+                      setIsGeneratingTitle(false);
+                    }
+                  }}
+                  disabled={isGeneratingTitle}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-forestPrimary bg-forestLight/60 hover:bg-forestLight px-2.5 py-1 rounded-lg border border-forestPrimary/20 transition-all cursor-pointer"
+                >
+                  {isGeneratingTitle ? (
+                    <>
+                      <RefreshCw className="w-3 h-3 animate-spin" />
+                      <span>Optimizing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✨ AI Hook Refiner (The Dodo & SEO)</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
               <input
                 id="edit-title"
                 type="text"
@@ -256,6 +301,49 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
                 required
                 className="w-full min-h-[44px] px-3 py-2 bg-canvas border border-borderLight rounded-xl text-sm font-serif font-bold text-inkPrimary focus-visible:ring-2 focus-visible:ring-forestPrimary"
               />
+
+              {/* AI Generated Suggestions Cards */}
+              {titleSuggestions.length > 0 && (
+                <div className="mt-2.5 p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-amber-900">
+                    <span>💡 Viral Hook Suggestions (Click to apply):</span>
+                    <button
+                      type="button"
+                      onClick={() => setTitleSuggestions([])}
+                      className="text-amber-700 hover:text-amber-900 underline text-[10px]"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {titleSuggestions.map((item, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          setTitle(item.title);
+                          setTitleSuggestions([]);
+                        }}
+                        className="p-2 bg-card hover:bg-forestLight/40 border border-borderLight hover:border-forestPrimary/40 rounded-lg cursor-pointer transition-all text-left group"
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-forestPrimary">
+                            {item.style}
+                          </span>
+                          <span className="text-[10px] text-inkSubtle group-hover:text-forestPrimary font-medium">
+                            Use this headline →
+                          </span>
+                        </div>
+                        <p className="text-xs font-serif font-bold text-inkPrimary group-hover:text-forestPrimary leading-snug">
+                          {item.title}
+                        </p>
+                        <p className="text-[10px] text-inkMuted mt-0.5">
+                          {item.explanation}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
