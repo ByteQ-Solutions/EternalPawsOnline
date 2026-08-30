@@ -12,8 +12,11 @@ export async function GET() {
   try {
     const allStories = await StoryService.getAllStoriesAsync();
     const existingTitles = allStories.map((s) => s.title);
+    const existingUrls: string[] = allStories.flatMap((s) =>
+      (s.verification?.sources || []).map((src) => src.url).filter((u): u is string => typeof u === 'string' && u.length > 0)
+    );
 
-    const news = await NewsDiscoveryService.fetchLiveDogNews(existingTitles);
+    const news = await NewsDiscoveryService.fetchLiveDogNews(existingTitles, existingUrls);
     return NextResponse.json({ success: true, news });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'News discovery error';

@@ -55,6 +55,29 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [isLoadingNews, setIsLoadingNews] = useState<boolean>(false);
   const [isGeneratingFromNews, setIsGeneratingFromNews] = useState<boolean>(false);
   const [generatingNewsId, setGeneratingNewsId] = useState<string | null>(null);
+  const [publishedNewsIds, setPublishedNewsIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = JSON.parse(localStorage.getItem('eternal_paws_published_news_ids') || '[]');
+        if (Array.isArray(stored)) {
+          setPublishedNewsIds(stored);
+        }
+      } catch {}
+    }
+  }, []);
+
+  const markNewsAsPublished = (idOrUrl: string) => {
+    setPublishedNewsIds((prev) => {
+      const updated = [...new Set([...prev, idOrUrl])];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('eternal_paws_published_news_ids', JSON.stringify(updated));
+      }
+      return updated;
+    });
+    setNewsList((prev) => prev.filter((n) => n.id !== idOrUrl && n.url !== idOrUrl && n.headline !== idOrUrl));
+  };
 
   // Unique Story Engine State
   const [uniqueCategory, setUniqueCategory] = useState<string>('any');
@@ -111,7 +134,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
   const [generatedDraft, setGeneratedDraft] = useState<GeneratedStoryDraft | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // 0. Fetch Live Dog News on Mount & Refresh
+  // 0. Fetch Live Dog News on Mount & Refresh (Anti-Duplication Filtered)
   const fetchLiveNews = useCallback(async () => {
     setIsLoadingNews(true);
     setErrorMsg(null);
@@ -119,7 +142,19 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       const res = await fetch('/api/admin/ai/discover-news');
       const data = await res.json();
       if (data.success && data.news) {
-        setNewsList(data.news);
+        let stored: string[] = [];
+        if (typeof window !== 'undefined') {
+          try {
+            stored = JSON.parse(localStorage.getItem('eternal_paws_published_news_ids') || '[]');
+          } catch {}
+        }
+        const filtered = data.news.filter(
+          (n: RealNewsItem) =>
+            !stored.includes(n.id) &&
+            !stored.includes(n.url) &&
+            !stored.some((s) => n.headline && n.headline.toLowerCase().includes(s.toLowerCase()))
+        );
+        setNewsList(filtered);
       }
     } catch (err) {
       console.warn('Failed to fetch live news:', err);
@@ -275,6 +310,15 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       const data = await res.json();
       if (data.success) {
         setPublishedUrl(data.liveUrl || `/stories/${generatedUniqueStory.slug}`);
+        if (generatingNewsId) {
+          markNewsAsPublished(generatingNewsId);
+        }
+        if (generatedUniqueStory.verification?.sources?.[0]?.url) {
+          markNewsAsPublished(generatedUniqueStory.verification.sources[0].url);
+        }
+        if (generatedUniqueStory.title) {
+          markNewsAsPublished(generatedUniqueStory.title);
+        }
         if (onStoryPublished) {
           onStoryPublished(generatedUniqueStory);
         }
@@ -894,6 +938,15 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
                       <Sparkles className="w-3.5 h-3.5 mr-1 text-goldLight" />
                       {generatingNewsId === item.id ? 'Writing Story...' : '1-Click Story'}
                     </Button>
+
+                    <button
+                      type="button"
+                      onClick={() => markNewsAsPublished(item.id)}
+                      className="p-2 rounded-lg text-inkSubtle hover:text-red-600 hover:bg-red-50 transition-colors text-xs"
+                      title="Dismiss & Hide (Won't show again)"
+                    >
+                      ✕
+                    </button>
                   </div>
                 </div>
               ))
