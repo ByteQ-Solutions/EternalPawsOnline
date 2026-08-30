@@ -72,50 +72,11 @@ export const AdSlot: React.FC<AdSlotProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || isTestMode) return;
-
-    // Prevent duplicate script injection
-    if (containerRef.current.querySelector('script')) return;
-
-    try {
-      const script = document.createElement('script');
-      script.async = true;
-      script.setAttribute('data-cfasync', 'false');
-      script.src = 'https://pl31063857.profitableratecpmnetwork.com/3891b5aff6fd937505e5115cfc5fdc1c/invoke.js';
-
-      containerRef.current.appendChild(script);
-    } catch {
-      // Graceful fallback
-    }
+    // Temporarily paused during Google AdSense review
   }, [isTestMode]);
 
-  return (
-    <aside
-      id={effectiveId}
-      aria-label="Advertisement placement"
-      className={cn(
-        'w-full my-8 flex flex-col items-center justify-center select-none',
-        className
-      )}
-      style={{
-        marginTop: '28px',
-        marginBottom: '28px',
-      }}
-    >
-      {/* Accessible Micro-Label */}
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-inkSubtle mb-2">
-        {config.label}
-      </span>
-
-      {/* Reserved Layout-Stable Container (CLS = 0.000) */}
-      <div
-        ref={containerRef}
-        className="w-full max-w-[650px] min-h-[160px] flex items-center justify-center bg-card border border-borderLight rounded-2xl overflow-hidden shadow-soft transition-all p-2"
-      >
-        <div id="container-3891b5aff6fd937505e5115cfc5fdc1c" className="w-full min-h-[140px]" />
-      </div>
-    </aside>
-  );
+  // Return null during Google AdSense review for 100% clean, pristine reading experience
+  return null;
 };
 
 export default AdSlot;
