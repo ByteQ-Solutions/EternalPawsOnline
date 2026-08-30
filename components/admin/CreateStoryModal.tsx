@@ -23,6 +23,9 @@ import {
   ShieldCheck,
   MapPin,
   ExternalLink,
+  Sparkles,
+  Wand2,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
@@ -90,7 +93,100 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
 
+  // AI Story Copilot States
+  const [aiIdeaPrompt, setAiIdeaPrompt] = useState('');
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [isAiPolishing, setIsAiPolishing] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleAIGenerateFullStory = async () => {
+    const prompt = aiIdeaPrompt.trim() || title.trim() || dogName.trim();
+    if (!prompt) {
+      setErrorMsg('Please type a brief story idea or dog details in the AI box first.');
+      return;
+    }
+
+    setIsAiGenerating(true);
+    setErrorMsg(null);
+    setAiFeedback(null);
+
+    try {
+      const res = await fetch('/api/admin/ai/generate-unique', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          themePrompt: prompt,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.story) {
+        const s = data.story;
+        if (s.title) setTitle(s.title);
+        if (s.subtitle) setSubtitle(s.subtitle);
+        if (s.slug) setSlug(s.slug);
+        if (s.excerpt) setExcerpt(s.excerpt);
+        if (s.content) setContent(s.content);
+        if (s.dogName) setDogName(s.dogName);
+        if (s.dogBreed) setDogBreed(s.dogBreed);
+        if (s.location?.city) setCity(s.location.city);
+        if (s.location?.stateOrProvince) setState(s.location.stateOrProvince);
+        if (s.category) setCategory(s.category);
+        if (s.emotionalThemes && s.emotionalThemes.length > 0) setThemes(s.emotionalThemes as EmotionalTheme[]);
+        if (s.heroImage?.url && !photoDataUrl) {
+          setPhotoDataUrl(s.heroImage.url);
+          setPhotoCredit(s.heroImage.credit || 'Editorial Photograph');
+        }
+
+        setAiFeedback('✨ Story generated with human-crafted narrative tone & high SEO score!');
+        setTimeout(() => setAiFeedback(null), 4000);
+      } else {
+        setErrorMsg(data.error || 'Failed to generate story.');
+      }
+    } catch {
+      setErrorMsg('Network error while generating story.');
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const handleAIPolishContent = async () => {
+    if (!content.trim()) {
+      setErrorMsg('Please write or paste narrative text into the story content box to polish.');
+      return;
+    }
+
+    setIsAiPolishing(true);
+    setErrorMsg(null);
+    setAiFeedback(null);
+
+    try {
+      const res = await fetch('/api/admin/ai/polish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: content,
+          dogName: dogName || 'Rescue Dog',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.polishedText) {
+        setContent(data.polishedText);
+        setAiFeedback('🪄 Story polished into high-emotion, human voice with zero AI clichés!');
+        setTimeout(() => setAiFeedback(null), 4000);
+      } else {
+        setErrorMsg(data.error || 'Failed to polish story content.');
+      }
+    } catch {
+      setErrorMsg('Network error while polishing story.');
+    } finally {
+      setIsAiPolishing(false);
+    }
+  };
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
@@ -304,6 +400,49 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
 
         {/* Form */}
         <form onSubmit={handlePublish} className="space-y-5">
+          {/* ✨ AI Story Assistant Copilot Panel */}
+          <div className="p-4 bg-forestLight/40 border border-forestPrimary/30 rounded-2xl space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-forestPrimary" />
+                <span className="text-xs font-bold text-forestPrimary uppercase tracking-wider">
+                  AI Story Assistant (Human-Tone & SEO Engine)
+                </span>
+              </div>
+              <Badge variant="forest" size="sm" className="text-[10px]">
+                DeepSeek v4 / Qwen
+              </Badge>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch gap-2">
+              <input
+                type="text"
+                value={aiIdeaPrompt}
+                onChange={(e) => setAiIdeaPrompt(e.target.value)}
+                placeholder="Enter rough idea or notes (e.g. Golden Retriever named Max saved owner from frozen river in Alaska)..."
+                className="flex-1 px-3.5 py-2 text-xs bg-card border border-borderLight rounded-xl text-inkPrimary focus-visible:ring-2 focus-visible:ring-forestPrimary shadow-xs"
+              />
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={handleAIGenerateFullStory}
+                isLoading={isAiGenerating}
+                className="text-xs font-bold min-h-[38px] whitespace-nowrap shadow-soft"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-goldLight" />
+                {isAiGenerating ? 'Synthesizing Story...' : '✨ 1-Click Auto-Draft Story'}
+              </Button>
+            </div>
+
+            {aiFeedback && (
+              <p className="text-xs font-bold text-emerald-800 flex items-center gap-1.5 animate-fadeIn">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                {aiFeedback}
+              </p>
+            )}
+          </div>
+
           {/* Headline & Category */}
           <div className="space-y-4">
             <div>
@@ -649,13 +788,27 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
 
           {/* Narrative Content Body */}
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
               <label htmlFor="create-content" className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
                 Full Narrative Story Content <span className="text-error">*</span>
               </label>
-              <span className="text-xs text-inkMuted font-mono">
-                {wordCount} words
-              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleAIPolishContent}
+                  disabled={isAiPolishing || !content.trim()}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-forestPrimary bg-forestLight/60 hover:bg-forestLight px-2.5 py-1 rounded-lg border border-forestPrimary/20 transition-all cursor-pointer disabled:opacity-50"
+                  title="Rewrite narrative with authentic human voice, emotional hooks & natural sentence flow"
+                >
+                  <Wand2 className={`w-3 h-3 ${isAiPolishing ? 'animate-spin' : 'text-goldAccent'}`} />
+                  <span>{isAiPolishing ? 'Polishing Human Voice...' : '🪄 Polish & Humanize Voice'}</span>
+                </button>
+
+                <span className="text-xs text-inkMuted font-mono">
+                  {wordCount} words
+                </span>
+              </div>
             </div>
             <textarea
               id="create-content"

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, AlertCircle, CheckCircle2, ShieldCheck, PenTool, Camera, Image as ImageIcon, RefreshCw, Upload } from 'lucide-react';
+import { X, Save, AlertCircle, CheckCircle2, ShieldCheck, PenTool, Camera, Image as ImageIcon, RefreshCw, Upload, Wand2, Sparkles } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
 import { Story } from '@/domain/types';
@@ -35,14 +35,18 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
   const [state, setState] = useState('');
   const [category, setCategory] = useState<string>('rescues');
   const [verificationStatus, setVerificationStatus] = useState<string>('Verified');
-  const [factChecker, setFactChecker] = useState('Elena Rostova, Fact Checker');
+  const [factChecker, setFactChecker] = useState('Eternal Paws Editorial Desk');
   const [heroImageUrl, setHeroImageUrl] = useState('');
   const [heroImageCredit, setHeroImageCredit] = useState('');
-  const [isFeatured, setIsFeatured] = useState(true);
+  const [isFeatured, setIsFeatured] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingTitle, setIsGeneratingTitle] = useState(false);
   const [titleSuggestions, setTitleSuggestions] = useState<{ title: string; style: string; explanation: string }[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // AI Polish State
+  const [isAiPolishing, setIsAiPolishing] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<string | null>(null);
 
   useEffect(() => {
     if (story) {
@@ -203,6 +207,41 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       setErrorMsg('Network error while saving story changes.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleAIPolishContent = async () => {
+    if (!content.trim()) {
+      setErrorMsg('Please write or paste narrative text into the story content box to polish.');
+      return;
+    }
+
+    setIsAiPolishing(true);
+    setErrorMsg(null);
+    setAiFeedback(null);
+
+    try {
+      const res = await fetch('/api/admin/ai/polish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: content,
+          dogName: dogName || 'Rescue Dog',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.polishedText) {
+        setContent(data.polishedText);
+        setAiFeedback('🪄 Story polished into high-emotion, human voice with zero AI clichés!');
+        setTimeout(() => setAiFeedback(null), 4000);
+      } else {
+        setErrorMsg(data.error || 'Failed to polish story content.');
+      }
+    } catch {
+      setErrorMsg('Network error while polishing story.');
+    } finally {
+      setIsAiPolishing(false);
     }
   };
 
@@ -533,14 +572,35 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
 
           {/* Narrative Content Body */}
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
               <label htmlFor="edit-content" className="text-xs font-bold uppercase tracking-wider text-inkSubtle">
                 Full Narrative Story Body
               </label>
-              <span className="text-xs text-inkMuted font-mono">
-                {wordCount} words (min. 50 words)
-              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleAIPolishContent}
+                  disabled={isAiPolishing || !content.trim()}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-forestPrimary bg-forestLight/60 hover:bg-forestLight px-2.5 py-1 rounded-lg border border-forestPrimary/20 transition-all cursor-pointer disabled:opacity-50"
+                  title="Rewrite narrative with authentic human voice, emotional hooks & natural sentence flow"
+                >
+                  <Wand2 className={`w-3 h-3 ${isAiPolishing ? 'animate-spin' : 'text-goldAccent'}`} />
+                  <span>{isAiPolishing ? 'Polishing Human Voice...' : '🪄 Polish & Humanize Voice'}</span>
+                </button>
+
+                <span className="text-xs text-inkMuted font-mono">
+                  {wordCount} words (min. 50 words)
+                </span>
+              </div>
             </div>
+
+            {aiFeedback && (
+              <p className="text-xs font-bold text-emerald-800 flex items-center gap-1.5 mb-2 animate-fadeIn">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                {aiFeedback}
+              </p>
+            )}
             <textarea
               id="edit-content"
               rows={8}
