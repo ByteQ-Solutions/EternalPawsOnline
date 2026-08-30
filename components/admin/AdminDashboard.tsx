@@ -66,9 +66,12 @@ import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { AnnouncementManager } from './AnnouncementManager';
 import { StorageManager } from './StorageManager';
 import { HeroSlideshowManager } from './HeroSlideshowManager';
+import { FoodSafetyManager } from './FoodSafetyManager';
+import { WellnessManager } from './WellnessManager';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { Story } from '@/domain/types';
+import { HeartPulse, Apple } from 'lucide-react';
 
 interface RedirectRule {
   fromPath: string;
@@ -78,6 +81,8 @@ interface RedirectRule {
 
 type AdminTab =
   | 'stories'
+  | 'wellness'
+  | 'food-safety'
   | 'hero-slideshow'
   | 'ai-studio'
   | 'submissions'
@@ -346,7 +351,31 @@ export const AdminDashboard: React.FC = () => {
               : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
           }`}
         >
-          <FileText className="w-4 h-4" /> Editorial Stories & Gate
+          <FileText className="w-4 h-4" /> Stories & Gate ({stories.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('wellness')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'wellness'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <HeartPulse className="w-4 h-4 text-red-500" /> 🩺 Health & Wellness
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('food-safety')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'food-safety'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Apple className="w-4 h-4 text-emerald-500" /> 🍏 Food Safety
         </button>
 
         <button
@@ -965,7 +994,13 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 2: HERO SLIDESHOW & SPOTLIGHT CAROUSEL */}
+      {/* TAB 2: HEALTH & WELLNESS DESK */}
+      {activeTab === 'wellness' && <WellnessManager />}
+
+      {/* TAB 3: FOOD SAFETY DESK */}
+      {activeTab === 'food-safety' && <FoodSafetyManager />}
+
+      {/* TAB 4: HERO SLIDESHOW & SPOTLIGHT CAROUSEL */}
       {activeTab === 'hero-slideshow' && (
         <HeroSlideshowManager
           stories={stories}
