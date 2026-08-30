@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Eternal Paws Platform - Dynamic XML Sitemap Generator
  * Path: app/sitemap.ts
  * 
@@ -10,6 +10,7 @@
 import { MetadataRoute } from 'next';
 import { StoryService } from '@/lib/services/story-service';
 import { allFoodSafetyItems } from '@/lib/data/food-safety';
+import { allWellnessGuides } from '@/lib/data/wellness';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const revalidate = 60;
@@ -31,6 +32,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/wellness`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/can-dogs-eat`,
@@ -130,6 +137,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes];
+  // 5. Health, Behavior & Emergency Wellness Guides
+  const wellnessRoutes: MetadataRoute.Sitemap = allWellnessGuides.map((guide) => ({
+    url: `${baseUrl}/wellness/${guide.slug}`,
+    lastModified: new Date(guide.lastReviewedAt),
+    changeFrequency: 'weekly',
+    priority: guide.urgency === 'emergency' ? 0.95 : 0.85,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes, ...wellnessRoutes];
 }
 
