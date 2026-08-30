@@ -1,33 +1,33 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck, Heart, Award, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Heart, Award, Users, ArrowRight, CheckCircle2, BookOpen, Stethoscope, Scale } from 'lucide-react';
 import { Container } from '@/design-system/components/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 export const metadata: Metadata = {
-  title: 'About Our Mission & Editorial Board | Eternal Paws',
+  title: 'About Our Mission, Research & Editorial Standards | Eternal Paws',
   description:
-    'Dedicated to celebrating canine devotion through 100% verified, true emotional stories. Learn about our fact-checking standards, editorial team, and shelter advocacy.',
+    'Dedicated to celebrating canine devotion through 100% verified, true emotional stories and veterinary-researched health guides. Learn about our authentic research methodology and institutional sources.',
 };
 
 export default function AboutPage() {
   return (
-    <div className="py-8 sm:py-12">
+    <div className="py-8 sm:py-12 bg-sand text-ink">
       <Container size="reading">
         {/* Navigation Breadcrumbs */}
         <Breadcrumbs items={[{ label: 'About Us' }]} className="mb-6" />
 
         {/* Page Header */}
         <header className="space-y-4 pb-8 border-b border-borderLight">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forestLight text-forestPrimary text-xs font-semibold">
-            <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-            <span>Journalistic Truth in Pet Media</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-forest/10 border border-forest/20 text-forest text-xs font-semibold uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-forest" aria-hidden="true" />
+            <span>Independent Journalistic Integrity</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-inkPrimary tracking-tight leading-tight">
             Honoring Canine Devotion Through 100% Verified Truth
           </h1>
           <p className="text-lg sm:text-xl text-inkMuted leading-relaxed">
-            In an era of viral AI fakes and scripted reunion videos, Eternal Paws was founded on a simple pledge: <em>every story we publish is real, corroborated, and anchored in verified truth.</em>
+            In an era of viral AI fabrications and staged pet dramas, Eternal Paws was established with a singular, unwavering pledge: <em>every story and health guide we publish is grounded in real-world facts, official documentation, and peer-reviewed veterinary science.</em>
           </p>
         </header>
 
@@ -36,191 +36,211 @@ export default function AboutPage() {
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
             Our Mission & Truth Commitment
           </h2>
-          <div className="p-6 rounded-xl bg-forestLight/50 border border-forestPrimary/20 space-y-3">
+          <div className="p-6 rounded-2xl bg-forestLight/50 border border-forestPrimary/20 space-y-3 shadow-xs">
             <h3 className="font-serif text-lg font-bold text-forestPrimary">
-              The Eternal Paws Truth Commitment
+              The Eternal Paws Editorial Pledge
             </h3>
             <p className="text-sm sm:text-base text-inkPrimary leading-relaxed">
-              <strong>Mission:</strong> To celebrate the extraordinary bond between humans and dogs through 100% verified, true emotional stories.
+              <strong>Our Mission:</strong> To document the loyalty, heroism, and emotional resilience of dogs through authentic, verified reporting that uplifts pet parents and supports real animal welfare.
             </p>
             <p className="text-sm sm:text-base text-inkMuted leading-relaxed">
-              <strong>Commitment to Truth:</strong> Zero fabricated narratives, zero misleading headlines, full public source attribution.
+              <strong>Commitment to Honesty:</strong> Zero manufactured drama, zero deceptive clickbait, and 100% public source attribution for every rescue and reunion featured on our platform.
             </p>
           </div>
-          <p className="text-inkMuted leading-relaxed">
-            Dogs give us unconditional loyalty, unmatched courage, and boundless love. They deserve storytelling that respects their reality. We never exaggerate medical conditions, script dramatic reunions, or publish unverified claims for social media engagement.
+          <p className="text-inkMuted leading-relaxed text-sm sm:text-base">
+            Dogs offer humanity unconditional loyalty, courage, and companionship. They deserve storytelling that respects their reality. We never exaggerate medical conditions, script dramatic reunions, or publish unverified claims for social media engagement.
           </p>
         </section>
 
-        {/* The Misinformation Problem */}
+        {/* Why Authentic Dog Media Matters */}
         <section className="py-8 space-y-6 border-b border-borderLight">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
             Why Verified Dog Journalism Matters
           </h2>
-          <p className="text-inkMuted leading-relaxed">
-            Social media platforms are saturated with staged rescue videos, synthetic AI pet dramas, and recycled hoaxes designed to generate clicks. This fake content harms real animal welfare:
+          <p className="text-inkMuted leading-relaxed text-sm sm:text-base">
+            Digital platforms are increasingly inundated with staged rescue videos, synthetic pet stories, and misleading claims. This misinformation causes genuine harm:
           </p>
-          <ul className="space-y-3 text-inkPrimary">
+          <ul className="space-y-3.5 text-inkPrimary text-sm sm:text-base">
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-forestPrimary flex-shrink-0 mt-0.5" aria-hidden="true" />
               <span>
-                <strong>Distorts public expectations:</strong> Fabricated recovery timelines create unrealistic expectations for adopters rehabilitating traumatized rescue dogs.
+                <strong>Distorts public expectations:</strong> Fabricated recovery timelines create unrealistic expectations for adopters rehabilitating traumatized shelter dogs.
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-forestPrimary flex-shrink-0 mt-0.5" aria-hidden="true" />
               <span>
-                <strong>Diverts support from authentic shelters:</strong> Fake donation links and staged rescues siphon vital funding away from legitimate 501(c)(3) animal shelters.
+                <strong>Diverts support from authentic shelters:</strong> Fake donation links and staged rescues siphon vital funding away from legitimate non-profit animal shelters.
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-forestPrimary flex-shrink-0 mt-0.5" aria-hidden="true" />
               <span>
-                <strong>Erodes community trust:</strong> When readers discover a beloved viral story was faked, it diminishes faith in all genuine canine search and rescue efforts.
+                <strong>Erodes community trust:</strong> When readers discover a viral pet story was faked, it diminishes faith in genuine canine search and rescue efforts.
               </span>
             </li>
           </ul>
         </section>
 
-        {/* Editorial Standards Overview */}
+        {/* How We Research & Verify Medical / Veterinary Content */}
         <section className="py-8 space-y-6 border-b border-borderLight">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
-            Our 4-Tier Verification Standard
+            Our Institutional Veterinary & Health Research Framework
           </h2>
-          <p className="text-inkMuted leading-relaxed">
-            Every story published on Eternal Paws undergoes rigorous fact-checking before receiving an editorial trust rating. We inspect official shelter intake logs, municipal licensing dockets, veterinary clinical records, and sworn law enforcement dispatch logs.
+          <p className="text-inkMuted leading-relaxed text-sm sm:text-base">
+            We take canine health and nutrition seriously. Our editorial team does not invent medical advice or promote unproven fads. Every nutritional food guide, emergency first-aid protocol, and behavioral analysis is synthesized directly from gold-standard veterinary authorities:
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="p-4 rounded-lg bg-card border border-borderLight space-y-1.5">
-              <div className="flex items-center gap-2 font-semibold text-forestPrimary text-sm">
-                <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-                <span>Primary Record Corroboration</span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div className="p-4 rounded-xl bg-card border border-borderLight space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 font-bold text-forestPrimary text-sm">
+                <Stethoscope className="w-4 h-4 text-forestPrimary" />
+                <span>ASPCA Animal Poison Control (APCC)</span>
               </div>
-              <p className="text-xs text-inkMuted">
-                Direct cross-examination of medical records, microchip telemetry, and police search reports.
+              <p className="text-xs text-inkMuted leading-relaxed">
+                Toxicology baselines, theobromine thresholds, and emergency decontamination protocols directly aligned with ASPCA clinical criteria.
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-card border border-borderLight space-y-1.5">
-              <div className="flex items-center gap-2 font-semibold text-[#8A5200] text-sm">
-                <Award className="w-4 h-4" aria-hidden="true" />
-                <span>Transparent Public Trust Cards</span>
+
+            <div className="p-4 rounded-xl bg-card border border-borderLight space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 font-bold text-forestPrimary text-sm">
+                <BookOpen className="w-4 h-4 text-forestPrimary" />
+                <span>American Veterinary Medical Association (AVMA)</span>
               </div>
-              <p className="text-xs text-inkMuted">
-                Every story includes full citations, confidence scores, fact-checker names, and direct links to public records.
+              <p className="text-xs text-inkMuted leading-relaxed">
+                Clinical standards for heatstroke emergency management, preventive senior care, and surgical interventions (such as GDV gastropexy).
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-card border border-borderLight space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 font-bold text-forestPrimary text-sm">
+                <ShieldCheck className="w-4 h-4 text-forestPrimary" />
+                <span>Merck Veterinary Manual & JAVMA</span>
+              </div>
+              <p className="text-xs text-inkMuted leading-relaxed">
+                Peer-reviewed pharmacological data, canine behavioral ethology, and evidence-based nutritional serving guidelines.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-card border border-borderLight space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 font-bold text-forestPrimary text-sm">
+                <Scale className="w-4 h-4 text-forestPrimary" />
+                <span>American Kennel Club (AKC) Health Archives</span>
+              </div>
+              <p className="text-xs text-inkMuted leading-relaxed">
+                Breed-specific predispositions, life stage milestones, and safe treat preparation guidelines.
               </p>
             </div>
           </div>
-          <div className="pt-2">
+        </section>
+
+        {/* Editorial Desk Structure */}
+        <section className="py-8 space-y-6 border-b border-borderLight">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
+            The Eternal Paws Editorial & Research Desks
+          </h2>
+          <p className="text-inkMuted leading-relaxed text-sm sm:text-base">
+            Eternal Paws operates through specialized editorial desks dedicated to thorough research, multi-source corroboration, and community engagement:
+          </p>
+
+          <div className="space-y-4">
+            <div className="p-5 rounded-2xl bg-card border border-borderLight space-y-2 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-inkPrimary">
+                  Primary Record & Public Dispatch Research Desk
+                </h3>
+                <span className="text-[11px] font-bold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full">
+                  Fact-Checking
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
+                Responsible for cross-referencing law enforcement incident blotters, fire department technical rescue mission reports, and municipal shelter intake logs before any story receives our verified badge.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-card border border-borderLight space-y-2 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-inkPrimary">
+                  Canine Health & Nutrition Research Desk
+                </h3>
+                <span className="text-[11px] font-bold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full">
+                  Veterinary Science
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
+                Synthesizes peer-reviewed veterinary literature, ASPCA poison control bulletins, and nutritional safety charts to ensure our Food Safety and Wellness guides remain accurate and up-to-date.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-card border border-borderLight space-y-2 shadow-xs">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-inkPrimary">
+                  Community Submissions & Story Curation Desk
+                </h3>
+                <span className="text-[11px] font-bold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full">
+                  Editorial Care
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
+                Reviews reader-submitted stories, verifies ownership records, coordinates photo permissions, and crafts emotional narratives that honor the genuine spirit of each dog&apos;s journey.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Fact-Checking & Transparency Links */}
+        <section className="py-8 space-y-4 border-b border-borderLight">
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-inkPrimary">
+            Our Transparent Editorial Standards
+          </h2>
+          <p className="text-inkMuted leading-relaxed text-sm">
+            We invite readers to review our complete verification charters, correction submission procedures, and privacy policies:
+          </p>
+          <div className="flex flex-wrap gap-3 pt-1">
             <Link
               href="/fact-checking"
-              className="inline-flex items-center gap-2 text-forestPrimary font-semibold hover:underline text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary rounded"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-card border border-borderLight text-xs font-bold text-forestPrimary hover:bg-forestLight transition-colors"
             >
-              <span>Explore our full Fact-Checking Rubric & Methodology</span>
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              <span>Fact-Checking Rubric</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/editorial-policy"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-card border border-borderLight text-xs font-bold text-forestPrimary hover:bg-forestLight transition-colors"
+            >
+              <span>Editorial Standards</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/corrections"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-card border border-borderLight text-xs font-bold text-forestPrimary hover:bg-forestLight transition-colors"
+            >
+              <span>Corrections Center</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </section>
 
-        {/* Editorial Board & Bios */}
-        <section className="py-8 space-y-6 border-b border-borderLight">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
-            Editorial Board & Fact-Checkers
-          </h2>
-          <div className="space-y-6">
-            <div className="p-5 rounded-lg bg-card border border-borderLight space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <h3 className="font-serif text-lg font-bold text-inkPrimary">
-                  Elena Rostova
-                </h3>
-                <span className="text-xs font-semibold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full self-start">
-                  Senior Fact-Checker & Investigative Editor
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
-                Former investigative journalist with 12 years of experience covering animal welfare, municipal emergency services, and search-and-rescue canine deployments. Elena leads our primary record audit process.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-lg bg-card border border-borderLight space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <h3 className="font-serif text-lg font-bold text-inkPrimary">
-                  Dr. Sarah Jenkins, DVM
-                </h3>
-                <span className="text-xs font-semibold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full self-start">
-                  Veterinary Medical Advisor
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
-                Board-certified emergency veterinary specialist with over 15 years in high-altitude trauma and wilderness canine rescue recovery. Dr. Jenkins reviews all medical claims, trauma diagnostics, and recovery timelines.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-lg bg-card border border-borderLight space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <h3 className="font-serif text-lg font-bold text-inkPrimary">
-                  Marcus Vance
-                </h3>
-                <span className="text-xs font-semibold text-forestPrimary bg-forestLight px-2.5 py-0.5 rounded-full self-start">
-                  Editorial Director & Animal Welfare Liaison
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-inkMuted leading-relaxed">
-                Lifelong canine advocate and former director of shelter communications. Marcus oversees ethical storytelling guidelines, community submissions, and partnerships with non-profit shelters nationwide.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Canine Advocacy Statement */}
-        <section className="py-8 space-y-6 border-b border-borderLight">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary">
-            Canine Advocacy & Shelter Partnerships
-          </h2>
-          <p className="text-inkMuted leading-relaxed">
-            Eternal Paws donates a portion of all platform proceeds to verified non-profit animal shelters, search-and-rescue canine training units, and low-cost microchipping clinics. We actively advocate for:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-cardMuted/60 border border-borderLight space-y-1">
-              <h4 className="font-semibold text-inkPrimary text-sm">Universal Microchipping</h4>
-              <p className="text-xs text-inkMuted">
-                Educating pet guardians on registered ISO microchips as the #1 tool for lost dog reunions.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-cardMuted/60 border border-borderLight space-y-1">
-              <h4 className="font-semibold text-inkPrimary text-sm">SAR Canine Funding</h4>
-              <p className="text-xs text-inkMuted">
-                Supporting volunteer wilderness and avalanche search dog units with protective gear and medical kits.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-cardMuted/60 border border-borderLight space-y-1">
-              <h4 className="font-semibold text-inkPrimary text-sm">Ethical Rescue Adoption</h4>
-              <p className="text-xs text-inkMuted">
-                Spotlighting special-needs, senior, and prosthetic-pioneer dogs who prove resilience has no limits.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Call to Action Links */}
+        {/* Call to Action */}
         <section className="py-8 text-center space-y-4">
           <h3 className="font-serif text-2xl font-bold text-inkPrimary">
             Have a True Dog Story to Share?
           </h3>
           <p className="text-sm text-inkMuted max-w-md mx-auto">
-            Submit your dog&apos;s verified rescue, reunion, or loyalty story to our fact-checking desk.
+            Submit your dog&apos;s rescue, reunion, or heroic loyalty journey to our verification desk.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <Link
               href="/submit-story"
-              className="min-h-[44px] px-6 py-2.5 rounded-lg bg-forestPrimary hover:bg-forestPrimary/90 text-white font-semibold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary flex items-center justify-center"
+              className="min-h-[44px] px-6 py-2.5 rounded-xl bg-forestPrimary hover:bg-forestHover text-white font-bold text-sm shadow-soft transition-colors flex items-center justify-center"
             >
               Submit a True Story
             </Link>
             <Link
-              href="/editorial-policy"
-              className="min-h-[44px] px-6 py-2.5 rounded-lg bg-card hover:bg-cardMuted text-inkPrimary border border-borderLight font-semibold text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forestPrimary flex items-center justify-center"
+              href="/wellness"
+              className="min-h-[44px] px-6 py-2.5 rounded-xl bg-card hover:bg-cardMuted text-inkPrimary border border-borderLight font-bold text-sm shadow-xs transition-colors flex items-center justify-center"
             >
-              Read Editorial Policy
+              Explore Health & Wellness
             </Link>
           </div>
         </section>

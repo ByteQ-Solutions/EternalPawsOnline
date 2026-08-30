@@ -57,7 +57,7 @@ export const EditStoryModal: React.FC<EditStoryModalProps> = ({
       setState(story.location?.stateOrProvince || '');
       setCategory(story.category || 'rescues');
       setVerificationStatus(story.verification?.status || 'Verified');
-      setFactChecker(story.verification?.verifiedBy || 'Elena Rostova, Fact Checker');
+      setFactChecker(story.verification?.verifiedBy || 'Eternal Paws Editorial Desk');
       setHeroImageUrl(story.heroImage?.url || '');
       setHeroImageCredit(story.heroImage?.credit || '');
       setIsFeatured(story.featured ?? true);

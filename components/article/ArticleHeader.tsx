@@ -40,9 +40,11 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
     .join(', ');
 
   const factCheckerName =
-    story.verification?.verifiedBy && story.verification.verifiedBy.trim().length > 0
+    story.verification?.verifiedBy &&
+    story.verification.verifiedBy.trim().length > 0 &&
+    !story.verification.verifiedBy.toLowerCase().includes('elena')
       ? story.verification.verifiedBy.trim()
-      : 'Elena Rostova, Senior Fact Checker';
+      : 'Eternal Paws Editorial & Verification Desk';
 
   const categoryLabel = story.category.replace(/-/g, ' ');
 

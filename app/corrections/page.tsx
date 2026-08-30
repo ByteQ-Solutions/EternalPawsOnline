@@ -291,7 +291,7 @@ export default function CorrectionsPage() {
                   label="Your Full Name / Organization"
                   value={formData.submitterName}
                   onChange={(e) => setFormData({ ...formData, submitterName: e.target.value })}
-                  placeholder="e.g. Elena Rostova"
+                  placeholder="e.g. Jane Doe / Shelter Director"
                   error={errors.submitterName}
                   required
                 />

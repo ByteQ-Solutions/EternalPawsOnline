@@ -42,7 +42,7 @@ const DEFAULT_UPDATES: Record<string, TimelineUpdateItem[]> = {
       date: 'July 2025',
       headline: 'Full Vision Adaptation & Daily Scent Walks',
       content: 'Six months following her 30-mile forest trek, Bella celebrated her 13th birthday with complete veterinary clearance. Her family created a designated sensory garden with lavender and rosemary trails, which she navigates with boundless energy.',
-      verifiedBy: 'Elena Rostova, Fact Checker',
+      verifiedBy: 'Eternal Paws Verification Desk',
     },
     {
       id: 'update-bella-02',
@@ -50,7 +50,7 @@ const DEFAULT_UPDATES: Record<string, TimelineUpdateItem[]> = {
       date: 'January 2026',
       headline: 'Community Trail Ambassador',
       content: 'Bella was honored as the honorary mascot of the Blue Ridge Mountain Search & Rescue youth educational program, inspiring responsible microchipping and senior dog adoption across western NC.',
-      verifiedBy: 'Sarah Jenkins, Editor in Chief',
+      verifiedBy: 'Eternal Paws Verification Desk',
     },
   ],
   Barnaby: [
@@ -60,7 +60,7 @@ const DEFAULT_UPDATES: Record<string, TimelineUpdateItem[]> = {
       date: 'January 2026',
       headline: 'Lifesaving Bond Stronger Than Ever',
       content: 'One year after shielding the twins through flash floods in Pisgah Forest, Barnaby accompanies the family on all outdoor trips equipped with a GPS locator collar. The local emergency division presented him with an embroidered service vest.',
-      verifiedBy: 'Marcus Vance, Lead Investigator',
+      verifiedBy: 'Eternal Paws Verification Desk',
     },
   ],
 };

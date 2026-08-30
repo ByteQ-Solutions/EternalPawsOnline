@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       verification: {
         status: (story.verification?.status || 'Strongly Verified') as VerificationStatus,
         confidenceScore: story.verification?.confidenceScore || story.verification?.trustScore || 95,
-        verifiedBy: story.verification?.verifiedBy || story.verification?.factChecker || 'Elena Rostova, Fact Checker',
+        verifiedBy: story.verification?.verifiedBy || story.verification?.factChecker || 'Eternal Paws Editorial Desk',
         verifiedAt: new Date().toISOString(),
         methodologyNotes: story.verification?.methodologyNotes || 'Verified via official record review.',
         sources: story.verification?.sources || [],

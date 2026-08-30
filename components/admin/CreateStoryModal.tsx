@@ -79,7 +79,7 @@ export const CreateStoryModal: React.FC<CreateStoryModalProps> = ({
   
   // Fact-Checking & Trust State
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('Verified');
-  const [factChecker, setFactChecker] = useState('Elena Rostova, Senior Fact Checker');
+  const [factChecker, setFactChecker] = useState('Eternal Paws Editorial Desk');
   const [sourceName, setSourceName] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
 

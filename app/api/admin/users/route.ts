@@ -35,8 +35,8 @@ let memoryAdminUsers: AdminUser[] = [
   },
   {
     id: 'user-admin-002',
-    email: 'elena.rostova@eternal-paws.com',
-    name: 'Elena Rostova',
+    email: 'editorial@eternalpaws.online',
+    name: 'Editorial Fact-Checker',
     role: 'fact_checker',
     status: 'active',
     lastLoginAt: new Date(Date.now() - 3600000 * 5).toISOString(),
@@ -44,8 +44,8 @@ let memoryAdminUsers: AdminUser[] = [
   },
   {
     id: 'user-admin-003',
-    email: 'sarah.miller@eternal-paws.com',
-    name: 'Sarah Miller',
+    email: 'editor@eternalpaws.online',
+    name: 'Lead Content Editor',
     role: 'editor',
     status: 'active',
     lastLoginAt: new Date(Date.now() - 3600000 * 24).toISOString(),

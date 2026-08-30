@@ -453,7 +453,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       verification: {
         status: 'Strongly Verified',
         trustScore: 95,
-        factChecker: 'Elena Rostova, Fact Checker',
+        factChecker: 'Eternal Paws Verification Desk',
         verifiedDate: new Date().toISOString(),
         sources: [
           {
@@ -505,7 +505,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({ onStoryPublished }) => {
       verification: {
         status: 'Strongly Verified',
         trustScore: 95,
-        factChecker: 'Elena Rostova, Fact Checker',
+        factChecker: 'Eternal Paws Verification Desk',
         verifiedDate: new Date().toISOString(),
         sources: [
           {

@@ -27,9 +27,11 @@ export const TrustCard: React.FC<TrustCardProps> = ({
   const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
 
   const factCheckerName =
-    verification?.verifiedBy && verification.verifiedBy.trim().length > 0
+    verification?.verifiedBy &&
+    verification.verifiedBy.trim().length > 0 &&
+    !verification.verifiedBy.toLowerCase().includes('elena')
       ? verification.verifiedBy.trim()
-      : 'Eternal Paws Editorial Board';
+      : 'Eternal Paws Editorial & Verification Desk';
 
   const sourceCount = verification?.sources?.length || 0;
   const status = verification?.status || 'Unverified';
