@@ -24,7 +24,7 @@ const serifFont = Newsreader({
   style: ['normal', 'italic'],
   weight: ['400', '600', '700'],
   fallback: ['Georgia', 'Cambria', 'serif'],
-  adjustFontFallback: true,
+  adjustFontFallback: false,
 });
 
 export const viewport: Viewport = {
