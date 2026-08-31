@@ -94,27 +94,28 @@ export default function RootLayout({
           strategy="afterInteractive"
           src="https://pl31065671.profitableratecpmnetwork.com/35/d0/9d/35d09d666e1a17157318deb1d420c662.js"
         /> */}
-        {/* Google AdSense Script */}
+        {/* Google AdSense Script - Deferred with lazyOnload to prevent LCP/main-thread blocking */}
         <Script
+          id="google-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5469656732511321"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </head>
       <body className="bg-canvas text-inkPrimary font-sans antialiased min-h-screen flex flex-col selection:bg-forestLight selection:text-forestPrimary overflow-x-hidden">
-        {/* Google tag (gtag.js) */}
+        {/* Google tag (gtag.js) - Deferred with lazyOnload */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-GWT084SEKZ"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-GWT084SEKZ');
+            gtag('config', 'G-GWT084SEKZ', { page_path: window.location.pathname });
           `}
         </Script>
 
