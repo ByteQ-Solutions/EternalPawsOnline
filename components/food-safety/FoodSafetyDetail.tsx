@@ -16,6 +16,10 @@ import {
   ArrowLeft,
   Share2,
   Heart,
+  Calculator,
+  HeartPulse,
+  ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import { FoodSafetyItem } from '@/lib/data/food-safety';
 import { Badge } from '@/design-system/components/Badge';
@@ -147,6 +151,68 @@ export const FoodSafetyDetail: React.FC<FoodSafetyDetailProps> = ({ item, relate
             {item.quickAnswer}
           </p>
         </div>
+
+        {/* Dynamic Contextual Interlinking Engine */}
+        {item.slug === 'chocolate' && (
+          <div className="p-5 bg-red-50 border-2 border-red-300 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft animate-fadeIn">
+            <div className="flex items-center gap-3 text-left">
+              <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0">
+                <Calculator className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-red-700 tracking-wider">
+                  Live Crisis Calculator
+                </span>
+                <p className="font-serif font-bold text-sm sm:text-base text-red-950">
+                  Did your dog eat chocolate right now? Calculate exact toxicity dosage:
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/tools/chocolate-toxicity-calculator"
+              className="min-h-[42px] px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-soft transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+            >
+              <span>Launch Toxicity Meter</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        {item.status === 'toxic' && item.slug !== 'chocolate' && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2.5">
+              <HeartPulse className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <span className="text-red-950 font-medium">
+                Accidental ingestion emergency? Read our <strong>Canine Poison Emergency Protocol</strong>.
+              </span>
+            </div>
+            <Link
+              href="/wellness/chocolate-toxicity-dog-emergency-protocol"
+              className="font-bold text-red-700 hover:underline shrink-0 flex items-center gap-1"
+            >
+              <span>Emergency Guide</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        {(item.slug === 'salmon' || item.slug === 'blueberries' || item.slug === 'carrots') && (
+          <div className="p-4 bg-forestLight/50 border border-forestPrimary/20 rounded-2xl flex items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-forestPrimary flex-shrink-0" />
+              <span className="text-inkPrimary">
+                Rich in natural anti-inflammatories! Learn how {item.name} supports mobility in our <strong>Senior Dog Joint Care Guide</strong>.
+              </span>
+            </div>
+            <Link
+              href="/wellness/natural-joint-care-arthritis-senior-dogs"
+              className="font-bold text-forestPrimary hover:underline shrink-0 flex items-center gap-1"
+            >
+              <span>Joint Guide</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
 
         {/* Vet Editorial Review Summary */}
         <div className="p-6 bg-card border border-borderLight rounded-2xl shadow-soft space-y-3">
@@ -332,9 +398,28 @@ export const FoodSafetyDetail: React.FC<FoodSafetyDetailProps> = ({ item, relate
           </div>
         </div>
 
-        {/* Monetization Ad Slot */}
-        <div className="my-8">
-          <AdSlot position="article_end" />
+        {/* Interactive Tools Promotion Bar */}
+        <div className="p-6 bg-forestLight/40 border border-forestPrimary/20 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-forestPrimary text-white flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+              <Calculator className="w-5 h-5 text-goldLight" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-forestPrimary tracking-wider">
+                Free Interactive Veterinary Tools
+              </span>
+              <h4 className="font-serif font-bold text-sm sm:text-base text-inkPrimary">
+                Try Our Dog Chocolate Toxicity & Human Age Calculators
+              </h4>
+            </div>
+          </div>
+          <Link
+            href="/tools"
+            className="min-h-[40px] px-5 py-2 rounded-xl bg-forestPrimary hover:bg-forestHover text-white font-bold text-xs shadow-soft transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+          >
+            <span>Explore Tools Suite</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
         {/* Related Foods Carousel */}

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { allWellnessGuides, getWellnessGuideBySlug } from '@/lib/data/wellness';
-import { ShieldCheck, AlertTriangle, PhoneCall, CheckCircle2, ChevronRight, BookOpen, Clock, Stethoscope, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, PhoneCall, CheckCircle2, ChevronRight, BookOpen, Clock, Stethoscope, ArrowLeft, Calculator, Sparkles, ArrowRight } from 'lucide-react';
 
 interface Props {
   params: Promise<{
@@ -181,6 +181,57 @@ export default async function WellnessGuideDetailPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Dynamic Interactive Tool Interlink Widget */}
+        {guide.slug === 'chocolate-toxicity-dog-emergency-protocol' && (
+          <div className="p-5 bg-red-50 border-2 border-red-300 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0">
+                <Calculator className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-red-700 tracking-wider">
+                  Interactive Dosing Tool
+                </span>
+                <p className="font-serif font-bold text-sm sm:text-base text-red-950">
+                  Calculate exact theobromine toxicity dose for your dog’s weight:
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/tools/chocolate-toxicity-calculator"
+              className="min-h-[42px] px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-soft transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+            >
+              <span>Launch Toxicity Meter</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        {guide.slug === 'natural-joint-care-arthritis-senior-dogs' && (
+          <div className="p-5 bg-forestLight/50 border border-forestPrimary/20 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-forestPrimary text-white flex items-center justify-center shrink-0">
+                <Calculator className="w-5 h-5 text-goldLight" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-forestPrimary tracking-wider">
+                  Life-Stage Calculator
+                </span>
+                <p className="font-serif font-bold text-sm sm:text-base text-inkPrimary">
+                  Calculate your dog’s exact biological human age & senior transition:
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/tools/dog-age-calculator"
+              className="min-h-[42px] px-5 py-2 rounded-xl bg-forestPrimary hover:bg-forestHover text-white font-bold text-xs shadow-soft transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+            >
+              <span>Calculate Dog Age</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
         {/* 24/7 ASPCA Poison Banner (for emergency guides) */}
         {guide.urgency === 'emergency' && (
           <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-soft">
@@ -320,6 +371,30 @@ export default async function WellnessGuideDetailPage({ params }: Props) {
             ))}
           </div>
         </section>
+
+        {/* Interactive Tools Promotion Bar */}
+        <div className="p-6 bg-forestLight/40 border border-forestPrimary/20 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-forest text-white flex items-center justify-center shrink-0 mx-auto sm:mx-0">
+              <Calculator className="w-5 h-5 text-goldLight" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-forest tracking-wider">
+                Free Interactive Veterinary Tools
+              </span>
+              <h4 className="font-serif font-bold text-sm sm:text-base text-ink">
+                Calculate Dog Chocolate Toxicity Dose & Breed Human Age
+              </h4>
+            </div>
+          </div>
+          <Link
+            href="/tools"
+            className="min-h-[40px] px-5 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white font-bold text-xs shadow-soft transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+          >
+            <span>Explore Tools Suite</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
         {/* Scholarly References & Sources */}
         <footer className="border-t border-borderLight pt-6 space-y-3 text-xs text-inkSubtle">
