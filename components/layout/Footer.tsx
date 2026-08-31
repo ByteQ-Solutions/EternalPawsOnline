@@ -169,11 +169,25 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
         </div>
 
         {/* Bottom Legal & Copyright Bar */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-inkSubtle">
-          <p>
-            &copy; {new Date().getFullYear()} Eternal Paws Media. Dedicated to truth, compassion, and canine devotion.
-          </p>
-          <div className="flex flex-wrap items-center gap-6">
+        <div className="pt-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-inkSubtle border-t border-borderLight/60 mt-2">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+            <p>
+              &copy; {new Date().getFullYear()} Eternal Paws Media. Dedicated to truth, compassion, and canine devotion.
+            </p>
+            <span className="hidden sm:inline text-borderLight">•</span>
+            <p className="text-inkMuted">
+              Designed &amp; Developed by{' '}
+              <a
+                href="https://byteqsolutions.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-forestPrimary hover:text-forestHover hover:underline transition-colors"
+              >
+                ByteQ Solutions
+              </a>
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <Link
               href="/privacy-policy"
               prefetch={false}
