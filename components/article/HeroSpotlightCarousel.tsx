@@ -353,14 +353,35 @@ export const HeroSpotlightCarousel: React.FC<HeroSpotlightCarouselProps> = ({
             </div>
           </div>
 
-          {/* Interactive Multi-Story Thumbnail Tab Strip */}
+          {/* Sleek Modern Trending Stories Tab Bar (Max 5 items) */}
           {total > 1 && (
-            <div className="mt-8 pt-6 border-t border-borderLight/80">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-inkSubtle block mb-3">
-                In this Featured Spotlight Series ({total} Stories):
-              </span>
+            <div className="mt-8 pt-6 border-t border-borderLight/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-inkSubtle flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-goldAccent" />
+                  <span>Trending Spotlight Stories ({currentIndex + 1} of {total})</span>
+                </span>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {/* Interactive Dot Indicators */}
+                <div className="flex items-center gap-1.5">
+                  {stories.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => goToSlide(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        idx === currentIndex
+                          ? 'w-7 bg-forestPrimary shadow-xs'
+                          : 'w-2 bg-borderLight hover:bg-inkMuted'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Modern Responsive Card Row (2 Cols on mobile, up to 5 on desktop) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                 {stories.map((story, idx) => {
                   const isSelected = idx === currentIndex;
                   return (
@@ -368,23 +389,36 @@ export const HeroSpotlightCarousel: React.FC<HeroSpotlightCarouselProps> = ({
                       key={story.id}
                       type="button"
                       onClick={() => goToSlide(idx)}
-                      className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
+                      className={`p-3 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-forestLight/50 border-forestPrimary shadow-sm ring-1 ring-forestPrimary'
-                          : 'bg-canvas border-borderLight hover:bg-card hover:border-forestPrimary/40'
+                          ? 'bg-forestLight/60 border-forestPrimary shadow-xs ring-2 ring-forestPrimary/20'
+                          : 'bg-canvas border-borderLight hover:bg-cardMuted hover:border-forestPrimary/30'
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-card border border-borderLight flex items-center justify-center font-mono font-bold text-xs text-forestPrimary flex-shrink-0">
-                        0{idx + 1}
+                      <div className="flex items-center justify-between mb-2 w-full">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                          isSelected ? 'bg-forestPrimary text-white' : 'bg-card border border-borderLight text-inkMuted'
+                        }`}>
+                          {story.category.replace(/-/g, ' ')}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-inkSubtle">
+                          0{idx + 1}
+                        </span>
                       </div>
-                      <div className="overflow-hidden space-y-0.5">
-                        <span className="font-bold text-xs text-inkPrimary truncate block">
+
+                      <div className="w-full">
+                        <span className="font-serif font-bold text-xs sm:text-sm text-inkPrimary truncate block">
                           {story.dogName}
                         </span>
-                        <p className="text-[11px] text-inkMuted truncate">
+                        <p className="text-[11px] text-inkMuted truncate mt-0.5">
                           {story.title}
                         </p>
                       </div>
+
+                      {/* Active Accent Indicator */}
+                      {isSelected && (
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-forestPrimary" />
+                      )}
                     </button>
                   );
                 })}

@@ -51,7 +51,7 @@ export default async function HomePage() {
   // This guarantees admin-published stories appear immediately on the client site.
   const allLiveStories: Story[] = await StoryService.getAllStoriesAsync();
   const allStories = allLiveStories.filter((s) => s.status === 'published');
-  const featuredStories = allStories.filter((s) => s.featured);
+  const featuredStories = allStories.filter((s) => s.featured).slice(0, 5);
   const recentStories = allStories.slice(0, 6);
   const categories = Object.keys(CATEGORIES_CONFIG) as StoryCategory[];
 
