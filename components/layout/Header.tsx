@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, HeartHandshake, PenTool, ChevronDown, Sparkles, ShieldCheck, HeartPulse, Apple, BookOpen, Compass } from 'lucide-react';
+import { Search, Menu, HeartHandshake, PenTool, ChevronDown, Sparkles, ShieldCheck, HeartPulse, Apple, BookOpen, Compass, Calculator } from 'lucide-react';
 import MobileNav from './MobileNav';
 
 export interface HeaderProps {
@@ -187,7 +187,20 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               <span>Food Safety</span>
             </Link>
 
-            {/* 4. Editorial & Trust Standards */}
+            {/* 4. Interactive Calculators & Tools */}
+            <Link
+              href="/tools"
+              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                pathname?.startsWith('/tools')
+                  ? 'text-forestPrimary bg-forestLight/80 shadow-xs'
+                  : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+              }`}
+            >
+              <Calculator className="w-4 h-4 text-amber-600" />
+              <span>Tools</span>
+            </Link>
+
+            {/* 5. Editorial & Trust Standards */}
             <Link
               href="/about"
               className={`px-3.5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${

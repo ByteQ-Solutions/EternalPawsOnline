@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { X, Search, HeartHandshake, ShieldCheck, FileText, HelpCircle, AlertCircle, PenTool, HeartPulse, Apple, BookOpen, PhoneCall } from 'lucide-react';
+import { X, Search, HeartHandshake, ShieldCheck, FileText, HelpCircle, AlertCircle, PenTool, HeartPulse, Apple, BookOpen, PhoneCall, Calculator } from 'lucide-react';
 import { STORY_CATEGORIES } from './Header';
 
 export interface MobileNavProps {
@@ -141,6 +141,22 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                 <span className="text-sm font-bold">🍏 Canine Food Safety</span>
               </div>
               <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">26+ Guides</span>
+            </Link>
+
+            <Link
+              href="/tools"
+              onClick={onClose}
+              className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                currentPath.startsWith('/tools')
+                  ? 'bg-forestLight/80 text-forestPrimary font-bold'
+                  : 'bg-card border border-borderLight hover:bg-cardMuted text-inkPrimary'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Calculator className="w-5 h-5 text-amber-600" />
+                <span className="text-sm font-bold">🧮 Interactive Calculators</span>
+              </div>
+              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">FREE TOOLS</span>
             </Link>
           </div>
 
