@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { allFoodSafetyItems } from '@/lib/data/food-safety';
 import { allWellnessGuides } from '@/lib/data/wellness';
-import { allSeedStories } from '@/lib/data/stories';
+import { StoryService } from '@/lib/services/story-service';
 import { AIService } from '@/lib/ai/ai-service';
 
 export interface SiteAsset {
@@ -21,66 +21,82 @@ export interface SiteAsset {
   keywords: string[];
 }
 
-// Global Site Corpus Catalog for Matcher
-const SITE_ASSETS: SiteAsset[] = [
-  // Interactive Tools
-  {
-    type: 'tool',
-    title: 'Dog Chocolate Toxicity Emergency Calculator',
-    url: 'https://eternalpaws.online/tools/chocolate-toxicity-calculator',
-    summary: 'Clinical calculator calculating exact theobromine mg/kg dose across 7 chocolate types based on dog body weight, with immediate safety rating and ASPCA hotline.',
-    keywords: ['chocolate', 'theobromine', 'cacao', 'cocoa', 'hershey', 'bakers chocolate', 'toxicity calculator', 'ate chocolate', 'dog ate chocolate'],
-  },
-  {
-    type: 'tool',
-    title: 'Dog Age in Human Years Calculator (by Breed Size)',
-    url: 'https://eternalpaws.online/tools/dog-age-calculator',
-    summary: 'Calculates equivalent human age using AVMA non-linear biological growth curves for small, medium, large, and giant breeds with senior checklists.',
-    keywords: ['dog age', 'human years', 'how old is my dog', 'senior dog age', 'dog age calculator', '7 year rule'],
-  },
-  // Clinical Wellness Guides
-  ...allWellnessGuides.map((g) => ({
-    type: 'wellness' as const,
-    title: g.title,
-    url: `https://eternalpaws.online/wellness/${g.slug}`,
-    summary: g.excerpt,
-    keywords: [
-      g.slug.replace(/-/g, ' '),
-      ...g.title.toLowerCase().split(' '),
-      ...g.keyTakeaways.map((t) => t.toLowerCase()),
-    ],
-  })),
-  // Food Safety Guides
-  ...allFoodSafetyItems.map((f) => ({
-    type: 'food_safety' as const,
-    title: `Can Dogs Eat ${f.name}? (${f.status.toUpperCase()})`,
-    url: `https://eternalpaws.online/can-dogs-eat/${f.slug}`,
-    summary: f.quickAnswer,
-    keywords: [
-      f.name.toLowerCase(),
-      f.slug.toLowerCase(),
-      `can dogs eat ${f.name.toLowerCase()}`,
-      `is ${f.name.toLowerCase()} toxic to dogs`,
-      ...f.benefits.map((b) => b.toLowerCase()),
-      ...f.risks.map((r) => r.toLowerCase()),
-    ],
-  })),
-  // Top Stories
-  ...allSeedStories.slice(0, 10).map((s) => ({
-    type: 'story' as const,
-    title: `${s.dogName}: ${s.title}`,
-    url: `https://eternalpaws.online/stories/${s.slug}`,
-    summary: s.excerpt,
-    keywords: [s.dogName.toLowerCase(), s.dogBreed.toLowerCase(), s.category, 'rescue story', 'hero dog', 'true dog story'],
-  })),
-];
+// Global Dynamic Site Corpus Catalog
+async function getLiveSiteAssetsAsync(): Promise<SiteAsset[]> {
+  // Fetch live published stories from Supabase / DB
+  const liveStories = await StoryService.getAllStoriesAsync().catch(() => []);
+  const publishedStories = liveStories.filter((s) => s.status === 'published');
 
-function findBestMatchingAsset(query: string): SiteAsset {
+  return [
+    // 1. Interactive Veterinary Tools
+    {
+      type: 'tool',
+      title: 'Dog Chocolate Toxicity Emergency Calculator',
+      url: 'https://eternalpaws.online/tools/chocolate-toxicity-calculator',
+      summary: 'Clinical calculator calculating exact theobromine mg/kg dose across 7 chocolate types based on dog body weight, with immediate safety rating and ASPCA hotline.',
+      keywords: ['chocolate', 'theobromine', 'cacao', 'cocoa', 'hershey', 'bakers chocolate', 'toxicity calculator', 'ate chocolate', 'dog ate chocolate'],
+    },
+    {
+      type: 'tool',
+      title: 'Dog Age in Human Years Calculator (by Breed Size)',
+      url: 'https://eternalpaws.online/tools/dog-age-calculator',
+      summary: 'Calculates equivalent human age using AVMA non-linear biological growth curves for small, medium, large, and giant breeds with senior checklists.',
+      keywords: ['dog age', 'human years', 'how old is my dog', 'senior dog age', 'dog age calculator', '7 year rule'],
+    },
+    // 2. Clinical Wellness Guides
+    ...allWellnessGuides.map((g) => ({
+      type: 'wellness' as const,
+      title: g.title,
+      url: `https://eternalpaws.online/wellness/${g.slug}`,
+      summary: g.excerpt,
+      keywords: [
+        g.slug.replace(/-/g, ' '),
+        ...g.title.toLowerCase().split(' '),
+        ...g.keyTakeaways.map((t) => t.toLowerCase()),
+      ],
+    })),
+    // 3. Food Safety Directory (26+ items)
+    ...allFoodSafetyItems.map((f) => ({
+      type: 'food_safety' as const,
+      title: `Can Dogs Eat ${f.name}? (${f.status.toUpperCase()})`,
+      url: `https://eternalpaws.online/can-dogs-eat/${f.slug}`,
+      summary: f.quickAnswer,
+      keywords: [
+        f.name.toLowerCase(),
+        f.slug.toLowerCase(),
+        `can dogs eat ${f.name.toLowerCase()}`,
+        `is ${f.name.toLowerCase()} toxic to dogs`,
+        ...f.benefits.map((b) => b.toLowerCase()),
+        ...f.risks.map((r) => r.toLowerCase()),
+      ],
+    })),
+    // 4. All Published Live Stories (Auto-updated upon new story creation)
+    ...publishedStories.map((s) => ({
+      type: 'story' as const,
+      title: `${s.dogName}: ${s.title}`,
+      url: `https://eternalpaws.online/stories/${s.slug}`,
+      summary: s.excerpt,
+      keywords: [
+        s.dogName.toLowerCase(),
+        s.dogBreed.toLowerCase(),
+        s.category,
+        'rescue story',
+        'hero dog',
+        'true dog story',
+        ...s.title.toLowerCase().split(' '),
+        ...s.emotionalThemes.map((t) => t.toLowerCase()),
+      ],
+    })),
+  ];
+}
+
+async function findBestMatchingAsset(query: string): Promise<SiteAsset> {
+  const assets = await getLiveSiteAssetsAsync();
   const lowerQuery = query.toLowerCase();
-  let bestAsset: SiteAsset = SITE_ASSETS[0];
+  let bestAsset: SiteAsset = assets[0];
   let highestScore = -1;
 
-  for (const asset of SITE_ASSETS) {
+  for (const asset of assets) {
     let score = 0;
 
     // Check direct keyword occurrences
@@ -131,8 +147,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Find the best matching site asset
-    const matchedAsset = findBestMatchingAsset(question);
+    // 1. Find the best matching site asset dynamically from live DB
+    const matchedAsset = await findBestMatchingAsset(question);
 
     const customKey = req.headers.get('x-custom-ai-key') || body.customKey || undefined;
 
