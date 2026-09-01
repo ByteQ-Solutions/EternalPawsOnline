@@ -68,10 +68,11 @@ import { StorageManager } from './StorageManager';
 import { HeroSlideshowManager } from './HeroSlideshowManager';
 import { FoodSafetyManager } from './FoodSafetyManager';
 import { WellnessManager } from './WellnessManager';
+import { OutreachCopilot } from './OutreachCopilot';
 import { Input } from '@/design-system/components/Input';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { Story } from '@/domain/types';
-import { HeartPulse, Apple } from 'lucide-react';
+import { HeartPulse, Apple, Link2 } from 'lucide-react';
 
 interface RedirectRule {
   fromPath: string;
@@ -83,6 +84,7 @@ type AdminTab =
   | 'stories'
   | 'wellness'
   | 'food-safety'
+  | 'outreach'
   | 'hero-slideshow'
   | 'ai-studio'
   | 'submissions'
@@ -376,6 +378,18 @@ export const AdminDashboard: React.FC = () => {
           }`}
         >
           <Apple className="w-4 h-4 text-emerald-500" /> 🍏 Food Safety
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('outreach')}
+          className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'outreach'
+              ? 'bg-forestPrimary text-white shadow-soft'
+              : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+          }`}
+        >
+          <Link2 className="w-4 h-4 text-orange-500" /> 🔗 Backlinks & Outreach
         </button>
 
         <button
@@ -999,6 +1013,9 @@ export const AdminDashboard: React.FC = () => {
 
       {/* TAB 3: FOOD SAFETY DESK */}
       {activeTab === 'food-safety' && <FoodSafetyManager />}
+
+      {/* TAB 3.5: BACKLINKS & OUTREACH COPILOT */}
+      {activeTab === 'outreach' && <OutreachCopilot />}
 
       {/* TAB 4: HERO SLIDESHOW & SPOTLIGHT CAROUSEL */}
       {activeTab === 'hero-slideshow' && (

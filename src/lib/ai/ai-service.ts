@@ -670,4 +670,126 @@ CRITICAL HUMAN WRITING RULES:
       duplicateCheckPassed: true,
     };
   }
+
+  /**
+   * 6. Generate Platform-Specific Q&A Outreach Answer for Reddit / Quora / Shelter
+   */
+  static async generateOutreachAnswer(params: {
+    question: string;
+    platform: 'reddit' | 'quora' | 'shelter_email' | 'social_dm';
+    matchedAsset: {
+      title: string;
+      url: string;
+      summary: string;
+    };
+    customKey?: string;
+  }): Promise<{
+    fullAnswer: string;
+    shortAnswer: string;
+    keyAdvice: string;
+    targetKeywords: string[];
+  }> {
+    const apiKey = this.getApiKey(params.customKey);
+
+    let platformInstructions = '';
+    if (params.platform === 'reddit') {
+      platformInstructions = `
+You are an experienced, empathetic canine specialist responding on Reddit (r/dogs, r/puppy101, r/AskVet).
+- Style: Casual, friendly, highly knowledgeable, and conversational.
+- Reddit Golden Rule: NEVER sound like an automated bot or a marketer. Always answer the OP's question directly in the very first 2 sentences with accurate veterinary facts.
+- Seamless Link Integration: At the end of the advice, naturally suggest the matched resource as an additional helpful reference (e.g. "If you want to double-check exact safe weights or dosing, this vet-reviewed breakdown/calculator is super helpful: [URL]").
+- Format in clean markdown with concise bullet points if needed.
+`;
+    } else if (params.platform === 'quora') {
+      platformInstructions = `
+You are an authoritative canine health & behavioral researcher answering on Quora.
+- Style: Comprehensive, structured, professional, yet easy for pet owners to digest.
+- Provide a clear, structured explanation with numbered clinical points (Physiology, Symptoms/Rules, Prevention).
+- Seamless Link Integration: Cite the matched resource as an authoritative source (e.g. "For a full clinical protocol / portion guide, you can reference the Eternal Paws veterinary directory: [URL]").
+`;
+    } else if (params.platform === 'shelter_email') {
+      platformInstructions = `
+You are an outreach coordinator reaching out to an Animal Shelter or Rescue Organization via email.
+- Style: Polite, warm, deeply appreciative of their rescue work, and non-salesy.
+- Pitch: Introduce the free, vet-reviewed resource as a free tool/guide their adopters might appreciate.
+- Include a clear, clean link: [URL]
+`;
+    } else {
+      platformInstructions = `
+You are sending a short, punchy social media comment/DM on Instagram, Facebook, or TikTok.
+- Style: Warm, engaging, under 60 words, 1-2 emojis max.
+- Give a quick 1-sentence tip and provide the direct link: [URL]
+`;
+    }
+
+    const systemPrompt = `You are the Outreach & Community Specialist for Eternal Paws (https://eternalpaws.online), an authoritative digital publication dedicated to verified dog stories, food safety, and veterinary health.
+${platformInstructions}
+
+MATCHED RESOURCE TO CITE:
+- Title: "${params.matchedAsset.title}"
+- URL: "${params.matchedAsset.url}"
+- Context: "${params.matchedAsset.summary}"
+
+Strict Requirements:
+1. Provide a "fullAnswer" (ready to post as the main response).
+2. Provide a "shortAnswer" (a concise, 2-3 sentence version for quick replies).
+3. Do NOT invent fake URLs; use the exact MATCHED URL provided.
+4. Output STRICT JSON format only:
+{
+  "fullAnswer": "...",
+  "shortAnswer": "...",
+  "keyAdvice": "...",
+  "targetKeywords": ["..."]
+}`;
+
+    if (!apiKey) {
+      return {
+        fullAnswer: `Based on veterinary clinical guidelines regarding "${params.question}", always prioritize safety and portion control. For a comprehensive, vet-reviewed breakdown and exact safety data, check out this guide:\n\n👉 ${params.matchedAsset.url}`,
+        shortAnswer: `Here is a helpful, vet-reviewed guide on this: ${params.matchedAsset.url}`,
+        keyAdvice: 'Direct veterinary review',
+        targetKeywords: [params.matchedAsset.title],
+      };
+    }
+
+    try {
+      const response = await fetch(`${this.getBaseUrl(params.customKey)}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.getModelName(params.customKey),
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Question / Ingestion Issue: "${params.question.trim()}"` },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.7,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const rawContent = data.choices?.[0]?.message?.content;
+      const parsed = JSON.parse(rawContent);
+
+      return {
+        fullAnswer: parsed.fullAnswer || `Here is helpful guidance: ${params.matchedAsset.url}`,
+        shortAnswer: parsed.shortAnswer || `Check out this guide: ${params.matchedAsset.url}`,
+        keyAdvice: parsed.keyAdvice || 'Veterinary guidance',
+        targetKeywords: parsed.targetKeywords || [params.matchedAsset.title],
+      };
+    } catch {
+      return {
+        fullAnswer: `Based on veterinary clinical guidelines regarding "${params.question}", always prioritize safety and portion control. For a comprehensive, vet-reviewed breakdown and exact safety data, check out this guide:\n\n👉 ${params.matchedAsset.url}`,
+        shortAnswer: `Here is a helpful, vet-reviewed guide on this: ${params.matchedAsset.url}`,
+        keyAdvice: 'Direct veterinary review',
+        targetKeywords: [params.matchedAsset.title],
+      };
+    }
+  }
 }
