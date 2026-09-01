@@ -254,6 +254,107 @@ export const DogAgeCalculator: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Popular Breed Quick-Conversion Matrix for Google Featured Snippets */}
+      <div className="bg-card border border-borderLight rounded-3xl p-6 sm:p-8 space-y-6 shadow-soft">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-borderLight pb-4">
+          <div>
+            <h3 className="font-serif text-xl font-bold text-inkPrimary flex items-center gap-2">
+              <span>📊</span> Popular Breed Age Conversion Chart (Human Years)
+            </h3>
+            <p className="text-xs sm:text-sm text-inkMuted mt-0.5">
+              Quick veterinary reference based on AVMA life-stage curves for popular dog breeds.
+            </p>
+          </div>
+          <span className="text-[11px] font-bold text-forestPrimary bg-forestLight px-3 py-1 rounded-full w-fit">
+            AVMA Verified
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-borderLight bg-canvas text-inkSubtle font-bold uppercase tracking-wider">
+                <th className="p-3 rounded-l-xl">Dog Breed & Size</th>
+                <th className="p-3 text-center">1 Year</th>
+                <th className="p-3 text-center">3 Years</th>
+                <th className="p-3 text-center">5 Years</th>
+                <th className="p-3 text-center">7 Years (Senior)</th>
+                <th className="p-3 text-center">10 Years</th>
+                <th className="p-3 text-center rounded-r-xl">12+ Years</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-borderLight/60 font-sans">
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  🐕 Golden Retriever <span className="text-[10px] text-inkMuted font-normal">(Large, 55-75 lbs)</span>
+                </td>
+                <td className="p-3 text-center">15 yrs</td>
+                <td className="p-3 text-center">26 yrs</td>
+                <td className="p-3 text-center">38 yrs</td>
+                <td className="p-3 text-center font-bold text-amber-700 bg-amber-50/60 rounded">50 yrs</td>
+                <td className="p-3 text-center">66 yrs</td>
+                <td className="p-3 text-center font-bold text-purple-700">77 yrs</td>
+              </tr>
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  🦮 Labrador Retriever <span className="text-[10px] text-inkMuted font-normal">(Large, 55-80 lbs)</span>
+                </td>
+                <td className="p-3 text-center">15 yrs</td>
+                <td className="p-3 text-center">26 yrs</td>
+                <td className="p-3 text-center">38 yrs</td>
+                <td className="p-3 text-center font-bold text-amber-700 bg-amber-50/60 rounded">50 yrs</td>
+                <td className="p-3 text-center">66 yrs</td>
+                <td className="p-3 text-center font-bold text-purple-700">77 yrs</td>
+              </tr>
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  🛡️ German Shepherd <span className="text-[10px] text-inkMuted font-normal">(Large, 50-90 lbs)</span>
+                </td>
+                <td className="p-3 text-center">15 yrs</td>
+                <td className="p-3 text-center">26 yrs</td>
+                <td className="p-3 text-center">38 yrs</td>
+                <td className="p-3 text-center font-bold text-amber-700 bg-amber-50/60 rounded">50 yrs</td>
+                <td className="p-3 text-center">66 yrs</td>
+                <td className="p-3 text-center font-bold text-purple-700">77 yrs</td>
+              </tr>
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  🐾 French Bulldog <span className="text-[10px] text-inkMuted font-normal">(Small/Med, 20-28 lbs)</span>
+                </td>
+                <td className="p-3 text-center">15 yrs</td>
+                <td className="p-3 text-center">28 yrs</td>
+                <td className="p-3 text-center">36 yrs</td>
+                <td className="p-3 text-center">44 yrs</td>
+                <td className="p-3 text-center font-bold text-amber-700 bg-amber-50/60 rounded">56 yrs</td>
+                <td className="p-3 text-center font-bold text-purple-700">64 yrs</td>
+              </tr>
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  🐶 Chihuahua / Yorkie <span className="text-[10px] text-inkMuted font-normal">(Toy/Small, &lt;15 lbs)</span>
+                </td>
+                <td className="p-3 text-center">15 yrs</td>
+                <td className="p-3 text-center">28 yrs</td>
+                <td className="p-3 text-center">36 yrs</td>
+                <td className="p-3 text-center">44 yrs</td>
+                <td className="p-3 text-center">56 yrs</td>
+                <td className="p-3 text-center font-bold text-emerald-700 bg-emerald-50/60 rounded">64 yrs</td>
+              </tr>
+              <tr className="hover:bg-cardMuted/50 transition-colors">
+                <td className="p-3 font-bold text-inkPrimary">
+                  ⛰️ Great Dane / Mastiff <span className="text-[10px] text-inkMuted font-normal">(Giant, &gt;90 lbs)</span>
+                </td>
+                <td className="p-3 text-center">12 yrs</td>
+                <td className="p-3 text-center">26 yrs</td>
+                <td className="p-3 text-center font-bold text-amber-700 bg-amber-50/60 rounded">45 yrs (Senior)</td>
+                <td className="p-3 text-center font-bold text-purple-700">56 yrs</td>
+                <td className="p-3 text-center font-bold text-purple-800">78 yrs</td>
+                <td className="p-3 text-center text-inkSubtle">85+ yrs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

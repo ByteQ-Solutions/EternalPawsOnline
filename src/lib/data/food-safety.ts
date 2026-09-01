@@ -1292,5 +1292,139 @@ export const allFoodSafetyItems: FoodSafetyItem[] = [
       credit: 'Unsplash Food Archive',
     },
   },
+  {
+    id: 'food-mango',
+    slug: 'mango',
+    name: 'Mango',
+    emoji: '🥭',
+    category: 'fruits',
+    status: 'safe',
+    shortVerdict: 'Safe & Sweet (Remove Peel & Hard Pit)',
+    quickAnswer: 'Yes! Dogs can safely enjoy fresh mango flesh as a nutrient-packed tropical treat. Always peel the tough skin and discard the large choking pit.',
+    vetReviewSummary: 'Mangoes are rich in vitamins A, B6, C, and E, plus beta-carotene and dietary fiber. Because of their natural sugar content, feed mango in moderation as an occasional treat.',
+    benefits: [
+      'High in Vitamin A and Beta-Carotene supporting eyesight and immune defense',
+      'Packed with Vitamin C and potassium for cellular vitality',
+      'Rich in soluble fiber that aids gentle canine digestion',
+      'Naturally sweet flavor loved by picky dogs',
+    ],
+    risks: [
+      'The large central pit contains trace cyanide and poses a life-threatening intestinal obstruction hazard',
+      'Mango peel is tough, fibrous, and can cause gastric irritation or vomiting',
+      'High natural fructose can cause diarrhea if fed in excessive amounts',
+    ],
+    prepInstructions: [
+      'Wash thoroughly under cold water',
+      'Peel away all outer skin completely',
+      'Slice the juicy golden flesh away from the large woody central pit',
+      'Cut flesh into small bite-sized cubes or freeze for a refreshing summer snack',
+    ],
+    servingSize: {
+      smallDog: '1 to 2 small cubes per day',
+      mediumDog: '3 to 4 cubes per day',
+      largeDog: 'Quarter of a mango sliced',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat dried mango?',
+        answer: 'Dried mango is not toxic, but it has much higher concentrated sugar and calories than fresh mango. Fresh sliced mango is much healthier for your dog.',
+      },
+      {
+        question: 'What should I do if my dog swallowed a whole mango pit?',
+        answer: 'A mango pit cannot pass through most canine digestive tracts and will cause a severe intestinal blockage. Call your emergency veterinarian immediately for guidance or endoscopic removal.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh sliced ripe mango on plate',
+      credit: 'Unsplash Food Photography',
+    },
+  },
+  {
+    id: 'food-dragon-fruit',
+    slug: 'dragon-fruit',
+    name: 'Dragon Fruit',
+    emoji: '🐉',
+    category: 'fruits',
+    status: 'safe',
+    shortVerdict: '100% Safe & Antioxidant-Rich (Peel Leathery Skin)',
+    quickAnswer: 'Yes! Both white and red/purple dragon fruit (pitaya) are completely non-toxic and safe for dogs to eat in moderation. Just remove the leathery spiky outer skin.',
+    vetReviewSummary: 'Dragon fruit is rich in calcium, iron, prebiotic fiber, and antioxidants with tiny edible seeds that pass easily through the canine gastrointestinal tract.',
+    benefits: [
+      'Packed with powerful polyphenols and antioxidants fighting oxidative stress',
+      'High moisture content (over 80% water) helping maintain canine hydration',
+      'Loaded with prebiotic fiber promoting beneficial gut microflora',
+      'Contains essential fatty acids in tiny edible black seeds',
+    ],
+    risks: [
+      'Tough, leathery outer skin is hard to digest and should always be removed',
+      'Red/pink dragon fruit flesh can temporarily turn dog urine or stool red (completely harmless but alarming to owners)',
+      'Too much dragon fruit at once can cause loose stools due to high fiber content',
+    ],
+    prepInstructions: [
+      'Slice dragon fruit in half lengthwise',
+      'Scoop out the soft inner flesh with a spoon, leaving the pink skin behind',
+      'Chop into bite-sized pieces or puree over regular meals',
+    ],
+    servingSize: {
+      smallDog: '1 tablespoon of flesh',
+      mediumDog: '2 tablespoons of flesh',
+      largeDog: '3 to 4 tablespoons of flesh',
+    },
+    faq: [
+      {
+        question: 'Can dogs eat red dragon fruit vs white dragon fruit?',
+        answer: 'Both varieties are equally safe and nutritious for dogs. Red pitaya contains slightly higher antioxidant levels (betalains), while white pitaya has a milder flavor.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1527325678964-54921641b888?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Fresh vibrant sliced dragon fruit pitaya',
+      credit: 'Unsplash Food Photography',
+    },
+  },
+  {
+    id: 'food-pistachios',
+    slug: 'pistachios',
+    name: 'Pistachios',
+    emoji: '🥜',
+    category: 'human_foods',
+    status: 'toxic',
+    shortVerdict: 'NOT Recommended / Toxic Risk (Aflatoxin & Pancreatitis Hazard)',
+    quickAnswer: 'No. While one dropped pistachio won\'t be instantly fatal, pistachios are unsafe for dogs due to aflatoxin mold contamination risks, high fat content (pancreatitis), and sharp choking shells.',
+    vetReviewSummary: 'Pistachios carry a high susceptibility to Aspergillus mold which produces aflatoxins (deadly liver toxins in canines). Furthermore, the sharp rigid shells cause severe esophageal and gastrointestinal punctures or blockages.',
+    benefits: [
+      'No unique canine benefits that cannot be provided by safer veterinary foods',
+    ],
+    risks: [
+      'Aflatoxin mold poisoning can cause acute canine liver failure and death',
+      'Extremely high fat content triggers sudden, life-threatening acute pancreatitis',
+      'Sharp, hard shells cause choking, perforated intestines, or bowel obstruction',
+      'Commercial pistachios are heavily salted, leading to sodium ion toxicosis',
+    ],
+    prepInstructions: [
+      'DO NOT FEED. Keep pistachio bags and snack bowls securely away from pets.',
+    ],
+    servingSize: {
+      smallDog: 'ZERO (Strictly Avoid)',
+      mediumDog: 'ZERO (Strictly Avoid)',
+      largeDog: 'ZERO (Strictly Avoid)',
+    },
+    faq: [
+      {
+        question: 'What if my dog accidentally ate one shelled pistachio?',
+        answer: 'A single unsalted pistachio is unlikely to cause poisoning. Monitor your dog for 24-48 hours for signs of vomiting, diarrhea, lethargy, or abdominal tenderness. If a whole handful or shell was eaten, call your vet.',
+      },
+      {
+        question: 'What are the symptoms of pistachio poisoning in dogs?',
+        answer: 'Symptoms include violent vomiting, dark/bloody diarrhea, severe abdominal pain (praying posture), jaundice (yellow gums/eyes from liver distress), and lethargy.',
+      },
+    ],
+    heroImage: {
+      url: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&w=1200&q=80',
+      altText: 'Raw pistachios in shells on table',
+      credit: 'Unsplash Food Photography',
+    },
+  },
 ];
 
