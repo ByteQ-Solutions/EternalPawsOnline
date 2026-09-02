@@ -183,12 +183,9 @@ export default function BlogHubPage() {
               <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-inkSubtle">
-                    <span className="text-forestPrimary font-bold">{featuredArticle.readTimeMinutes} min deep read</span>
-                    <span>•</span>
-                    <span>{featuredArticle.wordCount.toLocaleString()} words</span>
-                    <span>•</span>
-                    <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded">
-                      🔥 {featuredArticle.searchVolume} Searches
+                    <span className="text-forestPrimary font-bold flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-forestPrimary" />
+                      <span>{featuredArticle.readTimeMinutes} min read</span>
                     </span>
                   </div>
 
@@ -240,7 +237,7 @@ export default function BlogHubPage() {
               <span>In-Depth Investigative &amp; Ethology Guides</span>
             </h2>
             <span className="text-xs text-inkSubtle font-medium">
-              1,200+ Words Each • Fully Referenced
+              Evidence-Based • Fully Referenced
             </span>
           </div>
 
@@ -270,12 +267,6 @@ export default function BlogHubPage() {
                     <div className="flex items-center gap-2 text-xs text-inkSubtle font-medium">
                       <Clock className="w-3.5 h-3.5 text-forestPrimary" />
                       <span>{article.readTimeMinutes} min read</span>
-                      <span>•</span>
-                      <span>{article.wordCount.toLocaleString()} words</span>
-                      <span>•</span>
-                      <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded text-[11px]">
-                        🔥 {article.searchVolume}
-                      </span>
                     </div>
 
                     <h3 className="font-serif text-xl font-bold text-inkPrimary group-hover:text-forestPrimary transition-colors leading-snug">

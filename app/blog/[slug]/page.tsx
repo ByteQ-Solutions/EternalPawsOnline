@@ -219,12 +219,6 @@ export default async function BlogArticleDetailPage({ params }: Props) {
             <span className="text-xs text-inkSubtle flex items-center gap-1 font-medium bg-card px-3 py-1 rounded-full border border-borderLight shadow-2xs">
               <Clock className="w-3.5 h-3.5 text-forestPrimary" />
               <span>{article.readTimeMinutes} min read</span>
-              <span>•</span>
-              <span>{article.wordCount.toLocaleString()} words</span>
-            </span>
-            <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
-              <Flame className="w-3 h-3 text-amber-600" />
-              <span>{article.searchVolume} Searches</span>
             </span>
           </div>
 
