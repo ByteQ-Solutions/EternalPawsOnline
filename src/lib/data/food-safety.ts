@@ -1349,13 +1349,15 @@ export const allFoodSafetyItems: FoodSafetyItem[] = [
       'No unique canine benefits that cannot be provided by safer veterinary foods',
     ],
     risks: [
-      'Aflatoxin mold poisoning can cause acute canine liver failure and death',
-      'Extremely high fat content triggers sudden, life-threatening acute pancreatitis',
-      'Sharp, hard shells cause choking, perforated intestines, or bowel obstruction',
-      'Commercial pistachios are heavily salted, leading to sodium ion toxicosis',
+      'Aflatoxin mold poisoning produced by Aspergillus flavus can cause acute canine hepatic failure and death',
+      'Extremely dense saturated fat content triggers sudden, life-threatening acute pancreatitis',
+      'Sharp, hard, non-digestible shells cause esophageal perforation, choked airways, or mechanical bowel obstruction',
+      'Commercial snack pistachios are heavily salted, leading to sodium ion toxicosis and hypernatremia',
+      'May contain trace phosphorus and toxic seasoning additives (onion powder, garlic powder)',
     ],
     prepInstructions: [
-      'DO NOT FEED. Keep pistachio bags and snack bowls securely away from pets.',
+      'STRICTLY DO NOT FEED: Keep pistachio bags, snack bowls, and party platters completely out of reach of pets.',
+      'If an accidental shell is swallowed, do not induce vomiting due to sharp laceration risks; call ASPCA Animal Poison Control or your emergency vet immediately.',
     ],
     servingSize: {
       smallDog: 'ZERO (Strictly Avoid)',
@@ -1365,11 +1367,19 @@ export const allFoodSafetyItems: FoodSafetyItem[] = [
     faq: [
       {
         question: 'What if my dog accidentally ate one shelled pistachio?',
-        answer: 'A single unsalted pistachio is unlikely to cause poisoning. Monitor your dog for 24-48 hours for signs of vomiting, diarrhea, lethargy, or abdominal tenderness. If a whole handful or shell was eaten, call your vet.',
+        answer: 'A single unsalted pistachio kernel without a shell is unlikely to cause acute poisoning. However, monitor your dog for 24-48 hours for signs of vomiting, diarrhea, lethargy, or abdominal tenderness. If a handful or any shells were eaten, seek veterinary care immediately.',
       },
       {
-        question: 'What are the symptoms of pistachio poisoning in dogs?',
-        answer: 'Symptoms include violent vomiting, dark/bloody diarrhea, severe abdominal pain (praying posture), jaundice (yellow gums/eyes from liver distress), and lethargy.',
+        question: 'Can dogs eat pistachio shells?',
+        answer: 'NO. Pistachio shells are extremely dangerous. They do not break down in canine gastric acid, feature razor-sharp jagged edges that can tear the stomach or intestinal lining, and frequently cause surgical mechanical obstructions.',
+      },
+      {
+        question: 'Can dogs eat pistachio ice cream or pistachio pudding?',
+        answer: 'No. Pistachio ice cream is packed with heavy dairy sugars, high fat, and often contains artificial flavorings or toxic artificial sweeteners like xylitol (birch bark extract), which causes fatal hypoglycemia and acute liver necrosis in dogs.',
+      },
+      {
+        question: 'What are the clinical symptoms of pistachio poisoning in dogs?',
+        answer: 'Symptoms include repetitive vomiting, bloody diarrhea, extreme abdominal pain (the classic "praying" stance with chest down and rear up), orange or dark urine, jaundice (yellowing gums or whites of eyes), and collapse.',
       },
     ],
     heroImage: {

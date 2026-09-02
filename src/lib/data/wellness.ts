@@ -593,6 +593,14 @@ export const allWellnessGuides: WellnessGuide[] = [
         title: '3. Deep Sighing Upon Settling',
         description: 'Signals full parasympathetic nervous system relaxation and safety.',
       },
+      {
+        title: '4. Scent Anchoring & Oxytocin Feedback Loop',
+        description: 'Your legs and bed sheets harbor your strongest individual pheromone concentrations. Inhaling familiar scent markers triggers the release of prolactin and oxytocin while dropping salivary cortisol levels, physically buffering the canine against separation stress.',
+      },
+      {
+        title: '5. Evolutionary Pack Defense & Guarding Posture',
+        description: 'In multi-dog environments or ancestral packs, sleeping in close biological proximity ensured collective perimeter defense. By positioning between your limbs, the dog instinctively ensures that any intruder would have to bypass them first.',
+      },
     ],
     actionProtocol: [
       {
@@ -623,6 +631,10 @@ export const allWellnessGuides: WellnessGuide[] = [
       {
         question: 'Why does my dog press his back against my legs while sleeping?',
         answer: 'Dogs have an instinctual need to protect their vulnerable spines. Pressing their back against you allows them to sleep soundly knowing their rear is completely shielded.',
+      },
+      {
+        question: 'Is it bad or unhealthy to let my dog sleep between my legs every night?',
+        answer: 'From a clinical behavioral perspective, as long as your dog does not show bed guarding or possessiveness and you are getting restful sleep, sharing your sleeping space is completely healthy and strengthens the human-animal bond.',
       },
     ],
     sources: [
@@ -670,6 +682,10 @@ export const allWellnessGuides: WellnessGuide[] = [
         title: '3. Stiff Paw with Averted Gaze or Yawning',
         description: 'Polite displacement or stress: your dog may feel overwhelmed by hugs or close face-to-face contact.',
       },
+      {
+        title: '4. Paw Dominance & Cognitive Emotional Lateralization',
+        description: 'Veterinary ethologists note that dogs often express positive, approach-oriented social emotions using their right paw, whereas cautious or exploratory pawing frequently begins with the left limb.',
+      },
     ],
     actionProtocol: [
       {
@@ -694,6 +710,10 @@ export const allWellnessGuides: WellnessGuide[] = [
       {
         question: 'Should I stop my dog from pawing if it scratches me?',
         answer: 'Keep claws trimmed and gently redirect persistent scratching into a "sit" or "touch" nose-target command with positive treat reinforcement.',
+      },
+      {
+        question: 'Why does my dog hold onto my arm with both paws while I pet them?',
+        answer: 'Holding your arm with both paws (often called a canine "hug") is a high-contact affectionate behavior. It locks you into prolonged contact and releases calming endorphins, often seen in deeply bonded rescue dogs.',
       },
     ],
     sources: [
@@ -741,6 +761,10 @@ export const allWellnessGuides: WellnessGuide[] = [
         title: '3. Physiological Alveolar Reset',
         description: 'A deep breath that expands the lower lungs and balances oxygen-to-carbon-dioxide ratios during rest transitions.',
       },
+      {
+        title: '4. Parasympathetic Vagus Nerve Activation',
+        description: 'A canine sigh stimulates the vagus nerve, initiating a physiological shift from the sympathetic "alert" state to the parasympathetic "rest and digest" nervous state, causing heart rate and respiratory rate to gently decelerate.',
+      },
     ],
     actionProtocol: [
       {
@@ -766,6 +790,10 @@ export const allWellnessGuides: WellnessGuide[] = [
       {
         question: 'What is the difference between a dog groan and a sigh?',
         answer: 'A sigh is pure air exhalation. A vocalized groan or grunt involves the vocal cords and can be normal settling noise in puppies/seniors or a sign of joint discomfort in arthritic dogs.',
+      },
+      {
+        question: 'Do puppies sigh more often than adult or senior dogs?',
+        answer: 'Puppies frequently let out pronounced sighs after high-intensity play bursts because their developing autonomic nervous systems rapidly switch between extreme excitement and deep regenerative sleep.',
       },
     ],
     sources: [
