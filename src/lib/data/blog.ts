@@ -62,6 +62,13 @@ export interface BlogArticle {
   }[];
 }
 
+export const defaultBlogAuthor: BlogAuthor = {
+  name: 'Eternal Paws Canine Research Desk',
+  role: 'Veterinary Science & Ethology Editorial Team',
+  bio: 'An evidence-based editorial desk dedicated to canine behavioral neuroscience, shelter rehabilitation, and companion animal welfare. All guides are corroborated against peer-reviewed studies from the AVMA, UC Davis, and the ASPCA.',
+  avatarUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=256&q=80',
+};
+
 export const allBlogArticles: BlogArticle[] = [
   // ==========================================
   // ARTICLE 1: The 3-3-3 Rule for Rescue Dogs
@@ -74,12 +81,7 @@ export const allBlogArticles: BlogArticle[] = [
     subtitle: 'From the first 72 hours of sensory overload to month three of genuine belonging: a vet-backed roadmap to shelter dog decompression.',
     excerpt: 'Bringing home a rescue dog? Discover the clinical 3-3-3 decompression timeline, the 10 quiet physiological signs your dog feels safe, and the biggest mistakes new adopters make.',
     category: 'Rescue & Adoption',
-    author: {
-      name: 'Dr. Sarah Mitchell, DVM',
-      role: 'Canine Ethologist & Shelter Medicine Consultant',
-      bio: 'Board-Certified Veterinary Behaviorist with over 14 years dedicated to shelter dog rehabilitation and post-adoption transition protocols.',
-      avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=256&q=80',
-    },
+    author: defaultBlogAuthor,
     publishedAt: '2026-09-02',
     lastUpdatedAt: '2026-09-02',
     readTimeMinutes: 8,
@@ -222,12 +224,7 @@ export const allBlogArticles: BlogArticle[] = [
     subtitle: 'A clinical deep-dive into canine foraging evolution, dietary fiber, pica, and when lawn-grazing signals a veterinary visit.',
     excerpt: 'Does your dog frantically graze on grass during morning walks? Discover why the old "upset stomach" myth is largely false, what canine biology actually reveals, and which lawn fertilizers are deadly.',
     category: 'Canine Biology',
-    author: {
-      name: 'Dr. Michael Chang, DVM',
-      role: 'Veterinary Internal Medicine Specialist',
-      bio: 'Clinical small animal veterinarian and clinical researcher focusing on canine gastrointestinal physiology and evolutionary nutrition.',
-      avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80',
-    },
+    author: defaultBlogAuthor,
     publishedAt: '2026-09-02',
     lastUpdatedAt: '2026-09-02',
     readTimeMinutes: 7,
@@ -368,12 +365,7 @@ export const allBlogArticles: BlogArticle[] = [
     subtitle: 'From olfactory scent mapping to facial recognition: how a dog’s memory stores human bonds for years—and sometimes lifetimes.',
     excerpt: 'Do adopted dogs truly remember the people who loved them years ago? Explore how canine episodic and associative memory works, how scent triggers lifelong recognition, and how dogs heal from past separation.',
     category: 'Canine Psychology',
-    author: {
-      name: 'Dr. Sarah Mitchell, DVM',
-      role: 'Canine Ethologist & Shelter Medicine Consultant',
-      bio: 'Board-Certified Veterinary Behaviorist with over 14 years dedicated to shelter dog rehabilitation and post-adoption transition protocols.',
-      avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=256&q=80',
-    },
+    author: defaultBlogAuthor,
     publishedAt: '2026-09-02',
     lastUpdatedAt: '2026-09-02',
     readTimeMinutes: 8,

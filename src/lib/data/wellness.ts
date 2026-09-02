@@ -565,8 +565,8 @@ export const allWellnessGuides: WellnessGuide[] = [
     category: 'behavior',
     urgency: 'informational',
     readTimeMinutes: 4,
-    vetReviewedBy: 'Dr. Sarah Mitchell, DVM & Canine Behavior Specialist',
-    vetCredentials: 'Board-Certified Veterinary Behaviorist (ACVB)',
+    vetReviewedBy: 'Eternal Paws Veterinary Research Desk',
+    vetCredentials: 'Corroborated with ACVB & AVMA Clinical Behavioral Studies',
     lastReviewedAt: '2026-09-01',
     keyTakeaways: [
       'Sleeping between your legs provides a 360-degree biological sense of physical security and warmth.',
@@ -654,8 +654,8 @@ export const allWellnessGuides: WellnessGuide[] = [
     category: 'behavior',
     urgency: 'informational',
     readTimeMinutes: 4,
-    vetReviewedBy: 'Dr. Michael Chang, DVM',
-    vetCredentials: 'Veterinary Ethologist & Behavioral Clinician',
+    vetReviewedBy: 'Eternal Paws Veterinary Research Desk',
+    vetCredentials: 'Corroborated with ACVB & Springer Animal Cognition Studies',
     lastReviewedAt: '2026-09-01',
     keyTakeaways: [
       'Placing a paw on you is often a reciprocal gesture of affection—your dog is literally "petting you back".',
