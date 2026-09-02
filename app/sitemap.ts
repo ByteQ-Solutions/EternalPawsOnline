@@ -11,6 +11,7 @@ import { MetadataRoute } from 'next';
 import { StoryService } from '@/lib/services/story-service';
 import { allFoodSafetyItems } from '@/lib/data/food-safety';
 import { allWellnessGuides } from '@/lib/data/wellness';
+import { allBlogArticles } from '@/lib/data/blog';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const revalidate = 60;
@@ -169,6 +170,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: guide.urgency === 'emergency' ? 0.95 : 0.85,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...foodRoutes, ...wellnessRoutes];
+  // 6. Dedicated Long-Form Editorial Blog Articles
+  const blogRoutes: MetadataRoute.Sitemap = allBlogArticles.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.lastUpdatedAt || post.publishedAt || now),
+    changeFrequency: 'weekly',
+    priority: 0.9,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...categoryRoutes,
+    ...storyRoutes,
+    ...foodRoutes,
+    ...wellnessRoutes,
+    ...blogRoutes,
+  ];
 }
 

@@ -1,183 +1,321 @@
 /**
- * Eternal Paws Platform - Master Canine Care, Behavior & Nutrition Blog Hub
+ * Eternal Paws Platform - Master Long-Form Editorial Blog Hub
  * Path: app/blog/page.tsx
  * 
- * Central SEO Content Pillar aggregating vet-reviewed wellness guides,
- * canine behavioral neuroscience, programmatic food safety ratings, and interactive tools.
- * 
- * Implements Schema.org CollectionPage & Blog JSON-LD for high-CTR Google rich results.
+ * Central publication hub for dedicated, standalone, 1,200+ word canine editorial articles.
+ * Deeply researched, human-voiced, and strictly optimized for high-volume Google search queries.
  */
 
 import React from 'react';
 import type { Metadata } from 'next';
-import { allWellnessGuides } from '@/lib/data/wellness';
-import { allFoodSafetyItems } from '@/lib/data/food-safety';
-import { BlogDirectory, UnifiedBlogArticle } from '@/components/blog/BlogDirectory';
+import Link from 'next/link';
+import Image from 'next/image';
+import { allBlogArticles } from '@/lib/data/blog';
+import { Container } from '@/design-system/components/Container';
+import {
+  Sparkles,
+  Clock,
+  Calendar,
+  ArrowRight,
+  Flame,
+  ShieldCheck,
+  BookOpen,
+  Search,
+  HeartPulse,
+  Apple,
+  Calculator,
+} from 'lucide-react';
 import { DEFAULT_BASE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Canine Life Guides, Behavior & Nutrition Blog | Eternal Paws',
+  title: 'Canine Care, Behavior & Science Blog | Eternal Paws Editorial',
   description:
-    'Evidence-based canine care guides, behavioral psychology breakdowns, veterinary food safety ratings, and clinical emergency calculators for dedicated dog owners.',
+    'In-depth, 1,200+ word veterinary-backed dog care articles, rescue decompression guides, canine ethology breakthroughs, and debunked pet myths.',
   metadataBase: new URL(DEFAULT_BASE_URL),
   alternates: {
     canonical: '/blog',
   },
   keywords: [
-    'dog care blog',
-    'canine behavior guides',
-    'why does my dog sleep between my legs',
-    'why do dogs put paw on you',
-    'can dogs eat watermelon',
-    'dog food safety directory',
-    'vet reviewed dog articles',
-    'dog health blog',
+    '3 3 3 rule for rescue dogs',
+    'why do dogs eat grass',
+    'do dogs remember previous owners',
+    'canine behavior blog',
+    'dog psychology articles',
+    'vet reviewed dog blog',
   ],
   openGraph: {
-    title: 'Canine Life Guides, Behavior & Nutrition Blog | Eternal Paws',
+    title: 'Canine Care, Behavior & Science Blog | Eternal Paws Editorial',
     description:
-      'Vet-reviewed behavioral neuroscience, emergency toxicity protocols, food safety ratings, and interactive calculators.',
+      'In-depth, veterinary-backed dog care articles, rescue decompression guides, and canine ethology breakthroughs.',
     url: `${DEFAULT_BASE_URL}/blog`,
     siteName: 'Eternal Paws',
     type: 'website',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1200&q=80',
+        url: 'https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80',
         width: 1200,
         height: 630,
-        alt: 'Canine Care and Behavior Editorial Guides',
+        alt: 'Eternal Paws Long-Form Editorial Blog',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Canine Life Guides, Behavior & Nutrition Blog | Eternal Paws',
-    description: 'Evidence-based canine care guides, behavioral psychology, and food safety ratings.',
-    images: ['https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1200&q=80'],
+    title: 'Canine Care, Behavior & Science Blog | Eternal Paws Editorial',
+    description: 'In-depth, veterinary-backed dog care articles and canine ethology breakthroughs.',
+    images: ['https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80'],
   },
 };
 
-export const revalidate = 3600; // ISR revalidate every hour
+export const revalidate = 3600; // ISR hourly
 
-export default function BlogPage() {
-  // 1. Transform Wellness Guides
-  const wellnessArticles: UnifiedBlogArticle[] = allWellnessGuides.map((g) => ({
-    id: g.id,
-    slug: g.slug,
-    href: `/wellness/${g.slug}`,
-    title: g.title,
-    subtitle: g.subtitle,
-    excerpt: g.excerpt,
-    category: g.category === 'behavior' ? 'behavior' : g.category === 'senior-care' ? 'senior-care' : 'first-aid',
-    categoryLabel: g.category === 'behavior' ? '🧠 Psychology & Behavior' : g.category === 'senior-care' ? '🦴 Senior Dog Care' : '🩺 Emergency First-Aid',
-    badgeVariant: 'forest',
-    readTime: `${g.readTimeMinutes} min read`,
-    authorOrVet: g.vetReviewedBy,
-    imageUrl: g.heroImage.url,
-    imageAlt: g.heroImage.altText,
-    isFeatured: g.slug === 'why-does-my-dog-sleep-between-my-legs',
-    searchKeywords: [
-      g.slug.replace(/-/g, ' '),
-      ...g.keyTakeaways,
-      ...g.title.toLowerCase().split(' '),
-    ],
-  }));
+export default function BlogHubPage() {
+  const featuredArticle = allBlogArticles[0];
+  const remainingArticles = allBlogArticles.slice(1);
 
-  // 2. Transform Programmatic Food Safety Items
-  const foodSafetyArticles: UnifiedBlogArticle[] = allFoodSafetyItems.map((f) => ({
-    id: f.id,
-    slug: f.slug,
-    href: `/can-dogs-eat/${f.slug}`,
-    title: `Can Dogs Eat ${f.name}? ${f.shortVerdict}`,
-    subtitle: f.scientificName ? `Botanical Classification: ${f.scientificName}` : undefined,
-    excerpt: f.quickAnswer,
-    category: 'food-safety',
-    categoryLabel: `🍏 Food Safety (${f.status.toUpperCase()})`,
-    badgeVariant: f.status === 'safe' ? 'forest' : f.status === 'moderate' ? 'warm' : 'berry',
-    readTime: '3 min read',
-    authorOrVet: 'Veterinary Nutrition Desk',
-    imageUrl: f.heroImage.url,
-    imageAlt: f.heroImage.altText,
-    isFeatured: false,
-    searchKeywords: [
-      f.name.toLowerCase(),
-      `can dogs eat ${f.name.toLowerCase()}`,
-      `is ${f.name.toLowerCase()} safe for dogs`,
-      f.category,
-      f.status,
-    ],
-  }));
-
-  // 3. Transform Interactive Calculators
-  const toolArticles: UnifiedBlogArticle[] = [
-    {
-      id: 'tool-chocolate',
-      slug: 'chocolate-toxicity-calculator',
-      href: '/tools/chocolate-toxicity-calculator',
-      title: 'Dog Chocolate Toxicity Emergency Calculator (ASPCA APCC Protocol)',
-      subtitle: 'Instant theobromine toxicity calculator with milligram-per-kilogram danger meter',
-      excerpt: 'Calculate exact theobromine danger based on dog weight and chocolate type (milk, dark, cocoa, bakers) with 24/7 hotline dialer.',
-      category: 'tool',
-      categoryLabel: '🧮 Emergency Calculator',
-      badgeVariant: 'berry',
-      readTime: 'Instant Tool',
-      authorOrVet: 'ASPCA APCC & Merck Vet Manual',
-      imageUrl: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=1200&q=80',
-      imageAlt: 'Chocolate pieces and veterinary scale',
-      isFeatured: false,
-      searchKeywords: ['chocolate calculator', 'theobromine toxicity', 'dog ate chocolate', 'dog weight'],
-    },
-    {
-      id: 'tool-age',
-      slug: 'dog-age-calculator',
-      href: '/tools/dog-age-calculator',
-      title: 'Dog Age in Human Years Calculator (AVMA Breed Size Curves)',
-      subtitle: 'Breed-specific human age converter replacing the inaccurate 7-year myth',
-      excerpt: 'Converts dog age to human years using AVMA non-linear biological curves for small, medium, large, and giant breeds.',
-      category: 'tool',
-      categoryLabel: '🧮 Interactive Calculator',
-      badgeVariant: 'forest',
-      readTime: 'Instant Tool',
-      authorOrVet: 'American Veterinary Medical Association (AVMA)',
-      imageUrl: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80',
-      imageAlt: 'Golden retriever puppy and senior dog',
-      isFeatured: false,
-      searchKeywords: ['dog age calculator', 'human years', 'how old is my dog', '7 year rule'],
-    },
-  ];
-
-  // Combine and sort (featured first, then wellness, then tools, then foods)
-  const allArticles: UnifiedBlogArticle[] = [
-    ...wellnessArticles,
-    ...toolArticles,
-    ...foodSafetyArticles,
-  ];
-
-  // Schema.org Structured Data
+  // Schema.org CollectionPage & Blog JSON-LD
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Eternal Paws Canine Life Guides, Behavior & Nutrition Blog',
-    description: 'Evidence-based canine care guides, behavioral psychology breakdowns, and veterinary food safety ratings.',
+    '@type': 'Blog',
+    name: 'Eternal Paws Canine Care & Life Guides',
+    description: 'Evidence-based, 1,200+ word canine care guides and behavioral neuroscience articles.',
     url: `${DEFAULT_BASE_URL}/blog`,
-    mainEntity: {
-      '@type': 'ItemList',
-      itemListElement: allArticles.slice(0, 30).map((article, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        url: `${DEFAULT_BASE_URL}${article.href}`,
-        name: article.title,
-      })),
+    publisher: {
+      '@type': 'Organization',
+      name: 'Eternal Paws Media',
+      url: DEFAULT_BASE_URL,
     },
+    blogPost: allBlogArticles.map((article) => ({
+      '@type': 'BlogPosting',
+      headline: article.title,
+      description: article.excerpt,
+      url: `${DEFAULT_BASE_URL}/blog/${article.slug}`,
+      datePublished: article.publishedAt,
+      dateModified: article.lastUpdatedAt,
+      author: {
+        '@type': 'Person',
+        name: article.author.name,
+      },
+    })),
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-canvas text-inkPrimary pb-20 space-y-12 sm:space-y-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogDirectory articles={allArticles} />
-    </>
+
+      {/* 1. Header Banner */}
+      <section className="pt-8 sm:pt-14 pb-10 bg-gradient-to-b from-[#F5F2EC] via-canvas to-canvas border-b border-borderLight">
+        <Container size="default" className="space-y-6">
+          <div className="max-w-3xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-forestLight text-forestPrimary text-xs font-bold uppercase tracking-wider shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-goldAccent" />
+              <span>Classic Long-Form Editorial Journalism</span>
+            </div>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-inkPrimary leading-tight tracking-tight">
+              Canine Science, Ethology &amp; Care Blog
+            </h1>
+            <p className="text-base sm:text-lg text-inkMuted leading-relaxed">
+              Deeply researched, peer-reviewed 1,200+ word standalone guides. No fluff, no robotic clichés—just compassionate veterinary neuroscience and actionable dog care.
+            </p>
+          </div>
+
+          {/* Quick Cross-Pillar Sub-Navigation */}
+          <div className="pt-2 flex flex-wrap items-center gap-3 text-xs">
+            <span className="font-bold text-inkSubtle uppercase tracking-wider">
+              Explore Our Other Specialized Hubs:
+            </span>
+            <Link
+              href="/can-dogs-eat"
+              className="px-3.5 py-1.5 rounded-full bg-card border border-borderLight hover:border-emerald-500/40 text-inkPrimary font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <Apple className="w-3.5 h-3.5 text-emerald-600" />
+              <span>🍏 Food Safety Directory (30+)</span>
+            </Link>
+            <Link
+              href="/wellness"
+              className="px-3.5 py-1.5 rounded-full bg-card border border-borderLight hover:border-red-500/40 text-inkPrimary font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <HeartPulse className="w-3.5 h-3.5 text-red-500" />
+              <span>🩺 Clinical Wellness Protocols (9+)</span>
+            </Link>
+            <Link
+              href="/tools"
+              className="px-3.5 py-1.5 rounded-full bg-card border border-borderLight hover:border-amber-500/40 text-inkPrimary font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs"
+            >
+              <Calculator className="w-3.5 h-3.5 text-amber-600" />
+              <span>🧮 Veterinary Calculators</span>
+            </Link>
+          </div>
+        </Container>
+      </section>
+
+      <Container size="default" className="space-y-12">
+        {/* 2. Featured Lead Article */}
+        {featuredArticle && (
+          <section aria-label="Featured Long-Form Guide">
+            <Link
+              href={`/blog/${featuredArticle.slug}`}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-card border border-borderLight rounded-3xl p-6 sm:p-8 lg:p-10 shadow-soft hover:shadow-elevated transition-all duration-300 group relative overflow-hidden"
+            >
+              <div className="lg:col-span-7 relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-cardMuted border border-borderLight shadow-sm">
+                <Image
+                  src={featuredArticle.heroImage.url}
+                  alt={featuredArticle.heroImage.altText}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 700px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-forestPrimary text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-soft">
+                    <Flame className="w-3.5 h-3.5 text-goldLight" />
+                    Lead Feature Article
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-black/60 text-white text-xs font-semibold backdrop-blur-sm">
+                    {featuredArticle.category}
+                  </span>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-inkSubtle">
+                    <span className="text-forestPrimary font-bold">{featuredArticle.readTimeMinutes} min deep read</span>
+                    <span>•</span>
+                    <span>{featuredArticle.wordCount.toLocaleString()} words</span>
+                    <span>•</span>
+                    <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded">
+                      🔥 {featuredArticle.searchVolume} Searches
+                    </span>
+                  </div>
+
+                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-inkPrimary group-hover:text-forestPrimary transition-colors leading-tight">
+                    {featuredArticle.title}
+                  </h2>
+
+                  {featuredArticle.subtitle && (
+                    <p className="font-serif italic text-sm sm:text-base text-inkMuted leading-relaxed">
+                      {featuredArticle.subtitle}
+                    </p>
+                  )}
+
+                  <p className="text-xs sm:text-sm text-inkMuted leading-relaxed line-clamp-3">
+                    {featuredArticle.excerpt}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-borderLight flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-forestPrimary/30">
+                      <Image
+                        src={featuredArticle.author.avatarUrl}
+                        alt={featuredArticle.author.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-inkPrimary">
+                      {featuredArticle.author.name}
+                    </span>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-forestPrimary group-hover:translate-x-1 transition-transform">
+                    <span>Read Full Guide</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </section>
+        )}
+
+        {/* 3. Grid of Remaining Standalone Articles */}
+        <section className="space-y-6">
+          <div className="border-b border-borderLight pb-3 flex items-center justify-between">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-inkPrimary flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-forestPrimary" />
+              <span>In-Depth Investigative &amp; Ethology Guides</span>
+            </h2>
+            <span className="text-xs text-inkSubtle font-medium">
+              1,200+ Words Each • Fully Referenced
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {remainingArticles.map((article) => (
+              <article
+                key={article.id}
+                className="bg-card border border-borderLight rounded-3xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+              >
+                <Link href={`/blog/${article.slug}`} className="block space-y-4">
+                  <div className="relative aspect-[16/10] w-full bg-cardMuted overflow-hidden border-b border-borderLight">
+                    <Image
+                      src={article.heroImage.url}
+                      alt={article.heroImage.altText}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 550px"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-bold backdrop-blur-md uppercase">
+                        {article.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-inkSubtle font-medium">
+                      <Clock className="w-3.5 h-3.5 text-forestPrimary" />
+                      <span>{article.readTimeMinutes} min read</span>
+                      <span>•</span>
+                      <span>{article.wordCount.toLocaleString()} words</span>
+                      <span>•</span>
+                      <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded text-[11px]">
+                        🔥 {article.searchVolume}
+                      </span>
+                    </div>
+
+                    <h3 className="font-serif text-xl font-bold text-inkPrimary group-hover:text-forestPrimary transition-colors leading-snug">
+                      {article.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-inkMuted leading-relaxed line-clamp-3">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="px-6 pb-6 pt-2 border-t border-borderLight/60 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-7 h-7 rounded-full overflow-hidden border border-borderLight">
+                      <Image
+                        src={article.author.avatarUrl}
+                        alt={article.author.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-inkSubtle font-semibold truncate max-w-[150px]">
+                      {article.author.name}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/blog/${article.slug}`}
+                    className="inline-flex items-center gap-1 font-bold text-forestPrimary hover:underline group-hover:translate-x-0.5 transition-transform"
+                  >
+                    <span>Read Article</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </Container>
+    </div>
   );
 }
