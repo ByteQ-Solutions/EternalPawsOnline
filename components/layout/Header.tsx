@@ -187,6 +187,19 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               <span>Food Safety</span>
             </Link>
 
+            {/* 3.5. Blog & Guides */}
+            <Link
+              href="/blog"
+              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                pathname?.startsWith('/blog')
+                  ? 'text-forestPrimary bg-forestLight/80 shadow-xs'
+                  : 'text-inkMuted hover:text-inkPrimary hover:bg-cardMuted'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-forestPrimary" />
+              <span>Guides & Blog</span>
+            </Link>
+
             {/* 4. Interactive Calculators & Tools */}
             <Link
               href="/tools"

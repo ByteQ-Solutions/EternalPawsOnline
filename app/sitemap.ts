@@ -43,7 +43,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/can-dogs-eat`,
       lastModified: now,
       changeFrequency: 'daily',
-      priority: 0.9,
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/tools`,

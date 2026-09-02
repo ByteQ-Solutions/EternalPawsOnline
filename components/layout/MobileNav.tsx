@@ -144,6 +144,22 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             </Link>
 
             <Link
+              href="/blog"
+              onClick={onClose}
+              className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                currentPath.startsWith('/blog')
+                  ? 'bg-forestLight/80 text-forestPrimary font-bold'
+                  : 'bg-card border border-borderLight hover:bg-cardMuted text-inkPrimary'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <BookOpen className="w-5 h-5 text-forestPrimary" />
+                <span className="text-sm font-bold">📖 Guides & Editorial Blog</span>
+              </div>
+              <span className="text-[10px] bg-forestLight text-forestPrimary px-2 py-0.5 rounded-full font-bold">41+ GUIDES</span>
+            </Link>
+
+            <Link
               href="/tools"
               onClick={onClose}
               className={`flex items-center justify-between p-3 rounded-xl transition-all ${

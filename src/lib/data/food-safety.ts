@@ -1293,54 +1293,6 @@ export const allFoodSafetyItems: FoodSafetyItem[] = [
     },
   },
   {
-    id: 'food-mango',
-    slug: 'mango',
-    name: 'Mango',
-    emoji: '🥭',
-    category: 'fruits',
-    status: 'safe',
-    shortVerdict: 'Safe & Sweet (Remove Peel & Hard Pit)',
-    quickAnswer: 'Yes! Dogs can safely enjoy fresh mango flesh as a nutrient-packed tropical treat. Always peel the tough skin and discard the large choking pit.',
-    vetReviewSummary: 'Mangoes are rich in vitamins A, B6, C, and E, plus beta-carotene and dietary fiber. Because of their natural sugar content, feed mango in moderation as an occasional treat.',
-    benefits: [
-      'High in Vitamin A and Beta-Carotene supporting eyesight and immune defense',
-      'Packed with Vitamin C and potassium for cellular vitality',
-      'Rich in soluble fiber that aids gentle canine digestion',
-      'Naturally sweet flavor loved by picky dogs',
-    ],
-    risks: [
-      'The large central pit contains trace cyanide and poses a life-threatening intestinal obstruction hazard',
-      'Mango peel is tough, fibrous, and can cause gastric irritation or vomiting',
-      'High natural fructose can cause diarrhea if fed in excessive amounts',
-    ],
-    prepInstructions: [
-      'Wash thoroughly under cold water',
-      'Peel away all outer skin completely',
-      'Slice the juicy golden flesh away from the large woody central pit',
-      'Cut flesh into small bite-sized cubes or freeze for a refreshing summer snack',
-    ],
-    servingSize: {
-      smallDog: '1 to 2 small cubes per day',
-      mediumDog: '3 to 4 cubes per day',
-      largeDog: 'Quarter of a mango sliced',
-    },
-    faq: [
-      {
-        question: 'Can dogs eat dried mango?',
-        answer: 'Dried mango is not toxic, but it has much higher concentrated sugar and calories than fresh mango. Fresh sliced mango is much healthier for your dog.',
-      },
-      {
-        question: 'What should I do if my dog swallowed a whole mango pit?',
-        answer: 'A mango pit cannot pass through most canine digestive tracts and will cause a severe intestinal blockage. Call your emergency veterinarian immediately for guidance or endoscopic removal.',
-      },
-    ],
-    heroImage: {
-      url: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=1200&q=80',
-      altText: 'Fresh sliced ripe mango on plate',
-      credit: 'Unsplash Food Photography',
-    },
-  },
-  {
     id: 'food-dragon-fruit',
     slug: 'dragon-fruit',
     name: 'Dragon Fruit',
